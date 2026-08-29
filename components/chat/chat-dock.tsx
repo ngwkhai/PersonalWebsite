@@ -241,7 +241,9 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
                             href={url}
                             className="border-rule text-ink-2 hover:border-ink-3 hover:text-ink border px-1.5 py-0.5 font-mono text-[0.68rem] transition-colors"
                           >
-                            {url.replace(/^\/(en|vi)/, '')}
+                            {/* The profile chunks cite /en itself, which strips to an
+                                empty string and rendered a blank pill. */}
+                            {url.replace(/^\/(en|vi)/, '') || '/'}
                           </a>
                         ))}
                       </div>
