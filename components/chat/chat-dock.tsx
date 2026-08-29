@@ -14,7 +14,15 @@ import { ToolActivity } from './tool-activity';
 import { ProjectChip } from './project-chip';
 import type { ChatProject } from './types';
 
-const SECTION_TARGETS = new Set(['about', 'contact', 'work']);
+/** Targets that are anchors on the homepage rather than routes of their own. */
+const SECTION_TARGETS = new Set([
+  'skills',
+  'work',
+  'achievements',
+  'experience',
+  'about',
+  'contact',
+]);
 
 /** The agent strips its own citation line; pills render it instead. */
 function splitSources(text: string): { body: string; urls: string[] } {

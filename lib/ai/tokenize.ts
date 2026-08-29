@@ -1,4 +1,5 @@
 import { stripDiacritics } from '@/lib/utils';
+import { STOPWORDS } from './stopwords';
 
 /**
  * Diacritic-folding tokenizer, shared by index build and query time so the two
@@ -9,5 +10,5 @@ export function tokenize(input: string): string[] {
   return stripDiacritics(input)
     .toLowerCase()
     .split(/[^a-z0-9+#.]+/)
-    .filter((token) => token.length > 1 && token.length < 32);
+    .filter((token) => token.length > 1 && token.length < 32 && !STOPWORDS.has(token));
 }

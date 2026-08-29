@@ -21,9 +21,15 @@ export function ContactForm() {
     'w-full border-b border-rule bg-transparent py-2.5 text-ink outline-none transition-colors placeholder:text-ink-3 focus:border-ink';
 
   return (
-    <section id="contact" className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8 sm:py-24">
+    <section
+      id="contact"
+      aria-labelledby="contact-heading"
+      className="mx-auto max-w-[88rem] scroll-mt-28 px-5 py-14 sm:px-8 sm:py-20"
+    >
       <div className="grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
-        <h2 className="label !text-ink">{ts('contact')}</h2>
+        <h2 id="contact-heading" className="label !text-ink">
+          {ts('contact')}
+        </h2>
 
         <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-20">
           {state.status === 'sent' ? (

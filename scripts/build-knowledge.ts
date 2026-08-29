@@ -25,6 +25,7 @@ import {
   socials,
   type Locale,
 } from '../content/cv';
+import { achievementsByDate } from '../content/achievements';
 import projectsJson from '../.velite/projects.json' with { type: 'json' };
 import writingJson from '../.velite/writing.json' with { type: 'json' };
 
@@ -173,6 +174,17 @@ function profileChunks(locale: Locale): Chunk[] {
     make('Experience', list(experience)),
     make('Leadership', list(leadership)),
     make('Skills', skills.map((g) => `${g.label[locale]}: ${g.items.join(', ')}`).join('\n')),
+    make(
+      'Achievements',
+      achievementsByDate
+        .map(
+          (item) =>
+            `${item.title[locale]} — ${item.issuer} (${item.date}).` +
+            (item.detail ? ` ${item.detail[locale]}` : '') +
+            (item.href ? ` ${item.href}` : ''),
+        )
+        .join('\n\n'),
+    ),
   ];
 }
 

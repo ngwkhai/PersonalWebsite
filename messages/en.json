@@ -8,7 +8,11 @@
     "skipToContent": "Skip to content",
     "menu": "Menu",
     "close": "Close",
-    "match": "Match"
+    "match": "Match",
+    "skills": "Skills",
+    "achievements": "Achievements",
+    "experience": "Experience",
+    "resume": "Resume"
   },
   "hero": {
     "restoring": "restoring diacritics",
@@ -26,7 +30,19 @@
     "leadership": "Leadership",
     "skills": "Skills",
     "contact": "Get in touch",
-    "writing": "Writing"
+    "writing": "Writing",
+    "skillsLead": "Counted from the case studies, not claimed. The number is how many of the seven projects actually use it.",
+    "skillsFootnote": "A dash means nothing on this site evidences it yet.",
+    "usedIn": "Used in {count} projects",
+    "achievementsLead": "Awards, credentials and published work.",
+    "writingLead": "Notes on things worth writing down.",
+    "writingEmpty": "Nothing published yet. The case studies under Work are where the writing lives for now.",
+    "resumeLead": "The whole thing on one page, or as a PDF.",
+    "resumeView": "Read the résumé",
+    "resumeDownload": "Download PDF",
+    "achievementsEmpty": "Nothing listed yet.",
+    "viewAll": "See all",
+    "research": "Research"
   },
   "project": {
     "role": "Role",

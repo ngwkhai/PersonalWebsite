@@ -8,7 +8,11 @@
     "skipToContent": "Tới nội dung chính",
     "menu": "Menu",
     "close": "Đóng",
-    "match": "Đối chiếu JD"
+    "match": "Đối chiếu JD",
+    "skills": "Kỹ năng",
+    "achievements": "Thành tích",
+    "experience": "Kinh nghiệm",
+    "resume": "Hồ sơ"
   },
   "hero": {
     "restoring": "đang khôi phục dấu",
@@ -26,7 +30,19 @@
     "leadership": "Hoạt động",
     "skills": "Kỹ năng",
     "contact": "Liên hệ",
-    "writing": "Bài viết"
+    "writing": "Bài viết",
+    "skillsLead": "Đếm từ chính các case study, không phải tự nhận. Con số là số dự án trong bảy dự án thực sự dùng tới nó.",
+    "skillsFootnote": "Dấu gạch nghĩa là chưa có gì trên trang này chứng minh cho mục đó.",
+    "usedIn": "Dùng trong {count} dự án",
+    "achievementsLead": "Giải thưởng, chứng chỉ và công bố.",
+    "writingLead": "Ghi chép về những thứ đáng viết lại.",
+    "writingEmpty": "Chưa có bài nào. Hiện phần viết nằm trong các case study ở mục Dự án.",
+    "resumeLead": "Toàn bộ trên một trang, hoặc tải bản PDF.",
+    "resumeView": "Xem hồ sơ",
+    "resumeDownload": "Tải PDF",
+    "achievementsEmpty": "Chưa có mục nào.",
+    "viewAll": "Xem tất cả",
+    "research": "Nghiên cứu"
   },
   "project": {
     "role": "Vai trò",

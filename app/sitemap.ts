@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     languages: Object.fromEntries(locales.map((locale) => [locale, `${BASE}/${locale}${path}`])),
   });
 
-  const staticPaths = ['', '/work', '/writing', '/colophon'];
+  const staticPaths = ['', '/work', '/writing', '/resume', '/colophon'];
 
   return [
     ...locales.flatMap((locale) =>

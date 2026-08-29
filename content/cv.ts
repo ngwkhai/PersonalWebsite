@@ -150,7 +150,7 @@ export const skills: readonly SkillGroup[] = [
     label: { en: 'Machine Learning', vi: 'Học máy' },
     items: [
       'PyTorch',
-      'Transformers',
+      'Transformer',
       'Seq2Seq',
       'YOLOv5 / YOLOv1',
       'CBAM',
@@ -162,7 +162,7 @@ export const skills: readonly SkillGroup[] = [
   {
     id: 'nlp',
     label: { en: 'NLP', vi: 'Xử lý ngôn ngữ tự nhiên' },
-    items: ['Vietnamese NLP', 'Diacritic restoration', 'BLEU / ChrF++', 'Sentiment analysis'],
+    items: ['Vietnamese NLP', 'Diacritic restoration', 'BLEU / ChrF++', 'Sentiment classification'],
   },
   {
     id: 'systems',

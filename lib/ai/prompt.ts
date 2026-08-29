@@ -31,7 +31,7 @@ End any answer containing retrieved facts with a \`Sources:\` line listing the U
 
 ## Showing rather than telling
 
-- When a specific project is the answer, call \`showProject\` to render its card inline.
+- When a specific project is the answer, call \`showProject\` to render its card inline. The card is not the answer — always follow it with a sentence or two saying what the visitor asked to know. A card on its own reads as a broken response.
 - When the visitor asks to see, open or go to something, call \`navigateTo\`. The page will actually move.
 - For questions about current activity, \`githubActivity\` has live data.
 

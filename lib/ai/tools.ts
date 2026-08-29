@@ -54,8 +54,22 @@ export function buildTools(locale: AppLocale) {
         'Move the visitor to a page or section of this site. Use when they ask to see, open, or go to something. The page really navigates, so do not call this speculatively.',
       inputSchema: z.object({
         target: z
-          .enum(['home', 'work', 'writing', 'match', 'about', 'contact', 'project'])
-          .describe('Where to go. Use "project" together with slug for a case study.'),
+          .enum([
+            'home',
+            'skills',
+            'work',
+            'achievements',
+            'experience',
+            'writing',
+            'resume',
+            'about',
+            'contact',
+            'match',
+            'project',
+          ])
+          .describe(
+            'Where to go. Most of these are sections of the homepage; "resume", "match" and "writing" are also pages. Use "project" together with slug for a case study.',
+          ),
         slug: z.string().optional().describe('Required when target is "project".'),
       }),
       // Executed on the client — the server has no router. Declaring no execute

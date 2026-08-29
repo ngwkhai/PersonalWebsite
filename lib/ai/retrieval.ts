@@ -11,16 +11,52 @@ const BM25_B = 0.75;
 /** Reciprocal-rank-fusion damping. 60 is the value from the original paper. */
 const RRF_K = 60;
 
+/**
+ * Minimum cosine similarity for a vector hit to count.
+ *
+ * This exists because embeddings always return something: without a floor,
+ * "what is the best recipe for sourdough bread" retrieves the six nearest case
+ * study passages and hands the agent irrelevant evidence to reason over, which
+ * is exactly how a grounded agent starts confabulating. BM25 has no such
+ * problem — an unmatched term simply scores zero.
+ *
+ * Measured against this corpus with text-embedding-3-small:
+ *
+ *   off-topic and nonsense queries  top similarity 0.149 - 0.151
+ *   on-topic queries                top similarity 0.233 - 0.430
+ *
+ * 0.20 sits in that gap. Re-measure if the embedding model changes; the
+ * absolute scale is model-specific and this number does not transfer.
+ */
+const MIN_SIMILARITY = 0.2;
+
+/**
+ * Minimum share of a query's content terms that must appear anywhere in the
+ * corpus for the lexical half to return anything.
+ *
+ * Stopword removal alone is not enough: "what is the best recipe for sourdough
+ * bread" still matches on "best", and one accidental match against a technical
+ * corpus is not evidence of anything. Requiring coverage asks a different and
+ * better question — is this query even about the material?
+ *
+ *   off-topic   1 of 4 content terms known  (0.25)
+ *   on-topic    2 of 2, 1 of 1              (1.00)
+ */
+const MIN_COVERAGE = 0.4;
+
 function bm25(query: string, candidates: readonly Chunk[]): Retrieved[] {
-  const terms = tokenize(query);
+  const terms = [...new Set(tokenize(query))];
   if (terms.length === 0) return [];
+
+  const known = terms.filter((term) => knowledge.df[term]);
+  if (known.length / terms.length < MIN_COVERAGE) return [];
 
   const total = knowledge.chunks.length;
 
   return candidates
     .map((chunk) => {
       let score = 0;
-      for (const term of new Set(terms)) {
+      for (const term of known) {
         const df = knowledge.df[term];
         if (!df) continue;
 
@@ -54,6 +90,7 @@ async function vector(query: string, candidates: readonly Chunk[]): Promise<Retr
       chunk,
       score: cosineSimilarity(embedding, chunk.embedding as number[]),
     }))
+    .filter((hit) => hit.score >= MIN_SIMILARITY)
     .sort((a, b) => b.score - a.score);
 }
 

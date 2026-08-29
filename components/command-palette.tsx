@@ -56,8 +56,12 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
   }, []);
 
   const pages = [
+    { label: tn('skills'), href: '/#skills' },
     { label: tn('work'), href: '/work' },
+    { label: tn('achievements'), href: '/#achievements' },
+    { label: tn('experience'), href: '/#experience' },
     { label: tn('writing'), href: '/writing' },
+    { label: tn('resume'), href: '/resume' },
     { label: tn('match'), href: '/match' },
     { label: tn('about'), href: '/#about' },
     { label: tn('contact'), href: '/#contact' },
