@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom global styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans, Inter), sans-serif;
+  background: theme('colors.surface');
+  color: theme('colors.ink');
+}
+
+a {
+  transition: color 0.2s;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-2xl font-bold shadow-soft transition bg-primary text-white hover:bg-accent;
+}
+.btn-outline {
+  @apply px-4 py-2 rounded-2xl font-bold border border-primary text-primary bg-transparent hover:bg-primary hover:text-white;
+}
+.btn-accent {
+  @apply px-4 py-2 rounded-2xl font-bold bg-accent text-white hover:bg-primary;
+}
+.input {
+  @apply px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary;
+}

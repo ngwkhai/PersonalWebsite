@@ -1,0 +1,976 @@
+/*=============== GOOGLE FONTS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400..800&display=swap");
+
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --header-height: 3.5rem;
+
+  /*========== Colors ==========*/
+--black: hsl(0, 0%, 10%);
+--white: hsl(0, 0%, 100%);
+--orange: hsl(10, 95%, 55%);
+--orange-light: hsl(14, 100%, 70%);
+
+--title-color: var(--orange);
+--text-color: var(--black); /* 修正为黑色作为文字颜色 */
+--body-color: var(--white); /* 修正为白色作为背景颜色 */
+--container-color: var(--orange-light);
+
+ /*========== Font and typography ==========*/
+  /*.5rem = 8px | 1rem = 16px ...*/
+
+  --body-font: "Syne", sans-serif;
+  --biggest-font-size: 3rem;
+  --big-font-size:2rem;
+  --h1-font-size: 1.75rem;
+  --h2-font-size: 1.5rem;
+  --h3-font-size: 1.25rem;
+  --normal-font-size: 1rem;
+  --small-font-size: .813rem;
+
+  /*========== Font weight ==========*/
+  --font-regular: 400;
+  --font-semi-bold: 600;
+  --font-bold: 700;
+
+  /*========== z index ==========*/
+  --z-tooltip: 10;
+  --z-fixed: 100;
+}
+ /*========== Responsive typography==========*/
+
+@media screen and (min-width: 1150px) {
+  :root {
+    --biggest-font-size: 4rem;
+    --big-font-size: 3rem;
+    --h1-font-size: 2.75rem;
+    --h2-font-size: 2.5rem;
+    --h3-font-size: 1.5rem;
+    --normal-font-size: 1.25rem;
+    --small-font-size: .875rem;
+  }
+}
+
+
+/*=============== BASE ===============*/
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+input,
+textarea,
+button {
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+}
+
+body {
+  background-color: var(--body-color);
+  color: var(--text-color);
+}
+
+input,
+button,
+textarea {
+  border: none;
+  outline: none;
+}
+
+h1, h2, h3 {
+  color: var(--title-color);
+  font-weight: var(--font-semi-bold);
+}
+h1 {
+    font-size: var(--h1-font-size);
+      margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: var(--h2-font-size);
+
+}
+p {
+  line-height: 1.5;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: var(--orange);
+}
+
+a:hover {
+  color: var(--orange-light);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/*=============== REUSABLE CSS CLASSES ===============*/
+.container {
+  max-width: 1120px;
+  margin-inline: auto; /* Center align */
+  padding: 0 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 2rem; /* Increased gap for better spacing */
+}
+
+.section {
+  padding: 5rem 1.5rem; /* Adjusted padding */
+}
+
+.section__title {
+  text-align: center;
+  font-size: var(--h1-font-size);
+  font-weight: var(--font-bold);
+  margin-bottom: 2.5rem; /* Increased margin for spacing */
+}
+
+.main {
+  overflow: hidden;
+}
+
+
+/*=============== NAV ===============*/
+.nav_icon ul {
+  position:fixed;
+  bottom:1.5rem;
+  left:0;
+  right:0;
+  background-color:hsla(0,0%,10%,0.4);
+  width:88%;
+  margin-inline:auto;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  padding:1rem 3.5rem;
+  border-radius:4rem;
+  z-index:var(--z-fixed);
+}
+.nav__list{
+  display: flex;
+  justify-content: space-between;
+  align-items:center;
+}
+.nav__lick{
+  width:3rem;
+  height:3rem;
+  background-color:hsla(0,0%,90%,0.2);
+  color: var(--white);
+  font-size:2rem;
+  border-radius:50%;
+  display: grid;
+  place-items:center;
+  transition:background-color .6s;
+}
+
+/*active link*/
+.active-link{
+    background-color:var(--orange-light);
+}
+
+
+
+/*=============== HEADER & NAV ===============*/
+.header {
+    background-color: var(--black); /* Header 背景颜色 */
+    padding: 1rem; /* 内边距 */
+    position: relative; /* 以便于绝对定位 */
+}
+
+.nav-toggle {
+    cursor: pointer; /* 鼠标指针变为手型 */
+    display: none; /* 默认隐藏 */
+}
+
+.nav-toggle span {
+    display: block; /* 每个线条作为块元素 */
+    width: 30px; /* 线条宽度 */
+    height: 3px; /* 线条高度 */
+    background-color: var(--orange); /* 线条颜色 */
+    margin: 5px 0; /* 上下间距 */
+    transition: all 0.3s; /* 动画效果 */
+}
+.nav-list {
+    display: flex; /* 默认横排 */
+    justify-content: space-between; /* 项目之间均匀分配空间 */
+    padding:  0 3rem; /* 增加上下间距 */
+}
+/* 导航链接样式 */
+.nav-list li {
+    text-align: center; /* 居中 */
+    padding: 1rem 0; /* 增加上下间距 */
+}
+/* 在小屏幕下显示汉堡图标 */
+@media (max-width: 768px) {
+      .nav-list {
+        display: none; /* 默认隐藏导航列表 */
+        flex-direction: column; /* 汉堡模式下竖排 */
+        position: absolute; /* 绝对定位 */
+        top: 50px; /* 距离顶部 */
+        right: 0;
+        background-color: hsl(0,0%,0%,.9); /* 菜单背景 */
+        width: 100%; /* 全宽 */
+        z-index: 2; /* 确保图像在最上层 */
+    }
+
+    .nav-list.active {
+        display: flex; /* 展开时显示 */
+    }
+
+    .nav-toggle {
+        display: block; /* 显示汉堡图标 */
+    }
+
+}
+.nav-list a {
+    text-decoration: none; /* 去掉下划线 */
+    color: var(--orange); /* 文字颜色 */
+    font-size: 1.25rem; /* 字体大小 */
+}
+
+.nav-list a:hover {
+    color: var(--orange-light); /* 悬停时颜色变化 */
+}
+/*================== Home ==================*/
+.home__container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 两列布局 */
+    gap: 10rem; /* 列间距 */
+    align-items: center; /* 垂直居中 */
+    white-space: normal; /* 允许换行 */
+     padding: 2rem;
+}
+
+@media (max-width: 768px) {
+    .home__container {
+        grid-template-columns: 1fr; /* 小屏幕时变为一列 */
+        gap: 2rem; /* 调整间距 */
+
+    }
+
+    .perfil {
+        width: 100%; /* 使 perfil 适应屏幕宽度 */
+        padding: 1.5rem; /* 调整内边距 */
+    }
+
+    .perfil__data {
+        width: auto; /* 让数据区域自适应 */
+    }
+}
+/*======== PERFIL =======*/
+.perfil {
+    position: relative;
+    background : hsl(0, 0%, 75%,0.3);
+    height:450px;
+    width: 750px;
+    border-radius:2rem;
+    padding:3rem;
+    display: grid;
+    overflow: hidden;
+
+}
+.perfil__img {
+    width: 260px; /* 设置你想要的宽度 */
+    height: 340px; /* 保持比例 */
+    position:absolute;
+    justify-self: left;
+    border-radius: 1.5rem;
+    top: 40%;
+    left: 20%;
+    padding:0 0 0 0;
+    align-self: flex-end;
+    transform: translate(-50%,-30%);
+}
+.perfil__data{
+    align-self:flex-end;
+    background-color:hsl(0,0%,30%,.2);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    width: 400px;
+    justify-self: right;
+    padding:1.5rem 1rem;
+    border-radius:1.5rem;
+    border:3px solid hsl(0,0%,100%,.5);
+}
+
+
+
+
+.perfil__name {
+    padding: 1rem 1rem;
+    font: var(--font-regular) var(--h1-font-size) var(--font-semi-bold);
+}
+
+.perfil__buttons {
+    display: grid;
+    column-gap: .5rem;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.perfil__buttons .button {
+    padding: .8rem 0;
+}
+
+/*================== About ==================*/
+.about {
+    background-color: var(--orange);
+    padding: 2rem 1.5rem;
+    display: grid;
+   grid-template-columns: 1fr 2fr;
+}
+.about__image{
+    padding: 2rem 1.5rem;
+    place-items:center;
+}
+.about__info
+{
+    padding:5rem 0;
+}
+.about__img{
+    width: 400px;/* 根据需要调整宽度 */
+    height: 560px; /* 保持比例 */
+    display: grid;
+    place-items:center;
+    border-radius: 1.5rem;
+}
+.about__name {
+  font-size:var(--h1-font-size);
+  color: var(--black);
+  font-weight: var(--font-regular);
+  margin-bottom:1rem;
+  margin-block:1rem 2rem;
+}
+.about__social{
+    display: flex;
+    justify-content: center;
+    column-gap:1.5rem;
+    margin-block:2rem;
+}
+.about__link {
+    width: 3rem;
+    height: 3rem;
+    background-color: var(--white);
+    color: var(--black);
+    font-size: 1.5rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    transition: background-color .4s, color .4s;
+}
+。about__link:hover{
+    background-color:var(--black);
+    color:var(--orange);
+}
+.about__note{
+    margin-block:1rem 2rem;
+    font-size:var(--normal-font-size);
+}
+
+/*================== Info ==================*/
+.info{
+    background-color: var(--orange);
+    padding: 2rem 1.5rem;
+    margin-top: 4rem;
+}
+
+.info__circle {
+    width: 2rem;
+    height: 2rem;
+    background-color: var(--white);
+    border-radius: 50%;
+}
+
+.info__name {
+
+    color: var(--white); /* 应该指定字体颜色 */
+}
+
+.info__data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.info__image {
+    background: var(--white); /* 确保这个变量已经定义 */
+    height:360px;
+    border-radius: 2rem;
+    display: grid;
+    margin-block: 1.5rem;
+    grid-template-columns: auto 1fr; /* 图像自适应宽度，文本占剩余空间 */
+    align-items: center; /* 垂直居中对齐 */
+    overflow: hidden;
+    padding: 1rem; /* 内边距，增加视觉效果 */
+}
+.info__description{
+    padding:4rem;
+    color: var(--black);
+}
+.info__title{
+   padding:1rem;
+}
+.info.button{
+   width:100%;
+}
+@media (max-width: 768px) {
+    .info__image {
+    height: 430px;
+    padding: 0rem;
+    grid-template-columns: 1fr;
+    }
+    .info__description{
+    padding:0 0 2rem 3rem;
+    color: var(--black);
+    margin-bottom:3rem;
+    }
+}
+@media (max-width: 600px) {
+  .info__image {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding: 0.5rem;
+    margin-block: 1rem;
+    justify-items: center; /* căn giữa nội dung grid */
+    text-align: center;    /* căn giữa nội dung bên trong */
+  }
+  .logo {
+    width: 120px;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto; /* căn giữa logo */
+  }
+  .info__description {
+    padding: 0.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: center; /* căn giữa text */
+    word-break: break-word; /* ngắt dòng nếu quá dài */
+    box-sizing: border-box;
+  }
+  .info__title {
+    padding: 0.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: center;
+    word-break: break-word;
+    box-sizing: border-box;
+    display: block; /* đảm bảo chiếm toàn bộ chiều ngang */
+  }
+}
+
+/*===============Logo ===============*/
+  .logo {
+    width: 400px;/* 根据需要调整宽度 */
+    height: auto; /* 保持比例 */
+    display: grid;
+    margin-right: 3px; /* 与文本之间的间距 */
+    padding:0 0 3 0rem;
+    place-items:center;
+    margin-bottom:0rem;
+}
+@media (max-width: 768px) {
+ .logo {
+    width: 400x;/* 根据需要调整宽度 */
+     margin-right: 1px;
+     padding:0 0 0 1rem;
+
+ }
+
+}
+/*================== PRODUCTS ==================*/
+.projects__container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(500px, 2fr)); /* 根据需要设置列数 */
+    gap: 5rem; /* 项目之间的间隔 */
+}
+.projects__card {
+    background-color: var(--black);
+    padding: 1.5rem; /* 添加内边距 */
+    border-radius: 2rem;
+    transition: transform 0.3s; /* 添加过渡效果 */
+}
+.projects__card:hover {
+    transform: translateY(-5px); /* 鼠标悬停时的效果 */
+}
+
+.projects__image {
+    display: block;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.projects__img {
+    transition: transform .4s;
+    width: 100%; /* 确保图像宽度填满父容器 */
+    aspect-ratio: 6 / 4; /* 设置宽高比为 6:4 */
+    border-radius: inherit; /* 继承圆角样式 */
+}
+
+.projects__name {
+    font-size: var(--h3-font-size);
+    margin-bottom: .5rem;
+}
+
+.projects__description {
+    color: var(--white);
+    margin-bottom: 1.5rem;
+}
+
+.projects__button {
+    color: var(--orange);
+    display: inline-flex;
+    align-items: center;
+    column-gap: .5rem;
+    transition: color .4s;
+}
+
+.projects__button i {
+    font-size: 1.25rem;
+}
+
+.projects__button span {
+    /*font-weight: var(--font-medium);*/
+}
+
+.projects__button:hover {
+    color: var(--white);
+}
+
+.projects__card:hover .projects__img {
+    transform: scale(1.2);
+}
+
+/*================== Work ==================*/
+.works__container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 2fr)); /* 根据需要设置列数 */
+    gap: 5rem; /* 项目之间的间隔 */
+}
+.works__card {
+    background-color: var(--black);
+    padding: 1.5rem; /* 添加内边距 */
+    border-radius: 2rem;
+    transition: transform 0.3s; /* 添加过渡效果 */
+}
+.works__card:hover {
+    transform: translateY(-5px); /* 鼠标悬停时的效果 */
+}
+
+.works__image {
+    display: block;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.works__img {
+    transition: transform .4s;
+    width: 100%; /* 确保图像宽度填满父容器 */
+    aspect-ratio: 16 / 9; /* 设置宽高比为 16:9 */
+    border-radius: inherit; /* 继承圆角样式 */
+}
+
+.works__name {
+    font-size: var(--h3-font-size);
+    margin-bottom: .5rem;
+}
+
+.works__description {
+    color: var(--white);
+    margin-bottom: 1.5rem;
+}
+
+.works__button {
+    color: var(--orange);
+    display: inline-flex;
+    align-items: center;
+    column-gap: .5rem;
+    transition: color .4s;
+}
+
+.works__button i {
+    font-size: 1.25rem;
+}
+
+.works__button span {
+   /* font-weight: var(--font-medium);*/
+}
+
+.works__button:hover {
+    color: var(--white);
+}
+
+.works__card:hover .works__img {
+    transform: scale(1.2);
+}
+
+/*=============== CONTACT ===============*/
+.contact {
+    background-color: var(--orange);
+    margin-top: 4rem;
+    padding: 4rem 1.5rem;
+}
+
+.contact__container {
+    row-gap: 4rem;
+}
+
+.contact__name {
+  color: var(--white);
+}
+
+.contact__group,
+.contact__form {
+    gap: 1rem;
+}
+
+.contact__form {
+    position: relative;
+}
+
+.contact__input {
+  padding: 1.25rem;
+  background-color: var(--white);
+  color: var(--black);
+  font-weight: var(--font-semi-bold);
+}
+
+.contact__input::placeholder {
+  color: var(--black);
+}
+
+.contact__area {
+  height: 10rem;
+  resize: none;
+}
+.contact__button {
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.contact__social {
+  grid-template-columns: repeat(3, max-content);
+  justify-content: center;
+}
+
+.contact__social-link {
+  color: var(--text-color);
+  display: inline-block;
+  column-gap: .25rem;
+  align-items: center;
+  transition: color .4s;
+}
+
+.contact__social-link i {
+  font-size: 1.5rem;
+}
+
+.contact__social-link span {
+  font-size: var(--small-font-size);
+  font-weight: var(--font-semi-bold);
+}
+
+.contact__social-link:hover {
+  color: var(--white);
+}
+
+/*=============== FOOTER ===============*/
+.footer {
+  text-align: center;
+  padding: 2rem 0;
+  background-color: var(--black);
+  color: var(--white);
+}
+
+/*===============BUTTON ===============*/
+.button{
+   display:inline-flex;
+   justify-content:center;
+   background-color: var(--orange);
+   color: var(--white);
+   font-weight:var(--font-semi-bold);
+   padding:1.25rem 2.5em;
+   border-radius:4rem;
+   transition :background-color .4s;
+    margin-bottom: 1rem;
+}
+  .button__black{
+    background-color: var(--black);
+
+  }
+  .button__about{
+    background-color: var(--black);
+    display:grid;
+    place-items:center;
+
+
+}
+  .button:hover{
+      background-color: var(--orange-light );
+  }
+/*===============scroll bar===============*/
+::-webkit-scrollbar {
+width:.6rem;
+     background-color:hsl(0,0%,20%);
+     border-radius:.5rem;
+}
+
+/* Track of the scrollbar */
+::-webkit-scrollbar-track {
+background-color:hsl(0,0%,70%);
+}
+
+/* Handle of the scrollbar */
+::-webkit-scrollbar-thumb {
+ background-color:hsl(0,0%,30%);
+     border-radius:.5rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+   background-color:hsl(0,0%,40%);
+}
+
+/* ================= MOBILE FRIENDLY ================= */
+@media (max-width: 600px) {
+  .container {
+    padding: 0 0.5rem;
+    max-width: 100vw;
+  }
+  .section {
+    padding: 2.5rem 0.5rem;
+  }
+  .section__title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  h1 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  h2 {
+    font-size: 1rem;
+  }
+  h3 {
+    font-size: 0.95rem;
+  }
+  .main {
+    padding: 0;
+  }
+  .nav_icon ul {
+    width: 98vw;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    bottom: 0.5rem;
+  }
+  .nav__lick {
+    width: 2.2rem;
+    height: 2.2rem;
+    font-size: 1.3rem;
+  }
+  .header {
+    padding: 0.5rem;
+  }
+  .nav-list {
+    padding: 0 1rem;
+  }
+  .nav-list a {
+    font-size: 1rem;
+  }
+  .home__container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1rem 0.5rem;
+  }
+  .perfil {
+    width: 100%;
+    height: auto;
+    padding: 1rem;
+    border-radius: 1rem;
+    min-width: 0;
+  }
+  .perfil__img {
+    width: 120px;
+    height: 160px;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%,0);
+    position: static;
+    margin: 0 auto 1rem auto;
+    display: block;
+  }
+  .perfil__data {
+    width: 100%;
+    padding: 1rem 0.5rem;
+    border-radius: 1rem;
+  }
+  .perfil__name {
+    font-size: 2rem !important;
+    padding: 0.5rem 0.5rem;
+  }
+  .perfil__buttons {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+  }
+  .about {
+    grid-template-columns: 1fr;
+    padding: 1rem 0.5rem;
+  }
+  .about__image {
+    padding: 0.5rem;
+  }
+  .about__img {
+    width: 120px;
+    height: 160px;
+    margin: 0 auto;
+  }
+  .about__info {
+    padding: 1rem 0;
+  }
+  .about__name {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .about__social {
+    column-gap: 1rem;
+    margin-block: 1rem;
+  }
+  .about__link {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+  .about__note {
+    font-size: 0.9rem;
+    margin-block: 0.5rem 1rem;
+  }
+  .info {
+    padding: 1rem 0.5rem;
+  }
+  .home__name,
+  .info__name,
+  .contact__name {
+    padding-top: 2rem;
+  }
+  .info__circle {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+  .info__data {
+    column-gap: 0.3rem;
+  }
+  .info__image {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding: 0.5rem;
+    margin-block: 1rem;
+    justify-items: center; 
+    text-align: center;   
+  }
+  .info__description {
+    padding: 0.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .info__title {
+    padding: 0.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+    text-align: center;
+    word-break: break-word;
+    box-sizing: border-box;
+    display: block; /* đảm bảo chiếm toàn bộ chiều ngang */
+  }
+  .logo {
+    width: 120px;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto; /* căn giữa logo */
+  }
+  .projects__container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0;
+  }
+  .projects__card {
+    padding: 1rem;
+    border-radius: 1rem;
+  }
+  .projects__image {
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+  }
+  .projects__img {
+    aspect-ratio: 4/3;
+    border-radius: inherit;
+  }
+  .projects__name {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+  .projects__description {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+  .projects__button {
+    font-size: 0.95rem;
+  }
+  .footer {
+    padding: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .button {
+    padding: 0.8rem 1.2em;
+    font-size: 0.95rem;
+    border-radius: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .contact__social, 
+  .footer {
+    padding-bottom: 2rem;
+  }
+}
+
+/* Thêm tối ưu cho màn hình rất nhỏ */
+@media (max-width: 480px) {
+  .container, .section, .main {
+    padding: 0 0.2rem;
+  }
+  .nav_icon ul {
+    padding: 0.3rem 0.5rem;
+  }
+  .perfil__img, .about__img, .logo {
+    width: 90px;
+    height: 120px;
+  }
+  .perfil__name, .about__name {
+    font-size: 1rem !important;
+  }
+  .projects__name, .projects__description, .info__description, .info__title {
+    font-size: 0.85rem;
+  }
+}
