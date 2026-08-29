@@ -87,10 +87,7 @@ export function SiteHeader() {
 
         {/* Eight items do not fit one line below lg, so they get their own row
             and scroll horizontally rather than wrapping into a wall. */}
-        <ul
-          className="label -mx-5 flex items-center gap-5 overflow-x-auto px-5 pb-2.5 sm:-mx-8 sm:px-8 lg:hidden [&::-webkit-scrollbar]:hidden"
-          style={{ scrollbarWidth: 'none' }}
-        >
+        <ul className="label scroll-hint -mx-5 flex items-center gap-5 overflow-x-auto px-5 pb-2.5 sm:-mx-8 sm:px-8 lg:hidden">
           {items.map((item) => (
             <li key={item.href} className="shrink-0">
               <NavItem {...item} />

@@ -24,7 +24,8 @@ next-env.d.ts
 /coverage
 /playwright-report/
 /test-results/
-/.lighthouseci/
+# Local reference captures from `pnpm shots`, not build output.
+/e2e/__screenshots__/
 
 # Env
 .env

@@ -67,8 +67,11 @@ export default async function ProjectPage({
         {t('backToWork')}
       </Link>
 
+      {/* On mobile the rail stacks above the title, which put a screenful of
+          metadata in front of what the project actually is. Ordered so the
+          claim comes first there, and returns to the margin at sm. */}
       <header className="mt-10 grid gap-8 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
-        <div className="flex flex-col gap-5">
+        <div className="order-2 flex flex-col gap-5 sm:order-1">
           <div>
             <p className="label">{t('year')}</p>
             <p className="text-ink font-mono text-sm tabular-nums">{project.year}</p>
@@ -106,7 +109,7 @@ export default async function ProjectPage({
           )}
         </div>
 
-        <div>
+        <div className="order-1 sm:order-2">
           <p className="label !text-teal">{project.kicker}</p>
           <h1 className="font-display text-h1 text-ink mt-3 max-w-4xl leading-[1.03]">
             {project.title}

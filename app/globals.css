@@ -59,7 +59,7 @@
   --sunk: oklch(0.945 0.007 300);
   --ink: oklch(0.185 0.028 305);
   --ink-2: oklch(0.44 0.022 300);
-  --ink-3: oklch(0.62 0.016 300);
+  --ink-3: oklch(0.52 0.016 300);
   --rule: oklch(0.885 0.008 300);
   --indigo: oklch(0.44 0.13 275);
   --teal: oklch(0.52 0.09 191);
@@ -76,7 +76,7 @@
     --sunk: oklch(0.125 0.017 305);
     --ink: oklch(0.945 0.006 300);
     --ink-2: oklch(0.73 0.014 300);
-    --ink-3: oklch(0.55 0.018 300);
+    --ink-3: oklch(0.6 0.018 300);
     --rule: oklch(0.29 0.022 305);
     --indigo: oklch(0.72 0.11 275);
     --teal: oklch(0.76 0.1 191);
@@ -93,7 +93,7 @@
   --sunk: oklch(0.125 0.017 305);
   --ink: oklch(0.945 0.006 300);
   --ink-2: oklch(0.73 0.014 300);
-  --ink-3: oklch(0.55 0.018 300);
+  --ink-3: oklch(0.6 0.018 300);
   --rule: oklch(0.29 0.022 305);
   --indigo: oklch(0.72 0.11 275);
   --teal: oklch(0.76 0.1 191);
@@ -265,6 +265,17 @@
     padding-left: 1.15rem;
     font-style: italic;
     color: var(--ink);
+  }
+
+  /* The mobile nav row scrolls horizontally; without an edge fade it just
+     looks clipped. Masked rather than a scrollbar, which iOS hides anyway. */
+  .scroll-hint {
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 2.5rem), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 2.5rem), transparent 100%);
+  }
+  .scroll-hint::-webkit-scrollbar {
+    display: none;
   }
 
   .palette-group [cmdk-group-heading] {

@@ -2,7 +2,7 @@
   "name": "ngwkhai-portfolio",
   "version": "2.0.0",
   "private": true,
-  "description": "Agentic research folio — Nguyen Dinh Khai",
+  "description": "Agentic research folio \u2014 Nguyen Dinh Khai",
   "packageManager": "pnpm@11.22.0",
   "engines": {
     "node": ">=20.9.0"
@@ -18,7 +18,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "knowledge": "tsx scripts/build-knowledge.ts"
+    "knowledge": "tsx scripts/build-knowledge.ts",
+    "test:a11y": "playwright test e2e/a11y.spec.ts --project=desktop",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "verify": "pnpm typecheck && pnpm lint && pnpm check:contrast && pnpm test",
+    "shots": "CAPTURE=1 playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "4.0.51",
@@ -43,6 +47,7 @@
     "zod": "4.5.2"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "26.4.0",

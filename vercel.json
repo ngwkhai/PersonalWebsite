@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "functions": {
+    "app/api/chat/route.ts": { "maxDuration": 30 },
+    "app/api/match/route.ts": { "maxDuration": 60 },
+    "app/api/explain/route.ts": { "maxDuration": 20 }
+  }
+}
