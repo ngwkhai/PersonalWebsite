@@ -1,0 +1,46 @@
+---
+title: Nhận diện biển số xe thời gian thực
+kicker: Thị giác máy tính ứng dụng
+summary: Mô hình YOLOv5 fine-tune kết hợp OCR, đóng gói trong dịch vụ FastAPI và giao diện React để người dân tự tra cứu vi phạm giao thông. Chạy ở ~12 FPS.
+year: 2025
+order: 20
+featured: true
+tags: [Thị giác máy tính, YOLOv5, OCR, FastAPI, Docker]
+cover: /img/project-docker.avif
+repo: https://github.com/ngwkhai/License-Plate-Recognition
+role: Thiết kế hệ thống, tầng API và cơ sở dữ liệu, triển khai
+stack: [YOLOv5, OCR, FastAPI, PostgreSQL, React, Docker]
+metrics:
+  - { label: Thông lượng, value: "~12 FPS", note: đầu-cuối, gồm cả phát hiện và OCR }
+  - { label: Số tầng xử lý, value: "4", note: phát hiện, cắt, OCR, tra cứu }
+---
+
+## Bài toán
+
+Xử phạt giao thông ở Việt Nam vận hành theo cơ chế *phạt nguội* — vi phạm được camera ghi lại và thông báo gửi về sau. Khoảng trống nằm ở chỗ người lái không có cách nào thuận tiện để biết biển số của mình có vi phạm hay không cho tới khi nhận được giấy báo. Dữ liệu tra cứu thì có, giao diện thì không.
+
+## Pipeline
+
+Hệ thống gồm bốn tầng, mỗi tầng là một điểm mà sai số của tầng trước bị khuếch đại:
+
+1. **Phát hiện** — mô hình YOLOv5 fine-tune trên biển số Việt Nam, vốn khác biệt đủ nhiều so với biển số phương Tây trong các bộ dữ liệu công khai (biển xe máy hai dòng, phông chữ và tỷ lệ riêng) đến mức một detector dùng sẵn cho kết quả rất kém.
+2. **Cắt và nắn phối cảnh** — biển số bị chụp nghiêng thường xuyên hơn nhiều so với chụp chính diện.
+3. **OCR** — trích xuất văn bản từ vùng ảnh đã nắn.
+4. **Tra cứu** — chuẩn hoá chuỗi biển số và truy vấn PostgreSQL lấy bản ghi vi phạm.
+
+## Phần của tôi: biến nó thành một hệ thống
+
+Phần mô hình hoá là nửa nhỏ hơn. Thứ tôi phụ trách là biến một notebook thành thứ triển khai được:
+
+- **FastAPI** cho dịch vụ suy luận, để phát hiện và OCR nằm sau một hợp đồng HTTP có kiểu rõ ràng thay vì bị gọi từ script.
+- **PostgreSQL** cho bản ghi vi phạm, với chuỗi biển số được chuẩn hoá ngay khi ghi, nhờ đó tra cứu là một lần trúng index chứ không phải quét mờ.
+- **React** cho giao diện — nửa hướng ra người dùng; người dân gõ hoặc chụp biển số và nhận được câu trả lời.
+- **Docker** đóng gói toàn bộ, đây mới là thứ khiến hệ thống tái lập được trên một máy không phải máy của tôi.
+
+## Hiệu năng
+
+Pipeline duy trì **~12 FPS đầu-cuối**, đã tính cả phát hiện lẫn OCR. Đó là con số quan trọng với bài toán này: đủ nhanh để chạy trên luồng camera trực tiếp thay vì chỉ xử lý ảnh tải lên — chính là ranh giới giữa một bản demo và một hệ thống triển khai được.
+
+## Điều tôi rút ra
+
+Độ chính xác của detector chưa bao giờ là nút thắt của tính hữu dụng — giao diện mới là. Một mô hình 95% nằm sau REST API mà frontend gọi được thì hơn hẳn mô hình 98% nằm trong notebook. Phần lớn công sức kỹ thuật đổ vào những tầng "nhàm chán", và giá trị nằm đúng ở đó.

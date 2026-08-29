@@ -1,0 +1,44 @@
+---
+title: Sentiment at 1.6M Tweets, Hadoop vs Spark
+kicker: Distributed computing
+summary: Sentiment classification on Sentiment140 with Naive Bayes and SVM, run on both Apache Hadoop and Apache Spark to measure what the execution engine actually costs you.
+year: 2024
+order: 50
+featured: false
+tags: [Hadoop, Spark, Naive Bayes, SVM, Distributed Systems]
+cover: /img/project-tsc.avif
+repo: https://github.com/ngwkhai/Text-Sentiment-Classification-Hadoop-Spark
+role: Pipeline implementation and comparative benchmarking
+stack: [Apache Hadoop, Apache Spark, Naive Bayes, SVM, Sentiment140]
+metrics:
+  - { label: Dataset, value: "1.6M", note: tweets, Sentiment140 }
+  - { label: SVM accuracy, value: "80–82%", note: slower to train }
+  - { label: Naive Bayes accuracy, value: "75%", note: markedly faster }
+---
+
+## The problem
+
+Two questions, deliberately crossed: which *model* suits large-scale sentiment classification, and which *execution engine* suits the workload. Running both axes together is what makes the comparison informative — the answer to one depends on the other.
+
+Dataset: **Sentiment140**, 1.6M labelled tweets.
+
+## The model axis
+
+| Model | Accuracy | Training cost |
+| --- | --- | --- |
+| Naive Bayes | ~75% | Low |
+| SVM | 80–82% | High |
+
+Naive Bayes assumes conditional independence between features, which is plainly false for text — words are not independent given a sentiment label. It nonetheless works well, because for *classification* you only need the argmax to land in the right place, not the probabilities to be calibrated. It trains in a single pass over the corpus.
+
+SVM buys **5–7 accuracy points** for substantially longer training, particularly on Hadoop.
+
+## The engine axis
+
+**Spark outperformed Hadoop on both execution time and scalability.** The reason is structural rather than incidental: MapReduce writes intermediate results to HDFS between every stage, so an iterative algorithm pays full disk I/O on each pass. Spark keeps working sets in memory across stages. For a single-pass job the gap is modest; for iterative training — which is exactly what SVM does — it compounds with every iteration.
+
+That is why the two axes interact. On Spark, SVM's extra cost is affordable and the accuracy is worth having. On Hadoop, the same model is expensive enough that Naive Bayes becomes the pragmatic choice.
+
+## What I took from it
+
+The engine is not a neutral substrate you pick afterwards. Hadoop's disk-between-stages model changes which algorithms are economically viable on it, and that constraint propagates all the way back into model selection.

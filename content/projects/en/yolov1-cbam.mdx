@@ -1,0 +1,43 @@
+---
+title: YOLOv1 From Scratch, Plus Attention
+kicker: Architecture study
+summary: A ground-up PyTorch reimplementation of YOLOv1 — custom dataset, custom loss — extended with CBAM attention to measure what attention contributes to a one-stage detector.
+year: 2024
+order: 60
+featured: false
+tags: [Object Detection, YOLO, CBAM, Attention, PyTorch]
+cover: /img/project-yolov1.avif
+demo: https://www.kaggle.com/code/ngwdinhkhai/yolov1-cbam-from-scratch-for-test-label
+role: Full implementation — dataset, loss function, attention module, training
+stack: [PyTorch, YOLOv1, CBAM, ReduceLROnPlateau]
+metrics:
+  - { label: Train mAP, value: "0.8829" }
+  - { label: Best val mAP, value: "0.6994" }
+  - { label: Parameters, value: "269.2M" }
+---
+
+## The goal
+
+Reimplement YOLOv1 from the paper rather than clone a repository, then use that implementation as a controlled testbed for a single question: **what does channel-and-spatial attention buy a one-stage detector?**
+
+Building it from scratch is what makes the answer trustworthy. In a codebase I did not write, an ablation measures the difference between two configurations I do not fully understand.
+
+## What I implemented
+
+- **`FruitDataset`** — image loading, augmentation, and the encoding that turns bounding boxes into YOLO's `S × S × (B·5 + C)` grid target. This encoding is the fiddliest part of YOLO and the place where a subtle bug produces a model that trains without ever converging.
+- **`YoloLoss`** — the multi-part objective: coordinate regression, confidence for cells containing an object, confidence for cells that do not, and classification. The `λ_coord` and `λ_noobj` weights exist because the overwhelming majority of grid cells are empty; without down-weighting them, the no-object term drowns everything else.
+- **CBAM** — the Convolutional Block Attention Module, applying channel attention (which feature maps matter) then spatial attention (where in the map matters) in sequence.
+
+**269,168,434 parameters** total. Training used **ReduceLROnPlateau**, dropping the learning rate when validation stopped improving.
+
+## Results
+
+**Train mAP 0.8829, best validation mAP 0.6994.**
+
+CBAM improved detection performance meaningfully — the attention modules help the network suppress background and concentrate on object regions, which is precisely the failure mode a grid-based one-stage detector suffers from.
+
+The **0.18 train/validation gap** is the other honest reading of these numbers: this is a 269M-parameter model, and a gap that size says it has capacity to spare relative to the dataset. On a larger corpus the validation figure would be the one that moves.
+
+## What I took from it
+
+Writing the loss function by hand taught me more about YOLO than reading the paper did. The `λ_noobj` weight is a single line, and it encodes the central structural problem of one-stage detection — a fact that is invisible until you have to choose the number yourself.

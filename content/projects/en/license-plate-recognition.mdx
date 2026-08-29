@@ -1,0 +1,46 @@
+---
+title: Real-Time License Plate Recognition
+kicker: Applied computer vision
+summary: A fine-tuned YOLOv5 detector coupled with OCR, wrapped in a FastAPI service and a React frontend so citizens can look up their own traffic violations. Runs at ~12 FPS.
+year: 2025
+order: 20
+featured: true
+tags: [Computer Vision, YOLOv5, OCR, FastAPI, Docker]
+cover: /img/project-docker.avif
+repo: https://github.com/ngwkhai/License-Plate-Recognition
+role: System design, API and database layer, deployment
+stack: [YOLOv5, OCR, FastAPI, PostgreSQL, React, Docker]
+metrics:
+  - { label: Throughput, value: "~12 FPS", note: end-to-end, detection + OCR }
+  - { label: Pipeline stages, value: "4", note: detect, crop, OCR, lookup }
+---
+
+## The problem
+
+Vietnam's traffic enforcement runs on *phạt nguội* — violations recorded by camera and mailed out later. The gap is that a driver has no convenient way to find out whether a violation exists against their plate until the notice arrives. The lookup exists; the interface does not.
+
+## Pipeline
+
+The system is four stages, each one a place where the previous stage's errors compound:
+
+1. **Detection** — a YOLOv5 model fine-tuned on Vietnamese plates, which differ enough from the Western plates in public datasets (two-line motorcycle plates, distinct fonts and aspect ratios) that an off-the-shelf detector underperforms badly.
+2. **Crop and rectify** — plates are photographed at an angle far more often than head-on.
+3. **OCR** — text extraction from the rectified crop.
+4. **Lookup** — normalise the string and query PostgreSQL for violation records.
+
+## My part: making it a system
+
+The modelling was the smaller half. What I owned was turning a notebook into something deployable:
+
+- **FastAPI** for the inference service, so detection and OCR sit behind one typed HTTP contract rather than being called from a script.
+- **PostgreSQL** for the violation records, with the plate string normalised on write so that lookup is an index hit and not a fuzzy scan.
+- **React** frontend — the public-facing half; a citizen types or photographs a plate and gets an answer.
+- **Docker** for the whole thing, which is what makes it reproducible on a machine that is not mine.
+
+## Performance
+
+The pipeline sustains **~12 FPS end to end**, detection and OCR included. That is the number that matters for the use case: fast enough to run against a live camera feed rather than only against uploaded stills, which is the difference between a demo and a deployment.
+
+## What I took from it
+
+The accuracy of the detector was never the bottleneck for usefulness — the interface was. A model at 95% behind a REST API that a frontend can call beats a model at 98% that lives in a notebook. Most of the engineering effort went into the boring layers, and that is where the value was.

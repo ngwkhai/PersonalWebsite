@@ -1,0 +1,42 @@
+---
+title: A Transformer That Trades
+kicker: Financial machine learning
+summary: A quantitative trading system built from scratch in PyTorch — a Transformer classifying BUY/SELL/HOLD from technical indicators and Time2Vec embeddings over 3.4M training samples.
+year: 2025
+order: 30
+featured: true
+tags: [Transformer, Time Series, PyTorch, Quantitative Finance]
+cover: /img/project-qts.avif
+repo: https://github.com/ngwkhai/Quantitative_trading_system
+role: End-to-end — feature engineering, model, training pipeline
+stack: [PyTorch, Transformer, Time2Vec, MACD, RSI, Bollinger Bands, ATR]
+metrics:
+  - { label: Validation accuracy, value: "92.75%" }
+  - { label: Test accuracy, value: "92.50%", note: 0.25pt gap — no overfit }
+  - { label: Training samples, value: "3.4M", note: plus 351K dev }
+---
+
+## The problem
+
+Framing a market as a classification problem is the first decision that matters, and most of the work is downstream of it. I framed each timestep as a three-way label — **BUY / SELL / HOLD** — over a window of price history and derived indicators, and built the whole pipeline in PyTorch rather than assembling it from a backtesting framework.
+
+## Features
+
+Raw OHLCV is a poor input; the model spends capacity rediscovering transformations that are cheap to compute directly. The feature set:
+
+- **Log-volume** rather than raw volume — volume is heavy-tailed to the point where the untransformed series lets a handful of days dominate every batch.
+- **Trend and momentum** — MACD, RSI.
+- **Volatility** — Bollinger Bands, ATR. These matter because the same absolute price move means something entirely different in a quiet regime than a violent one.
+- **Time2Vec** for temporal encoding. A Transformer has no inherent notion of time ordering, and sinusoidal position encoding assumes fixed intervals. Time2Vec learns periodic and linear components of time directly, which suits a series where the meaningful periodicities are what the model should discover rather than what I should hardcode.
+
+Normalisation runs in **two steps**, which is the detail that makes or breaks a financial time series: normalising across the whole series leaks future statistics into past windows, and the model learns to exploit information it would not have had.
+
+## Scale and result
+
+**3.4M training samples, 351K development samples.** Final accuracy: **92.75% validation, 92.50% test.**
+
+The quarter-point gap between validation and test is the number I actually check. A model that memorises its way to a high validation score shows a large gap here; this one does not, which suggests the learned features generalise across the split rather than fitting the validation window.
+
+## An honest caveat
+
+Classification accuracy is not profitability. A model can be right about direction most of the time and still lose money if it is wrong on the moves that carry the most magnitude, and this project measures the former, not the latter. Turning these signals into a strategy requires position sizing, transaction costs and slippage — none of which are in scope here. What the project demonstrates is the modelling pipeline, not a trading edge.

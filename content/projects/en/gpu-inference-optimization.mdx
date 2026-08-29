@@ -1,0 +1,41 @@
+---
+title: Making Inference 4× Faster
+kicker: Systems performance
+summary: A systematic study of GPU inference optimisation across ResNet50 and DistilBERT — FP16, INT8 quantisation, TorchScript, torch.compile and ONNX — measured rather than assumed.
+year: 2025
+order: 15
+featured: true
+tags: [TensorRT, ONNX, Quantization, CUDA, Performance]
+cover: /img/project-gpu.avif
+paper: https://drive.google.com/file/d/1f7F2ligbgD0-W9qFn60VqmJeOjNoPYka/view?usp=sharing
+role: Benchmarking methodology, profiling, analysis
+stack: [TensorRT, ONNX Runtime, TorchScript, torch.compile, Nsight, CUDA]
+metrics:
+  - { label: FP16 throughput, value: "4×", note: DistilBERT, 305 → 1202 samples/s @ bs8 }
+  - { label: INT8 speedup, value: "2–5×", note: TensorRT, calibration-sensitive }
+  - { label: Graph optimisation, value: "1.2–1.8×" }
+---
+
+## The problem
+
+Training gets the attention; inference gets the bill. A model served in production runs its forward pass millions of times, and the gap between a naive PyTorch `.eval()` loop and a properly optimised engine is often close to an order of magnitude.
+
+I benchmarked the optimisation techniques across two deliberately different workloads — **ResNet50** (convolutional, vision) and **DistilBERT** (transformer, language) — because the techniques do not transfer evenly between them, and a single-model benchmark hides exactly that.
+
+## What was measured
+
+**Mixed precision (FP16)** was the largest single win, and disproportionately so for DistilBERT: throughput rose from **305 to 1202 samples/s at batch size 8 — roughly 4×**. Transformer inference is dominated by large dense GEMMs, which map directly onto tensor cores; halving the precision halves memory traffic and roughly doubles arithmetic throughput at once. ResNet50 improved too, but by less — convolutions were already well served.
+
+**INT8 via TensorRT** delivered **2–5×**, the widest range in the study, and the most conditional. INT8 needs a calibration pass to fit activation ranges, and a poorly chosen calibration set costs accuracy that no amount of speed justifies. The speedup is real; it is not free.
+
+**Graph optimisation** — TorchScript, `torch.compile`, ONNX export — gave a consistent **1.2–1.8×** through operator fusion and the removal of Python dispatch overhead. Smaller than precision reduction, but it composes with it and costs nothing in accuracy.
+
+**CUDA profiling** located the bottlenecks in **GEMM and ReLU kernels** — which is the sanity check on all of the above. GEMM dominance is what makes precision reduction the highest-leverage move; had the profile been memory-bound elsewhere, the ranking would have inverted.
+
+## Conclusion
+
+For large-scale inference, **mixed precision and quantisation dominate**. Graph-level optimisation is worth doing and worth stacking, but it is a multiplier on a smaller base.
+
+## What I took from it
+
+The profiler settles arguments that intuition loses. Knowing that GEMM and ReLU own the runtime tells you immediately which optimisations can possibly matter — and stops you from spending a week on one that mathematically cannot.

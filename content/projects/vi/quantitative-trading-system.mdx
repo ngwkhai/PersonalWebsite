@@ -1,0 +1,42 @@
+---
+title: Một Transformer đi giao dịch
+kicker: Học máy tài chính
+summary: Hệ thống giao dịch định lượng viết từ đầu bằng PyTorch — Transformer phân loại tín hiệu MUA/BÁN/GIỮ từ chỉ báo kỹ thuật và Time2Vec trên 3,4 triệu mẫu huấn luyện.
+year: 2025
+order: 30
+featured: true
+tags: [Transformer, Chuỗi thời gian, PyTorch, Tài chính định lượng]
+cover: /img/project-qts.avif
+repo: https://github.com/ngwkhai/Quantitative_trading_system
+role: Toàn bộ — kỹ thuật đặc trưng, mô hình, pipeline huấn luyện
+stack: [PyTorch, Transformer, Time2Vec, MACD, RSI, Bollinger Bands, ATR]
+metrics:
+  - { label: Độ chính xác validation, value: "92.75%" }
+  - { label: Độ chính xác test, value: "92.50%", note: chênh 0.25 điểm — không overfit }
+  - { label: Mẫu huấn luyện, value: "3.4M", note: cùng 351K mẫu dev }
+---
+
+## Bài toán
+
+Việc đóng khung thị trường thành bài toán phân loại là quyết định quan trọng nhất, và gần như mọi thứ sau đó đều là hệ quả của nó. Tôi gán cho mỗi bước thời gian một nhãn ba lớp — **MUA / BÁN / GIỮ** — trên một cửa sổ lịch sử giá cùng các chỉ báo dẫn xuất, và dựng toàn bộ pipeline bằng PyTorch thay vì lắp ghép từ một framework backtest có sẵn.
+
+## Đặc trưng
+
+Dữ liệu OHLCV thô là đầu vào kém; mô hình phải tiêu tốn năng lực để tự khám phá lại những phép biến đổi vốn tính trực tiếp rất rẻ. Bộ đặc trưng gồm:
+
+- **Log-volume** thay cho volume thô — khối lượng giao dịch có đuôi rất nặng, đến mức chuỗi chưa biến đổi khiến vài phiên cá biệt chi phối toàn bộ mọi batch.
+- **Xu hướng và động lượng** — MACD, RSI.
+- **Biến động** — Bollinger Bands, ATR. Nhóm này quan trọng vì cùng một mức biến động giá tuyệt đối mang ý nghĩa hoàn toàn khác nhau trong một thị trường yên ắng so với một thị trường dữ dội.
+- **Time2Vec** để mã hoá thời gian. Transformer không có khái niệm thứ tự thời gian tự thân, còn position encoding hình sin lại giả định các khoảng cách đều nhau. Time2Vec học trực tiếp thành phần tuần hoàn và tuyến tính của thời gian — phù hợp với chuỗi mà các chu kỳ có ý nghĩa là thứ mô hình nên tự tìm ra, chứ không phải thứ tôi nên gán cứng.
+
+Chuẩn hoá được thực hiện theo **hai bước**, và đây là chi tiết quyết định thành bại với chuỗi thời gian tài chính: chuẩn hoá trên toàn chuỗi sẽ rò rỉ thống kê tương lai vào các cửa sổ quá khứ, và mô hình học cách khai thác thông tin lẽ ra nó không được có.
+
+## Quy mô và kết quả
+
+**3,4 triệu mẫu huấn luyện, 351 nghìn mẫu phát triển.** Kết quả cuối: **92,75% validation, 92,50% test.**
+
+Khoảng cách một phần tư điểm giữa validation và test mới là con số tôi thật sự kiểm tra. Một mô hình học thuộc để đạt điểm validation cao sẽ để lộ khoảng cách lớn ở đây; mô hình này thì không, cho thấy các đặc trưng học được tổng quát hoá qua các tập chia chứ không chỉ khớp riêng cửa sổ validation.
+
+## Một lưu ý thẳng thắn
+
+Độ chính xác phân loại không đồng nghĩa với khả năng sinh lời. Một mô hình có thể đoán đúng chiều trong phần lớn trường hợp mà vẫn thua lỗ, nếu nó sai ở đúng những biến động có biên độ lớn nhất — và dự án này đo vế trước, không đo vế sau. Để biến các tín hiệu này thành một chiến lược cần thêm quản trị khối lượng vị thế, chi phí giao dịch và trượt giá, đều nằm ngoài phạm vi. Thứ dự án chứng minh là pipeline mô hình hoá, không phải một lợi thế giao dịch.

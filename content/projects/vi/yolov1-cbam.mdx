@@ -1,0 +1,43 @@
+---
+title: YOLOv1 viết từ đầu, cộng thêm attention
+kicker: Nghiên cứu kiến trúc
+summary: Cài đặt lại YOLOv1 từ con số không bằng PyTorch — dataset riêng, hàm mất mát riêng — rồi bổ sung CBAM để đo xem attention đóng góp gì cho một detector một giai đoạn.
+year: 2024
+order: 60
+featured: false
+tags: [Phát hiện đối tượng, YOLO, CBAM, Attention, PyTorch]
+cover: /img/project-yolov1.avif
+demo: https://www.kaggle.com/code/ngwdinhkhai/yolov1-cbam-from-scratch-for-test-label
+role: Cài đặt toàn bộ — dataset, hàm mất mát, module attention, huấn luyện
+stack: [PyTorch, YOLOv1, CBAM, ReduceLROnPlateau]
+metrics:
+  - { label: mAP huấn luyện, value: "0.8829" }
+  - { label: mAP validation tốt nhất, value: "0.6994" }
+  - { label: Tham số, value: "269.2M" }
+---
+
+## Mục tiêu
+
+Cài đặt lại YOLOv1 từ bài báo thay vì clone một repo, rồi dùng chính bản cài đặt đó làm môi trường thí nghiệm có kiểm soát cho một câu hỏi duy nhất: **attention theo kênh và theo không gian mang lại gì cho một detector một giai đoạn?**
+
+Viết từ đầu chính là thứ khiến câu trả lời đáng tin. Trong một codebase tôi không tự viết, một phép ablation chỉ đo được chênh lệch giữa hai cấu hình mà tôi không hiểu trọn vẹn.
+
+## Những gì tôi đã cài đặt
+
+- **`FruitDataset`** — nạp ảnh, tăng cường dữ liệu, và phép mã hoá biến bounding box thành tensor mục tiêu dạng lưới `S × S × (B·5 + C)` của YOLO. Phép mã hoá này là phần rắc rối nhất của YOLO và là chỗ mà một lỗi tinh vi sẽ tạo ra mô hình huấn luyện mãi mà không hội tụ.
+- **`YoloLoss`** — hàm mục tiêu nhiều thành phần: hồi quy toạ độ, độ tin cậy cho ô lưới có chứa vật thể, độ tin cậy cho ô không chứa, và phân loại. Hai trọng số `λ_coord` và `λ_noobj` tồn tại vì đại đa số ô lưới là ô trống; nếu không giảm trọng số chúng, thành phần no-object sẽ nhấn chìm mọi thành phần còn lại.
+- **CBAM** — Convolutional Block Attention Module, áp dụng lần lượt attention theo kênh (feature map nào quan trọng) rồi attention theo không gian (vị trí nào trong map quan trọng).
+
+Tổng cộng **269.168.434 tham số**. Quá trình huấn luyện dùng **ReduceLROnPlateau**, giảm learning rate khi validation ngừng cải thiện.
+
+## Kết quả
+
+**mAP huấn luyện 0,8829, mAP validation tốt nhất 0,6994.**
+
+CBAM cải thiện hiệu năng phát hiện một cách rõ rệt — các module attention giúp mạng ức chế nền và tập trung vào vùng chứa vật thể, đúng vào kiểu lỗi mà một detector một giai đoạn dựa trên lưới hay mắc phải.
+
+**Khoảng cách 0,18 giữa train và validation** là cách đọc trung thực còn lại của các con số này: đây là mô hình 269 triệu tham số, và một khoảng cách cỡ đó cho thấy nó dư năng lực so với lượng dữ liệu. Trên một bộ ngữ liệu lớn hơn, chính con số validation mới là con số sẽ dịch chuyển.
+
+## Điều tôi rút ra
+
+Tự tay viết hàm mất mát dạy tôi về YOLO nhiều hơn đọc bài báo. Trọng số `λ_noobj` chỉ là một dòng code, mà nó mã hoá đúng vấn đề cấu trúc trung tâm của phát hiện một giai đoạn — một sự thật hoàn toàn vô hình cho tới khi bạn phải tự chọn con số ấy.

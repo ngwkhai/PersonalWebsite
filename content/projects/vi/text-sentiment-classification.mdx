@@ -1,0 +1,44 @@
+---
+title: Phân tích cảm xúc trên 1,6 triệu tweet, Hadoop đối đầu Spark
+kicker: Tính toán phân tán
+summary: Phân loại cảm xúc trên Sentiment140 bằng Naive Bayes và SVM, chạy song song trên Apache Hadoop và Apache Spark để đo xem engine thực thi thật sự khiến bạn trả giá bao nhiêu.
+year: 2024
+order: 50
+featured: false
+tags: [Hadoop, Spark, Naive Bayes, SVM, Hệ phân tán]
+cover: /img/project-tsc.avif
+repo: https://github.com/ngwkhai/Text-Sentiment-Classification-Hadoop-Spark
+role: Cài đặt pipeline và đo đạc so sánh
+stack: [Apache Hadoop, Apache Spark, Naive Bayes, SVM, Sentiment140]
+metrics:
+  - { label: Dữ liệu, value: "1.6M", note: tweet, Sentiment140 }
+  - { label: Độ chính xác SVM, value: "80–82%", note: huấn luyện chậm hơn }
+  - { label: Độ chính xác Naive Bayes, value: "75%", note: nhanh hơn rõ rệt }
+---
+
+## Bài toán
+
+Hai câu hỏi được đặt chéo nhau một cách có chủ đích: *mô hình* nào phù hợp cho phân loại cảm xúc quy mô lớn, và *engine thực thi* nào phù hợp với khối lượng công việc đó. Chạy đồng thời cả hai trục mới là thứ khiến phép so sánh có giá trị — vì câu trả lời cho trục này phụ thuộc vào trục kia.
+
+Dữ liệu: **Sentiment140**, 1,6 triệu tweet đã gán nhãn.
+
+## Trục mô hình
+
+| Mô hình | Độ chính xác | Chi phí huấn luyện |
+| --- | --- | --- |
+| Naive Bayes | ~75% | Thấp |
+| SVM | 80–82% | Cao |
+
+Naive Bayes giả định các đặc trưng độc lập có điều kiện, điều rõ ràng là sai với văn bản — các từ không hề độc lập khi đã biết nhãn cảm xúc. Vậy mà nó vẫn hoạt động tốt, bởi với bài toán *phân loại* bạn chỉ cần argmax rơi đúng chỗ, không cần xác suất được hiệu chỉnh chuẩn. Nó huấn luyện xong chỉ trong một lượt duyệt ngữ liệu.
+
+SVM đổi lấy **5–7 điểm phần trăm độ chính xác** bằng thời gian huấn luyện dài hơn đáng kể, đặc biệt trên Hadoop.
+
+## Trục engine
+
+**Spark vượt Hadoop ở cả thời gian thực thi lẫn khả năng mở rộng.** Lý do mang tính cấu trúc chứ không ngẫu nhiên: MapReduce ghi kết quả trung gian xuống HDFS sau mỗi giai đoạn, nên một thuật toán lặp phải trả trọn vẹn chi phí I/O đĩa ở từng lượt. Spark giữ tập dữ liệu làm việc trong bộ nhớ xuyên suốt các giai đoạn. Với một job chạy một lượt thì khoảng cách còn khiêm tốn; với huấn luyện lặp — đúng những gì SVM làm — nó cộng dồn qua từng vòng lặp.
+
+Đó cũng là lý do hai trục tương tác với nhau. Trên Spark, chi phí phụ trội của SVM là chấp nhận được và độ chính xác thu về đáng giá. Trên Hadoop, cùng mô hình đó đắt đến mức Naive Bayes trở thành lựa chọn thực dụng.
+
+## Điều tôi rút ra
+
+Engine không phải một nền tảng trung lập mà bạn chọn sau cùng. Mô hình ghi-xuống-đĩa-giữa-các-giai-đoạn của Hadoop thay đổi luôn việc thuật toán nào còn khả thi về mặt kinh tế trên đó, và ràng buộc ấy lan ngược lên tận khâu chọn mô hình.

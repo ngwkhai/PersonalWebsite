@@ -1,0 +1,50 @@
+---
+title: Restoring Vietnamese Diacritics at Scale
+kicker: Sequence modelling
+summary: A 12.5M-pair Vietnamese diacritic-restoration corpus, and four seq2seq architectures built from scratch in PyTorch to translate undiacritised text back into correct Vietnamese.
+year: 2025
+order: 10
+featured: true
+tags: [NLP, Seq2Seq, Transformer, PyTorch, Vietnamese]
+cover: /img/project-nlp.avif
+repo: https://github.com/ngwkhai/Neural-Machine-Translation
+role: Dataset construction, model implementation, evaluation design
+stack: [PyTorch, Transformer, LSTM, GRU, RNN, sacreBLEU]
+metrics:
+  - { label: BLEU, value: "81.31", note: Transformer, on held-out test }
+  - { label: ChrF++, value: "88.57", note: character-level agreement }
+  - { label: Training pairs, value: "12.5M", note: first corpus of this size for the task }
+---
+
+## The problem
+
+Vietnamese written without diacritics — `toi di hoc` instead of `tôi đi học` — is everywhere: legacy databases, SMS, search queries, OCR output from low-quality scans. It is also genuinely ambiguous. A single undiacritised string routinely maps to a dozen valid Vietnamese words, and only the surrounding sentence decides which one is meant.
+
+That framing matters, because it turns what looks like a spelling-correction task into a **translation** task: the input and output are different languages that happen to share an alphabet, and the model has to carry sentence-level context to disambiguate.
+
+## Building the corpus
+
+No dataset of the required size existed, so the first half of the project was data work. I assembled **12.5 million sentence pairs**, each aligning a stripped, undiacritised sentence to its correctly-accented original — the largest corpus built for Vietnamese diacritic restoration at the time.
+
+The stripping direction is the useful one: correct Vietnamese is abundant, and removing diacritics is deterministic. Every clean sentence therefore yields exactly one free training pair, which is what makes a corpus this size reachable without annotation cost.
+
+## Four architectures, from scratch
+
+Rather than fine-tune an off-the-shelf model, I implemented each architecture directly in PyTorch — RNN, GRU, LSTM and Transformer — so the comparison isolates the architecture rather than the pretraining budget.
+
+| Model | BLEU | ChrF++ |
+| --- | --- | --- |
+| RNN | baseline | baseline |
+| GRU | improved | improved |
+| LSTM | improved | improved |
+| **Transformer** | **81.31** | **88.57** |
+
+The gap is where the interesting result lives. Recurrent models have to compress the entire left context into a fixed-width hidden state before they can commit to a diacritic. Self-attention does not: it can look directly at the noun six tokens away that resolves the ambiguity. On a task defined by long-range disambiguation, that inductive bias is worth far more than parameter count.
+
+## Evaluation
+
+I evaluated with **BLEU and ChrF++** together on purpose. BLEU scores n-gram overlap and is the standard for translation, but it is coarse for a task where errors are single-character. ChrF++ works at the character level and catches exactly the near-misses that BLEU rounds away — a word with one wrong tone mark is a very different failure from a word that is entirely wrong, and only ChrF++ separates them.
+
+## What I took from it
+
+The dataset was the leverage. Model code for four architectures took less time than the corpus did, and the corpus is the part that made every subsequent comparison meaningful. It is also the part that outlives the project: the pairs remain useful whatever architecture comes next.

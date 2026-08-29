@@ -1,0 +1,44 @@
+---
+title: Finding 492 Frauds in 284,807 Transactions
+kicker: Imbalanced learning
+summary: Fraud detection on a dataset that is 0.172% positive — where accuracy is a useless metric and the whole problem is resampling strategy and the recall/precision trade-off.
+year: 2024
+order: 40
+featured: false
+tags: [XGBoost, SMOTE, ADASYN, Imbalanced Data, scikit-learn]
+cover: /img/project-ccfd.avif
+repo: https://github.com/ngwkhai/Card-fraud-detection
+role: Preprocessing, resampling, model comparison, evaluation
+stack: [XGBoost, Random Forest, Decision Tree, Logistic Regression, SMOTE, ADASYN]
+metrics:
+  - { label: ROC-AUC, value: "0.9817", note: XGBoost on imbalanced data }
+  - { label: Recall, value: "0.816", note: with ADASYN, up from 0.735 }
+  - { label: Positive rate, value: "0.172%", note: 492 frauds in 284,807 }
+---
+
+## The problem
+
+The Kaggle credit-card dataset contains **284,807 transactions of which 492 are fraudulent** — 0.172%. A classifier that predicts "legitimate" unconditionally scores 99.83% accuracy and catches nothing. This is the canonical case where the headline metric actively misleads, and every meaningful decision in the project follows from refusing to use it.
+
+## Resampling
+
+I compared **SMOTE** and **ADASYN**. Both synthesise minority-class examples by interpolating between neighbours, but they choose where to synthesise differently: SMOTE spreads uniformly across the minority class, ADASYN concentrates on the examples that are hardest to classify — the ones sitting near the decision boundary, which is where fraud actually lives.
+
+## Models
+
+Four classifiers, on both the raw and resampled distributions: Logistic Regression, Decision Tree, Random Forest, XGBoost.
+
+| Setting | ROC-AUC | Recall |
+| --- | --- | --- |
+| XGBoost, imbalanced | **0.9817** | 0.735 |
+| XGBoost + ADASYN | 0.9744 | **0.816** |
+
+## Reading the trade-off
+
+This is the entire finding, and it is a trade, not a win. ADASYN lifts recall from **0.735 to 0.816** — roughly 40 additional frauds caught out of every 492 — at the cost of 0.7 points of ROC-AUC.
+
+Which side of that trade you want is a business question, not a modelling one. A missed fraud costs the issuer the transaction value plus investigation overhead; a false positive costs a declined card and an annoyed customer. The ratio between those decides the operating point, and the honest output of this project is the curve rather than a single chosen threshold.
+
+## What I took from it
+
+Choosing the metric *is* the modelling decision. Once ROC-AUC and recall replaced accuracy, every subsequent choice — which resampler, which model, which threshold — became answerable with evidence. Before that, the numbers were all excellent and all meaningless.

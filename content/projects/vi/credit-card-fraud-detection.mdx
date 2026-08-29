@@ -1,0 +1,44 @@
+---
+title: Tìm 492 giao dịch gian lận trong 284.807 giao dịch
+kicker: Học trên dữ liệu mất cân bằng
+summary: Phát hiện gian lận trên bộ dữ liệu chỉ có 0,172% mẫu dương — nơi accuracy là chỉ số vô dụng và toàn bộ bài toán nằm ở chiến lược tái lấy mẫu cùng đánh đổi recall/precision.
+year: 2024
+order: 40
+featured: false
+tags: [XGBoost, SMOTE, ADASYN, Dữ liệu mất cân bằng, scikit-learn]
+cover: /img/project-ccfd.avif
+repo: https://github.com/ngwkhai/Card-fraud-detection
+role: Tiền xử lý, tái lấy mẫu, so sánh mô hình, đánh giá
+stack: [XGBoost, Random Forest, Decision Tree, Logistic Regression, SMOTE, ADASYN]
+metrics:
+  - { label: ROC-AUC, value: "0.9817", note: XGBoost trên dữ liệu mất cân bằng }
+  - { label: Recall, value: "0.816", note: với ADASYN, tăng từ 0.735 }
+  - { label: Tỷ lệ mẫu dương, value: "0.172%", note: 492 gian lận trong 284.807 }
+---
+
+## Bài toán
+
+Bộ dữ liệu thẻ tín dụng trên Kaggle có **284.807 giao dịch, trong đó chỉ 492 là gian lận** — 0,172%. Một mô hình luôn dự đoán "hợp lệ" đạt 99,83% accuracy mà không bắt được giao dịch gian lận nào. Đây là ví dụ kinh điển của việc chỉ số nổi bật nhất lại đánh lừa người đọc, và mọi quyết định có ý nghĩa trong dự án đều bắt nguồn từ việc từ chối dùng nó.
+
+## Tái lấy mẫu
+
+Tôi so sánh **SMOTE** và **ADASYN**. Cả hai đều sinh thêm mẫu lớp thiểu số bằng nội suy giữa các láng giềng, nhưng chọn vị trí sinh khác nhau: SMOTE trải đều trên toàn lớp thiểu số, còn ADASYN tập trung vào những mẫu khó phân loại nhất — những mẫu nằm sát biên quyết định, cũng chính là nơi gian lận thực sự xuất hiện.
+
+## Mô hình
+
+Bốn bộ phân loại, chạy trên cả phân phối gốc lẫn phân phối đã tái lấy mẫu: Logistic Regression, Decision Tree, Random Forest, XGBoost.
+
+| Cấu hình | ROC-AUC | Recall |
+| --- | --- | --- |
+| XGBoost, dữ liệu gốc | **0.9817** | 0.735 |
+| XGBoost + ADASYN | 0.9744 | **0.816** |
+
+## Đọc phép đánh đổi
+
+Đây là toàn bộ phát hiện của dự án, và nó là một sự đánh đổi chứ không phải một chiến thắng. ADASYN nâng recall từ **0,735 lên 0,816** — tương đương bắt thêm khoảng 40 giao dịch gian lận trên mỗi 492 — đổi lấy việc mất 0,7 điểm ROC-AUC.
+
+Chọn nghiêng về phía nào là câu hỏi kinh doanh, không phải câu hỏi mô hình hoá. Một giao dịch gian lận bị bỏ sót khiến tổ chức phát hành mất giá trị giao dịch cộng chi phí điều tra; một cảnh báo sai khiến thẻ bị từ chối và khách hàng khó chịu. Tỷ lệ giữa hai chi phí đó quyết định điểm vận hành, và đầu ra trung thực của dự án là cả đường cong chứ không phải một ngưỡng được chọn sẵn.
+
+## Điều tôi rút ra
+
+Chọn chỉ số *chính là* quyết định mô hình hoá. Khi ROC-AUC và recall thay thế accuracy, mọi lựa chọn tiếp theo — dùng bộ tái lấy mẫu nào, mô hình nào, ngưỡng nào — đều trở nên có thể trả lời bằng bằng chứng. Trước đó thì mọi con số đều rất đẹp và đều vô nghĩa.

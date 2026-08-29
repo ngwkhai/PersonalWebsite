@@ -1,0 +1,50 @@
+---
+title: Khôi phục dấu tiếng Việt ở quy mô lớn
+kicker: Mô hình chuỗi
+summary: Bộ ngữ liệu 12,5 triệu cặp câu cho bài toán khôi phục dấu tiếng Việt, cùng bốn kiến trúc seq2seq viết từ đầu bằng PyTorch để dịch văn bản không dấu trở lại tiếng Việt đúng chính tả.
+year: 2025
+order: 10
+featured: true
+tags: [NLP, Seq2Seq, Transformer, PyTorch, Tiếng Việt]
+cover: /img/project-nlp.avif
+repo: https://github.com/ngwkhai/Neural-Machine-Translation
+role: Xây dựng dữ liệu, cài đặt mô hình, thiết kế đánh giá
+stack: [PyTorch, Transformer, LSTM, GRU, RNN, sacreBLEU]
+metrics:
+  - { label: BLEU, value: "81.31", note: Transformer, trên tập test }
+  - { label: ChrF++, value: "88.57", note: khớp ở mức ký tự }
+  - { label: Cặp câu huấn luyện, value: "12.5M", note: bộ ngữ liệu lớn nhất cho bài toán này }
+---
+
+## Bài toán
+
+Tiếng Việt viết không dấu — `toi di hoc` thay vì `tôi đi học` — có ở khắp nơi: cơ sở dữ liệu cũ, tin nhắn SMS, truy vấn tìm kiếm, đầu ra OCR từ bản scan chất lượng thấp. Và nó thực sự nhập nhằng. Một chuỗi không dấu thường ứng với cả chục từ tiếng Việt hợp lệ, chỉ có ngữ cảnh câu mới quyết định được từ nào đúng.
+
+Cách nhìn nhận đó rất quan trọng, vì nó biến một bài toán tưởng như sửa lỗi chính tả thành bài toán **dịch máy**: đầu vào và đầu ra là hai ngôn ngữ khác nhau tình cờ dùng chung bảng chữ cái, và mô hình buộc phải mang được ngữ cảnh cấp câu để khử nhập nhằng.
+
+## Xây dựng bộ ngữ liệu
+
+Chưa có bộ dữ liệu nào đủ lớn, nên nửa đầu dự án là công việc dữ liệu. Tôi xây dựng **12,5 triệu cặp câu**, mỗi cặp căn chỉnh một câu đã bị bỏ dấu với bản gốc có dấu đầy đủ — bộ ngữ liệu lớn nhất từng được xây cho bài toán khôi phục dấu tiếng Việt tại thời điểm đó.
+
+Chiều bỏ dấu mới là chiều hữu ích: tiếng Việt viết đúng thì dồi dào, còn việc gỡ dấu là thao tác tất định. Mỗi câu sạch vì thế cho ra đúng một cặp huấn luyện miễn phí — đó chính là lý do một bộ ngữ liệu cỡ này khả thi mà không tốn chi phí gán nhãn.
+
+## Bốn kiến trúc, viết từ đầu
+
+Thay vì fine-tune một mô hình có sẵn, tôi cài đặt trực tiếp từng kiến trúc bằng PyTorch — RNN, GRU, LSTM và Transformer — để phép so sánh cô lập được yếu tố kiến trúc thay vì ngân sách tiền huấn luyện.
+
+| Mô hình | BLEU | ChrF++ |
+| --- | --- | --- |
+| RNN | mốc cơ sở | mốc cơ sở |
+| GRU | cải thiện | cải thiện |
+| LSTM | cải thiện | cải thiện |
+| **Transformer** | **81.31** | **88.57** |
+
+Khoảng cách đó mới là kết quả đáng nói. Các mô hình hồi quy buộc phải nén toàn bộ ngữ cảnh bên trái vào một vector ẩn kích thước cố định trước khi quyết định dấu. Self-attention thì không: nó nhìn thẳng vào danh từ cách đó sáu token — chính là thứ khử được nhập nhằng. Với một bài toán mà bản chất là khử nhập nhằng ở khoảng cách xa, thiên kiến quy nạp đó giá trị hơn hẳn số lượng tham số.
+
+## Đánh giá
+
+Tôi cố ý dùng đồng thời **BLEU và ChrF++**. BLEU đo mức trùng khớp n-gram và là chuẩn của dịch máy, nhưng nó quá thô cho một bài toán mà lỗi chỉ nằm ở một ký tự. ChrF++ làm việc ở mức ký tự và bắt được đúng những trường hợp suýt đúng mà BLEU làm tròn bỏ qua — một từ sai một dấu thanh là kiểu lỗi hoàn toàn khác với một từ sai hẳn, và chỉ ChrF++ phân biệt được hai loại đó.
+
+## Điều tôi rút ra
+
+Dữ liệu mới là đòn bẩy. Viết code cho bốn kiến trúc tốn ít thời gian hơn xây bộ ngữ liệu, và bộ ngữ liệu mới là thứ khiến mọi phép so sánh sau đó có ý nghĩa. Nó cũng là thứ sống lâu hơn dự án: các cặp câu vẫn còn giá trị dù kiến trúc tiếp theo là gì đi nữa.
