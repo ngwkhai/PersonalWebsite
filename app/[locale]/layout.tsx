@@ -11,6 +11,7 @@ import { SmoothScroll } from '@/components/motion/smooth-scroll';
 import { ThemeScript } from '@/components/theme-script';
 import { CommandPalette } from '@/components/command-palette';
 import { ChatDock } from '@/components/chat/chat-dock';
+import { getProjects } from '@/lib/content';
 import { JsonLd } from '@/components/json-ld';
 import '../globals.css';
 
@@ -56,7 +57,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'hero' });
+  const tHero = await getTranslations({ locale, namespace: 'hero' });
   const l = locale as AppLocale;
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ngwkhai.dev';
 
@@ -66,7 +67,7 @@ export async function generateMetadata({
       default: `${profile.name} — ${profile.headline[l]}`,
       template: `%s — ${profile.name}`,
     },
-    description: t('thesis'),
+    description: tHero('thesis'),
     alternates: {
       canonical: `/${locale}`,
       languages: { en: '/en', vi: '/vi', 'x-default': '/en' },
@@ -77,7 +78,7 @@ export async function generateMetadata({
       url: `/${locale}`,
       siteName: profile.name,
       title: `${profile.name} — ${profile.headline[l]}`,
-      description: t('thesis'),
+      description: tHero('thesis'),
       images: [{ url: `/api/og?locale=${locale}`, width: 1200, height: 630, alt: profile.name }],
     },
     twitter: { card: 'summary_large_image' },
@@ -97,6 +98,16 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const t = await getTranslations({ locale, namespace: 'nav' });
+
+  // The dock renders real project cards inline, so it needs the catalogue.
+  const projects = getProjects(locale as AppLocale).map((project) => ({
+    slug: project.slug,
+    title: project.title,
+    kicker: project.kicker,
+    year: project.year,
+    cover: project.cover,
+    href: `/work/${project.slug}`,
+  }));
 
   return (
     <html
@@ -119,8 +130,8 @@ export default async function LocaleLayout({
           <SiteHeader />
           <main id="main">{children}</main>
           <SiteFooter />
-          <CommandPalette />
-          <ChatDock />
+          <CommandPalette projects={projects} />
+          <ChatDock projects={projects} />
           <JsonLd locale={locale as AppLocale} />
         </NextIntlClientProvider>
       </body>

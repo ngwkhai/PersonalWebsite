@@ -267,6 +267,28 @@
     color: var(--ink);
   }
 
+  .palette-group [cmdk-group-heading] {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding: 0.85rem 0.75rem 0.35rem;
+  }
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    cursor: default;
+  }
+  .palette-item[data-selected='true'] {
+    background: var(--sunk);
+    color: var(--ink);
+  }
+
   /* Tables are the native artifact of this field — an ablation table is the
      result. They get real treatment rather than default borders. */
   .prose-notebook table {

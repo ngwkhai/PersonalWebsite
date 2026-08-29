@@ -61,7 +61,7 @@ export function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={`${t('toggle')} — ${t(theme)}`}
       title={t(theme)}
-      className="grid size-8 place-items-center text-ink-3 transition-colors hover:text-ink"
+      className="text-ink-3 hover:text-ink grid size-8 place-items-center transition-colors"
     >
       <Icon size={15} strokeWidth={1.75} aria-hidden />
     </button>
