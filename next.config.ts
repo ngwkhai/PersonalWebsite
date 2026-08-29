@@ -13,8 +13,6 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    // Route transitions without a full remount.
-    viewTransition: true,
     optimizePackageImports: ['lucide-react', 'motion'],
   },
 

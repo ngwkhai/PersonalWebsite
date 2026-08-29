@@ -43,7 +43,10 @@ const projects = defineCollection({
     })
     .transform((data, { meta }) => {
       const path = meta.path.replaceAll('\\', '/');
-      const slug = path.split('/').pop()!.replace(/\.mdx$/, '');
+      const slug = path
+        .split('/')
+        .pop()!
+        .replace(/\.mdx$/, '');
       const locale = localeFromPath(path);
       return { ...data, slug, locale, permalink: `/${locale}/work/${slug}` };
     }),
@@ -65,7 +68,10 @@ const writing = defineCollection({
     })
     .transform((data, { meta }) => {
       const path = meta.path.replaceAll('\\', '/');
-      const slug = path.split('/').pop()!.replace(/\.mdx$/, '');
+      const slug = path
+        .split('/')
+        .pop()!
+        .replace(/\.mdx$/, '');
       const locale = localeFromPath(path);
       return { ...data, slug, locale, permalink: `/${locale}/writing/${slug}` };
     }),

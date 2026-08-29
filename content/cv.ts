@@ -94,7 +94,7 @@ export const education: readonly Institution[] = [
     },
     start: '2023-08',
     end: null,
-    logo: '/img/vnu-university-logo.png',
+    logo: '/img/vnu-university-logo.avif',
     detail: [
       { en: 'GPA: 3.5 / 4.0', vi: 'GPA: 3.5 / 4.0' },
       {
@@ -111,7 +111,7 @@ export const experience: readonly Institution[] = [
     role: { en: 'Member', vi: 'Thành viên' },
     start: '2025-06',
     end: null,
-    logo: '/img/nlp-lab-logo.jpg',
+    logo: '/img/nlp-lab-logo.avif',
     detail: [
       {
         en: 'Participated in research and development activities in natural language processing, including exploring AI models, experimenting with text data, and contributing ideas to group projects.',
@@ -130,7 +130,7 @@ export const leadership: readonly Institution[] = [
     },
     start: '2024-09',
     end: null,
-    logo: '/img/uet-ai-logo.png',
+    logo: '/img/uet-ai-logo.avif',
     detail: [
       {
         en: 'Served as Class Vice-President and an active member of the Executive Committee, coordinating student projects, organizing meetings, and contributing to strategic planning within the institute.',

@@ -1,0 +1,307 @@
+@import 'tailwindcss';
+
+/*
+  Palette: viridis.
+  Not a mood board choice — viridis is the matplotlib default, so it is the
+  colormap on every attention map, confusion matrix and loss surface in this
+  field. Using it as the brand means the case-study charts and the site are
+  literally the same system, and it is perceptually uniform, which is why the
+  contrast holds up in both themes.
+
+    #440154  #3B528B  #21918C  #5EC962  #FDE725
+    deep     indigo   teal     green    flare
+*/
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  /* next/font emits the --font-* names; these alias them to semantic roles. */
+  --font-display: var(--font-fraunces), 'Iowan Old Style', Georgia, serif;
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, 'SF Mono', monospace;
+
+  /* Viridis ramp, kept raw for data visualisation. */
+  --color-viridis-0: oklch(0.24 0.11 314);
+  --color-viridis-1: oklch(0.42 0.11 275);
+  --color-viridis-2: oklch(0.58 0.09 191);
+  --color-viridis-3: oklch(0.76 0.17 145);
+  --color-viridis-4: oklch(0.9 0.17 105);
+
+  /* Semantic tokens; values live on :root so the theme can swap them. */
+  --color-paper: var(--paper);
+  --color-raised: var(--raised);
+  --color-sunk: var(--sunk);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-indigo: var(--indigo);
+  --color-teal: var(--teal);
+  --color-flare: var(--flare);
+
+  --text-display: clamp(2.6rem, 8.2vw, 6.75rem);
+  --text-h1: clamp(2.25rem, 6vw, 4.25rem);
+  --text-h2: clamp(1.6rem, 3.4vw, 2.6rem);
+  --text-h3: clamp(1.15rem, 1.8vw, 1.5rem);
+  --text-micro: 0.6875rem;
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* Width of the lab-notebook margin rail. */
+  --rail: 12rem;
+}
+
+:root {
+  color-scheme: light;
+  --paper: oklch(0.978 0.004 300);
+  --raised: oklch(1 0 0);
+  --sunk: oklch(0.945 0.007 300);
+  --ink: oklch(0.185 0.028 305);
+  --ink-2: oklch(0.44 0.022 300);
+  --ink-3: oklch(0.62 0.016 300);
+  --rule: oklch(0.885 0.008 300);
+  --indigo: oklch(0.44 0.13 275);
+  --teal: oklch(0.52 0.09 191);
+  --flare: oklch(0.9 0.17 105);
+  --flare-wash: oklch(0.9 0.17 105 / 0.32);
+}
+
+/* System-dark, unless the reader has explicitly chosen light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --paper: oklch(0.155 0.019 305);
+    --raised: oklch(0.205 0.021 305);
+    --sunk: oklch(0.125 0.017 305);
+    --ink: oklch(0.945 0.006 300);
+    --ink-2: oklch(0.73 0.014 300);
+    --ink-3: oklch(0.55 0.018 300);
+    --rule: oklch(0.29 0.022 305);
+    --indigo: oklch(0.72 0.11 275);
+    --teal: oklch(0.76 0.1 191);
+    --flare: oklch(0.9 0.17 105);
+    --flare-wash: oklch(0.9 0.17 105 / 0.22);
+  }
+}
+
+/* Explicit choice wins in both directions. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: oklch(0.155 0.019 305);
+  --raised: oklch(0.205 0.021 305);
+  --sunk: oklch(0.125 0.017 305);
+  --ink: oklch(0.945 0.006 300);
+  --ink-2: oklch(0.73 0.014 300);
+  --ink-3: oklch(0.55 0.018 300);
+  --rule: oklch(0.29 0.022 305);
+  --indigo: oklch(0.72 0.11 275);
+  --teal: oklch(0.76 0.1 191);
+  --flare: oklch(0.9 0.17 105);
+  --flare-wash: oklch(0.9 0.17 105 / 0.22);
+}
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    /* Lenis drives scrolling; native smooth-scroll fights it. */
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  /* Fraunces has optical-size, softness and wonk axes. Held at its most
+     disciplined setting: high optical size for stroke contrast, no wonk. */
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings:
+      'SOFT' 0,
+      'WONK' 0,
+      'opsz' 144;
+    letter-spacing: -0.022em;
+  }
+
+  ::selection {
+    background: var(--flare-wash);
+    color: var(--ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--indigo);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* The rail is instrumentation, not decoration: it reads like a readout. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+
+  /* The one bold accessory: a highlighter mark, used on restored glyphs and
+     the single most important number in a table. Nowhere else. */
+  .flare {
+    background-image: linear-gradient(var(--flare-wash), var(--flare-wash));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 100% 0.42em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .prose-notebook {
+    max-width: 68ch;
+    font-size: 1.0625rem;
+    line-height: 1.72;
+    color: var(--ink-2);
+  }
+  .prose-notebook > * + * {
+    margin-top: 1.35em;
+  }
+  .prose-notebook h2 {
+    font-family: var(--font-display);
+    font-variation-settings:
+      'SOFT' 0,
+      'WONK' 0,
+      'opsz' 48;
+    font-size: var(--text-h2);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-top: 2.6em;
+    margin-bottom: 0.1em;
+  }
+  .prose-notebook h3 {
+    font-size: var(--text-h3);
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 2em;
+  }
+  .prose-notebook strong {
+    color: var(--ink);
+    font-weight: 620;
+  }
+  .prose-notebook a {
+    color: var(--indigo);
+    text-underline-offset: 3px;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+  }
+  .prose-notebook code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: var(--sunk);
+    padding: 0.15em 0.36em;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+  .prose-notebook ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .prose-notebook ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-top: 0.7em;
+  }
+  .prose-notebook ul li::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.72em;
+    width: 0.42rem;
+    height: 0.42rem;
+    background: var(--teal);
+  }
+  .prose-notebook ol {
+    list-style: none;
+    counter-reset: step;
+    padding-left: 0;
+  }
+  .prose-notebook ol li {
+    position: relative;
+    padding-left: 2.1rem;
+    margin-top: 0.7em;
+    counter-increment: step;
+  }
+  .prose-notebook ol li::before {
+    content: counter(step, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.18em;
+    font-family: var(--font-mono);
+    font-size: 0.72em;
+    color: var(--teal);
+  }
+  .prose-notebook blockquote {
+    border-left: 2px solid var(--teal);
+    padding-left: 1.15rem;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  /* Tables are the native artifact of this field — an ablation table is the
+     result. They get real treatment rather than default borders. */
+  .prose-notebook table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.94rem;
+    margin-top: 2em;
+  }
+  .prose-notebook thead th {
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    font-weight: 500;
+    padding: 0 0.9rem 0.6rem 0;
+    border-bottom: 1px solid var(--ink-3);
+  }
+  .prose-notebook tbody td {
+    padding: 0.66rem 0.9rem 0.66rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .prose-notebook tbody td strong {
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  /* A row whose first cell is bold is the winning configuration. */
+  .prose-notebook tbody tr:has(td:first-child strong) td {
+    color: var(--ink);
+  }
+  .prose-notebook :where(table) {
+    display: block;
+    overflow-x: auto;
+  }
+}

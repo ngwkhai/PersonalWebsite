@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "work": "Dự án",
+    "writing": "Bài viết",
+    "about": "Giới thiệu",
+    "ask": "Hỏi",
+    "contact": "Liên hệ",
+    "skipToContent": "Tới nội dung chính",
+    "menu": "Menu",
+    "close": "Đóng",
+    "match": "Đối chiếu JD"
+  },
+  "hero": {
+    "restoring": "đang khôi phục dấu",
+    "restored": "đã khôi phục",
+    "thesis": "Tôi xây những hệ thống khôi phục tín hiệu từ dữ liệu đã bị suy giảm.",
+    "cta": "Xem dự án",
+    "ctaAsk": "Hỏi về công việc của tôi"
+  },
+  "sections": {
+    "work": "Dự án tiêu biểu",
+    "workLead": "Bảy hệ thống. Mỗi dự án là một case study, không phải một tấm ảnh chụp màn hình.",
+    "about": "Giới thiệu",
+    "education": "Học vấn",
+    "experience": "Kinh nghiệm",
+    "leadership": "Hoạt động",
+    "skills": "Kỹ năng",
+    "contact": "Liên hệ",
+    "writing": "Bài viết"
+  },
+  "project": {
+    "role": "Vai trò",
+    "stack": "Công nghệ",
+    "year": "Năm",
+    "repo": "Mã nguồn",
+    "demo": "Demo",
+    "paper": "Báo cáo",
+    "backToWork": "Tất cả dự án",
+    "next": "Dự án tiếp theo",
+    "readingTime": "{minutes} phút đọc",
+    "explainAs": "Giải thích cho",
+    "audienceRecruiter": "nhà tuyển dụng",
+    "audienceEngineer": "kỹ sư",
+    "audienceResearcher": "nhà nghiên cứu",
+    "explainRunning": "Đang viết lại tóm tắt",
+    "explainReset": "Xem bản gốc"
+  },
+  "chat": {
+    "title": "Hỏi về công việc của tôi",
+    "subtitle": "Một agent bám vào chính các case study này. Nó trích dẫn nguồn đã dùng, và nói thẳng khi không biết.",
+    "placeholder": "Transformer vượt mô hình nào, và hơn bao nhiêu?",
+    "send": "Gửi",
+    "stop": "Dừng",
+    "clear": "Xoá hội thoại",
+    "open": "Hỏi",
+    "sources": "Nguồn",
+    "thinking": "Đang xử lý",
+    "searching": "Đang tìm trong case study",
+    "navigating": "Đang mở",
+    "rateLimited": "Đã hết lượt nhắn lúc này. Giới hạn sẽ được đặt lại sớm — các case study vẫn ở đây để bạn đọc.",
+    "budgetExhausted": "Trợ lý nghỉ hết hôm nay. Mọi thứ nó định nói đều đã nằm trong các case study.",
+    "error": "Yêu cầu không gửi được. Bạn thử lại nhé.",
+    "suggestions": {
+      "one": "Kết quả mạnh nhất ở đây là gì?",
+      "two": "Anh xử lý dữ liệu mất cân bằng thế nào?",
+      "three": "Cho tôi xem phần tối ưu suy luận",
+      "four": "Anh ấy có hợp vị trí thực tập thị giác máy tính không?"
+    },
+    "disclaimer": "Câu trả lời lấy từ nội dung của chính trang này. Hãy kiểm chứng lại những gì quan trọng."
+  },
+  "match": {
+    "title": "Đối chiếu mô tả công việc",
+    "lead": "Dán một mô tả công việc vào đây. Nhận đánh giá mức độ phù hợp có dẫn chứng, và những khoảng trống được nêu thẳng thay vì giấu đi.",
+    "placeholder": "Dán toàn bộ mô tả công việc vào đây",
+    "submit": "Phân tích độ phù hợp",
+    "analysing": "Đang đọc mô tả",
+    "score": "Độ phù hợp",
+    "matched": "Có dẫn chứng",
+    "gaps": "Chưa có dẫn chứng",
+    "talkingPoints": "Nên trao đổi thêm",
+    "empty": "Chưa phân tích gì.",
+    "tooShort": "Nội dung quá ngắn để phân tích. Hãy dán đầy đủ mô tả."
+  },
+  "contact": {
+    "name": "Tên của bạn",
+    "email": "Email của bạn",
+    "message": "Nội dung",
+    "send": "Gửi tin nhắn",
+    "sending": "Đang gửi",
+    "sent": "Đã gửi. Tôi sẽ phản hồi.",
+    "error": "Chưa gửi được. Bạn thử lại, hoặc liên hệ qua GitHub.",
+    "invalidEmail": "Địa chỉ email này có vẻ chưa đúng.",
+    "tooShort": "Bạn viết thêm một chút nhé."
+  },
+  "theme": {
+    "toggle": "Đổi giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Theo hệ thống"
+  },
+  "language": {
+    "toggle": "Đổi ngôn ngữ"
+  },
+  "palette": {
+    "open": "Tìm kiếm",
+    "placeholder": "Tìm dự án, bài viết, hoặc đặt một câu hỏi",
+    "empty": "Không có kết quả nào khớp.",
+    "groupPages": "Trang",
+    "groupWork": "Dự án",
+    "groupActions": "Hành động",
+    "askAbout": "Hỏi agent về \"{query}\"",
+    "downloadCV": "Tải CV"
+  },
+  "footer": {
+    "rights": "Bảo lưu mọi quyền.",
+    "colophon": "Ghi chú kỹ thuật",
+    "builtWith": "Xây bằng"
+  },
+  "error": {
+    "notFoundTitle": "Không có trang này",
+    "notFoundBody": "Liên kết đó không dẫn tới đâu trên trang này.",
+    "back": "Về trang đầu",
+    "genericTitle": "Có gì đó hỏng",
+    "genericBody": "Trang này render lỗi. Tải lại thường sẽ khắc phục được.",
+    "retry": "Tải lại"
+  }
+}

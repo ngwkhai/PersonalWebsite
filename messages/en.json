@@ -1,0 +1,127 @@
+{
+  "nav": {
+    "work": "Work",
+    "writing": "Writing",
+    "about": "About",
+    "ask": "Ask",
+    "contact": "Contact",
+    "skipToContent": "Skip to content",
+    "menu": "Menu",
+    "close": "Close",
+    "match": "Match"
+  },
+  "hero": {
+    "restoring": "restoring diacritics",
+    "restored": "restored",
+    "thesis": "I build systems that recover signal from degraded data.",
+    "cta": "Read the work",
+    "ctaAsk": "Ask about my work"
+  },
+  "sections": {
+    "work": "Selected work",
+    "workLead": "Seven systems. Each one is a case study, not a screenshot.",
+    "about": "About",
+    "education": "Education",
+    "experience": "Experience",
+    "leadership": "Leadership",
+    "skills": "Skills",
+    "contact": "Get in touch",
+    "writing": "Writing"
+  },
+  "project": {
+    "role": "Role",
+    "stack": "Stack",
+    "year": "Year",
+    "repo": "Source",
+    "demo": "Demo",
+    "paper": "Report",
+    "backToWork": "All work",
+    "next": "Next project",
+    "readingTime": "{minutes} min read",
+    "explainAs": "Explain this for",
+    "audienceRecruiter": "a recruiter",
+    "audienceEngineer": "an engineer",
+    "audienceResearcher": "a researcher",
+    "explainRunning": "Rewriting the summary",
+    "explainReset": "Show the original"
+  },
+  "chat": {
+    "title": "Ask about my work",
+    "subtitle": "An agent grounded in these case studies. It cites what it uses, and says so when it does not know.",
+    "placeholder": "What did the Transformer beat, and by how much?",
+    "send": "Send",
+    "stop": "Stop",
+    "clear": "Clear conversation",
+    "open": "Ask",
+    "sources": "Sources",
+    "thinking": "Working",
+    "searching": "Searching the case studies",
+    "navigating": "Opening",
+    "rateLimited": "That is the message limit for now. It resets shortly — the case studies are all still here to read.",
+    "budgetExhausted": "The assistant is resting for today. Everything it would tell you is in the case studies.",
+    "error": "That request did not go through. Try again.",
+    "suggestions": {
+      "one": "What is the strongest result here?",
+      "two": "How do you handle imbalanced data?",
+      "three": "Show me the inference optimisation work",
+      "four": "Would he fit a computer vision internship?"
+    },
+    "disclaimer": "Answers come from this site's content. Verify anything that matters."
+  },
+  "match": {
+    "title": "Job description matcher",
+    "lead": "Paste a job description. Get an evidence-backed read on fit, with the gaps named rather than hidden.",
+    "placeholder": "Paste the full job description here",
+    "submit": "Analyse fit",
+    "analysing": "Reading the description",
+    "score": "Fit",
+    "matched": "Backed by evidence",
+    "gaps": "Not evidenced",
+    "talkingPoints": "Worth raising",
+    "empty": "Nothing analysed yet.",
+    "tooShort": "That is too short to analyse. Paste the full description."
+  },
+  "contact": {
+    "name": "Your name",
+    "email": "Your email",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending",
+    "sent": "Sent. I will reply.",
+    "error": "That did not send. Try again, or reach me on GitHub.",
+    "invalidEmail": "That email address does not look right.",
+    "tooShort": "Add a little more detail."
+  },
+  "theme": {
+    "toggle": "Switch theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "language": {
+    "toggle": "Switch language"
+  },
+  "palette": {
+    "open": "Search",
+    "placeholder": "Search work, writing, or ask a question",
+    "empty": "Nothing matches that.",
+    "groupPages": "Pages",
+    "groupWork": "Work",
+    "groupActions": "Actions",
+    "askAbout": "Ask the agent about \"{query}\"",
+    "downloadCV": "Download CV"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "colophon": "Colophon",
+    "builtWith": "Built with"
+  },
+  "error": {
+    "notFoundTitle": "No page here",
+    "notFoundBody": "That link does not lead anywhere on this site.",
+    "back": "Back to the start",
+    "genericTitle": "Something broke",
+    "genericBody": "This page failed to render. Reloading usually fixes it.",
+    "retry": "Reload"
+  }
+}
