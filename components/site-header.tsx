@@ -14,6 +14,19 @@ const routes = [
   { href: '/match', key: 'match' },
 ] as const;
 
+function NavLink({ href, label, pathname }: { href: string; label: string; pathname: string }) {
+  const current = pathname.startsWith(href);
+  return (
+    <Link
+      href={href}
+      aria-current={current ? 'page' : undefined}
+      className={cn('transition-colors hover:text-ink', current && 'flare text-ink')}
+    >
+      {label}
+    </Link>
+  );
+}
+
 export function SiteHeader() {
   const t = useTranslations('nav');
   const tp = useTranslations('palette');
@@ -31,50 +44,58 @@ export function SiteHeader() {
     <header
       className={cn(
         'fixed inset-x-0 top-0 z-50 transition-colors duration-300',
-        lifted && 'border-rule bg-paper/85 border-b backdrop-blur-xl',
+        lifted && 'border-b border-rule bg-paper/85 backdrop-blur-xl',
       )}
     >
-      <nav className="mx-auto flex h-14 max-w-[88rem] items-center gap-6 px-5 sm:px-8">
-        <Link href="/" className="label !text-ink shrink-0 !tracking-[0.2em]">
-          NGWKHAI
-        </Link>
+      {/* Two rows on mobile. The links cannot simply be hidden there, or the
+          only route to Work and Writing is a keyboard shortcut. */}
+      <nav className="mx-auto max-w-[88rem] px-5 sm:px-8">
+        <div className="flex h-14 items-center gap-6">
+          <Link href="/" className="label shrink-0 !tracking-[0.2em] !text-ink">
+            NGWKHAI
+          </Link>
 
-        <ul className="label hidden items-center gap-6 sm:flex">
-          {routes.map((route) => {
-            const current = pathname.startsWith(route.href);
-            return (
+          <ul className="label hidden items-center gap-6 sm:flex">
+            {routes.map((route) => (
               <li key={route.href}>
-                <Link
-                  href={route.href}
-                  aria-current={current ? 'page' : undefined}
-                  className={cn('hover:text-ink transition-colors', current && 'text-ink flare')}
-                >
-                  {t(route.key)}
-                </Link>
+                <NavLink href={route.href} label={t(route.key)} pathname={pathname} />
               </li>
-            );
-          })}
-        </ul>
+            ))}
+          </ul>
 
-        <div className="ml-auto flex items-center gap-3 sm:gap-4">
-          <button
-            type="button"
-            onClick={openPalette}
-            className="label border-rule hover:border-ink-3 hover:text-ink border px-2.5 py-1 transition-colors"
-          >
-            {tp('open')}
-            <kbd className="text-ink-3 ml-2 hidden font-sans text-[0.65rem] sm:inline">⌘K</kbd>
-          </button>
-          <button
-            type="button"
-            onClick={() => openChat()}
-            className="label bg-ink !text-paper px-3 py-1.5 transition-opacity hover:opacity-85"
-          >
-            {t('ask')}
-          </button>
-          <LanguageToggle />
-          <ThemeToggle />
+          <div className="ml-auto flex items-center gap-3 sm:gap-4">
+            <button
+              type="button"
+              onClick={openPalette}
+              className="label hidden border border-rule px-2.5 py-1 transition-colors hover:border-ink-3 hover:text-ink sm:block"
+            >
+              {tp('open')}
+              <kbd className="ml-2 font-sans text-[0.65rem] text-ink-3">⌘K</kbd>
+            </button>
+            <button
+              type="button"
+              onClick={() => openChat()}
+              className="label bg-ink px-3 py-1.5 !text-paper transition-opacity hover:opacity-85"
+            >
+              {t('ask')}
+            </button>
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
+
+        <ul className="label flex items-center gap-5 pb-2.5 sm:hidden">
+          {routes.map((route) => (
+            <li key={route.href}>
+              <NavLink href={route.href} label={t(route.key)} pathname={pathname} />
+            </li>
+          ))}
+          <li className="ml-auto">
+            <button type="button" onClick={openPalette} className="label hover:text-ink">
+              {tp('open')}
+            </button>
+          </li>
+        </ul>
       </nav>
     </header>
   );
