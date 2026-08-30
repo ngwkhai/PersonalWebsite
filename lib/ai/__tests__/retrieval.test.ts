@@ -19,7 +19,7 @@ describe('retrieve', () => {
   });
 
   it('indexes the achievements, so the agent can cite a credential', async () => {
-    const hits = await retrieve('Kaggle published notebook', { locale: 'en' });
+    const hits = await retrieve('Student Scientific Research Award prize', { locale: 'en' });
     expect(hits.some((hit) => hit.chunk.section === 'Achievements')).toBe(true);
   });
 

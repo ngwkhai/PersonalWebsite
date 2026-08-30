@@ -17,7 +17,6 @@ export async function WritingList({ limit }: { limit?: number }) {
       <SectionHeader
         id="writing"
         label={t('writing')}
-        lead={ts('writingLead')}
         action={
           all.length > (limit ?? Infinity) ? (
             <Link
@@ -30,11 +29,7 @@ export async function WritingList({ limit }: { limit?: number }) {
         }
       />
 
-      {posts.length === 0 ? (
-        <p className="text-ink-3 mt-10 max-w-prose sm:ml-[calc(var(--rail)+2.5rem)]">
-          {ts('writingEmpty')}
-        </p>
-      ) : (
+      {posts.length === 0 ? null : (
         <ul className="border-rule mt-[var(--space-block)] border-b">
           {posts.map((post) => (
             <li key={post.slug} className="border-rule border-t">

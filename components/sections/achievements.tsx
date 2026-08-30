@@ -25,7 +25,7 @@ export async function Achievements() {
 
   return (
     <Section id="achievements">
-      <SectionHeader id="achievements" label={t('achievements')} lead={ts('achievementsLead')} />
+      <SectionHeader id="achievements" label={t('achievements')} />
 
       {achievementsByDate.length === 0 ? (
         <p className="text-ink-3 mt-10 sm:ml-[calc(var(--rail)+2.5rem)]">

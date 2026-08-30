@@ -39,7 +39,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <SectionHeader
           id="work"
           label={tn('work')}
-          lead={t('workLead')}
           action={
             <Link
               href="/work"

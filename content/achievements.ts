@@ -6,9 +6,9 @@
  * homepage section, the agent's knowledge index, the HTML resume — reads from
  * here, so one edit updates all three.
  *
- * Only three entries are seeded, because those are the only ones evidenced
- * anywhere in this repository. Nothing here is invented: an agent that cites a
- * certificate you do not hold is worse than no agent.
+ * Nothing here is invented: an agent that cites a certificate you do not hold
+ * is worse than no agent. Entries carry the granularity they were awarded at —
+ * a bare year where only a year is known, `YYYY-MM` where the month is.
  * ────────────────────────────────────────────────────────────────────────────
  */
 import type { Localized } from './cv';
@@ -21,7 +21,7 @@ export interface Achievement {
   readonly title: Localized;
   /** Awarding body, publisher or institution. */
   readonly issuer: string;
-  /** ISO year-month. Used for ordering and display. */
+  /** `YYYY` or `YYYY-MM`. Used for ordering and display. */
   readonly date: string;
   readonly detail?: Localized;
   /** Verification link — a credential URL, a published notebook, a certificate. */
@@ -30,43 +30,54 @@ export interface Achievement {
 
 export const achievements: readonly Achievement[] = [
   {
-    id: 'gpa',
-    kind: 'academic',
+    id: 'ssr-ai-2026',
+    kind: 'award',
     title: {
-      en: 'GPA 3.5 / 4.0, Bachelor of Artificial Intelligence',
-      vi: 'GPA 3.5 / 4.0, Cử nhân Trí tuệ Nhân tạo',
+      en: 'Third Prize, Student Scientific Research Award — Artificial Intelligence',
+      vi: 'Giải Ba, Giải thưởng Nghiên cứu khoa học sinh viên — Trí tuệ Nhân tạo',
     },
     issuer: 'VNU University of Engineering and Technology',
-    date: '2023-08',
+    date: '2026',
   },
   {
-    id: 'kaggle-yolov1-cbam',
-    kind: 'publication',
+    id: 'humanitarian-logistics-hackathon-2026',
+    kind: 'award',
     title: {
-      en: 'Published notebook: YOLOv1 with CBAM, from scratch',
-      vi: 'Notebook đã công bố: YOLOv1 kèm CBAM, viết từ đầu',
+      en: 'Third Prize, Student Track — Humanitarian Logistics Hackathon',
+      vi: 'Giải Ba, Bảng Sinh viên — Humanitarian Logistics Hackathon',
     },
-    issuer: 'Kaggle',
-    date: '2024-01',
-    detail: {
-      en: 'A ground-up YOLOv1 reimplementation with channel-and-spatial attention, published publicly. Train mAP 0.8829, best validation mAP 0.6994.',
-      vi: 'Bản cài đặt lại YOLOv1 từ con số không kèm attention theo kênh và không gian, công bố công khai. mAP huấn luyện 0,8829, mAP validation tốt nhất 0,6994.',
-    },
-    href: 'https://www.kaggle.com/code/ngwdinhkhai/yolov1-cbam-from-scratch-for-test-label',
+    issuer: 'Humanitarian Logistics Hackathon',
+    date: '2026',
   },
   {
-    id: 'uet-ai-committee',
-    kind: 'role',
+    id: 'uet-encouragement-scholarship-2024',
+    kind: 'academic',
     title: {
-      en: 'Class Vice-President & Executive Committee Member',
-      vi: 'Lớp phó & Thành viên Ban Chấp hành',
+      en: 'Academic Encouragement Scholarship',
+      vi: 'Học bổng Khuyến khích học tập',
     },
-    issuer: 'Institute for Artificial Intelligence, VNU-UET',
-    date: '2024-09',
-    detail: {
-      en: 'Elected to coordinate student projects, organise meetings and contribute to the institute’s planning.',
-      vi: 'Được bầu để điều phối các dự án sinh viên, tổ chức họp và tham gia hoạch định của viện.',
+    issuer: 'University of Engineering and Technology',
+    date: '2024',
+  },
+  {
+    id: 'thai-nguyen-physics-2023',
+    kind: 'award',
+    title: {
+      en: 'Second Prize, Provincial Excellent Student Contest in Physics',
+      vi: 'Giải Nhì, Kỳ thi Học sinh giỏi cấp tỉnh môn Vật lý',
     },
+    issuer: 'Thai Nguyen Province',
+    date: '2023',
+  },
+  {
+    id: 'thai-nguyen-informatics-2021',
+    kind: 'award',
+    title: {
+      en: 'Third Prize, Provincial Excellent Student Contest in Informatics',
+      vi: 'Giải Ba, Kỳ thi Học sinh giỏi cấp tỉnh môn Tin học',
+    },
+    issuer: 'Thai Nguyen Province',
+    date: '2021',
   },
 ];
 

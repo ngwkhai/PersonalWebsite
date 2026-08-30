@@ -32,7 +32,6 @@ function rampColour(count: number, max: number): string {
 
 export async function Skills() {
   const t = await getTranslations('nav');
-  const ts = await getTranslations('sections');
   const locale = (await getLocale()) as AppLocale;
   const projects = getProjects(locale);
 
@@ -79,7 +78,7 @@ export async function Skills() {
 
   return (
     <Section id="skills" band>
-      <SectionHeader id="skills" label={t('skills')} lead={ts('skillsLead')} />
+      <SectionHeader id="skills" label={t('skills')} />
 
       <SectionBody>
         <div className="grid gap-x-14 gap-y-[var(--space-block)] md:grid-cols-2">
@@ -115,10 +114,6 @@ export async function Skills() {
             </div>
           ))}
         </div>
-
-        <p className="label mt-[var(--space-block)] !tracking-normal !normal-case">
-          {ts('skillsFootnote')}
-        </p>
       </SectionBody>
     </Section>
   );

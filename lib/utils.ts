@@ -18,8 +18,13 @@ export function stripDiacritics(input: string): string {
     .replace(/Đ/g, 'D');
 }
 
+/**
+ * `YYYY-MM` renders as month and year; a bare `YYYY` renders as the year alone,
+ * so an award known only by its year is not given an invented month.
+ */
 export function formatMonth(iso: string, locale: string): string {
   const [year, month] = iso.split('-');
-  const date = new Date(Number(year), Number(month ?? '1') - 1, 1);
+  if (!month) return year!;
+  const date = new Date(Number(year), Number(month) - 1, 1);
   return new Intl.DateTimeFormat(locale, { month: 'short', year: 'numeric' }).format(date);
 }

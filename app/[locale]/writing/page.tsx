@@ -46,12 +46,6 @@ export default async function WritingPage({ params }: { params: Promise<{ locale
           </li>
         ))}
       </ul>
-
-      {posts.length === 0 && (
-        <p className="font-display text-h3 text-ink-3 mt-12 max-w-prose">
-          Nothing published yet. The case studies under Work are where the writing lives for now.
-        </p>
-      )}
     </section>
   );
 }
