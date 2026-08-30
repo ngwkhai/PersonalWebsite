@@ -61,7 +61,7 @@ export default async function ProjectPage({
   ].filter((link): link is { href: string; label: string } => Boolean(link.href));
 
   return (
-    <article className="mx-auto max-w-[88rem] px-5 pt-28 pb-8 sm:px-8 sm:pt-36">
+    <article className="shell pt-28 pb-8 sm:pt-36">
       <Link href="/work" className="label hover:text-ink inline-flex items-center gap-2">
         <ArrowLeft size={12} strokeWidth={2} aria-hidden />
         {t('backToWork')}
@@ -70,7 +70,7 @@ export default async function ProjectPage({
       {/* On mobile the rail stacks above the title, which put a screenful of
           metadata in front of what the project actually is. Ordered so the
           claim comes first there, and returns to the margin at sm. */}
-      <header className="mt-10 grid gap-8 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
+      <header className="rail-grid mt-10">
         <div className="order-2 flex flex-col gap-5 sm:order-1">
           <div>
             <p className="label">{t('year')}</p>
@@ -132,7 +132,7 @@ export default async function ProjectPage({
 
       <MetricStrip metrics={project.metrics} />
 
-      <div className="mt-4 grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
+      <div className="rail-grid mt-4">
         <div aria-hidden />
         <div className="prose-notebook">
           <MDXContent code={project.body} />
@@ -141,10 +141,7 @@ export default async function ProjectPage({
 
       {next && (
         <nav className="border-rule mt-28 border-t pt-8">
-          <Link
-            href={`/work/${next.slug}`}
-            className="group grid gap-2 sm:grid-cols-[var(--rail)_1fr] sm:gap-10"
-          >
+          <Link href={`/work/${next.slug}`} className="rail-grid group">
             <span className="label">{t('next')}</span>
             <span className="font-display text-h3 text-ink group-hover:text-indigo flex items-center gap-3 transition-colors">
               {next.title}

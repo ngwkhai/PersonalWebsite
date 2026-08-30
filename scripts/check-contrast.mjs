@@ -51,7 +51,7 @@ const THEMES = {
     'ink-3': [0.52, 0.016, 300],
     rule: [0.885, 0.008, 300],
     indigo: [0.44, 0.13, 275],
-    teal: [0.52, 0.09, 191],
+    teal: [0.5, 0.09, 191],
     flare: [0.9, 0.17, 105],
   },
   dark: {
@@ -80,6 +80,11 @@ const CHECKS = [
   ['rule', 'paper', 1.2, 'hairline rules (decorative, informational only)'],
   ['indigo', 'paper', 4.5, 'links and focus ring'],
   ['teal', 'paper', 4.5, 'role lines and section sublabels'],
+  // Alternating section bands put every foreground on `sunk` as well. Missing
+  // this pair is how a 4.47:1 teal reached production.
+  ['teal', 'sunk', 4.5, 'sublabels inside a banded section'],
+  ['indigo', 'sunk', 4.5, 'links inside a banded section'],
+  ['ink-2', 'sunk', 4.5, 'secondary prose inside a banded section'],
   ['paper', 'ink', 4.5, 'inverted button text'],
 ];
 

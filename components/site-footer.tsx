@@ -9,7 +9,7 @@ export async function SiteFooter() {
 
   return (
     <footer className="border-rule mt-20 border-t">
-      <div className="mx-auto grid max-w-[88rem] gap-8 px-5 py-12 sm:grid-cols-[var(--rail)_1fr] sm:px-8">
+      <div className="shell rail-grid py-12">
         <p className="label leading-[1.9]">
           {profile.location[locale]}
           <br />

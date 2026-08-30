@@ -59,7 +59,9 @@ Results: ${project.metrics.map((m) => `${m.label} ${m.value}${m.note ? ` (${m.no
 Case study:
 ${project.raw.slice(0, 6000)}`,
     maxOutputTokens: 220,
-    temperature: 0.4,
+    // temperature is deliberately absent: the GPT-5.6 models are reasoning
+    // models and the SDK warns that they ignore it. Setting it implied a
+    // control over output variance that does not exist.
     onFinish: async ({ usage }) => {
       await recordSpend(estimateCost(MODELS.cheap, usage));
     },

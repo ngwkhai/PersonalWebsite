@@ -1,49 +1,19 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Every homepage section opens the same way: a mono label in the notebook rail
- * and a display-face lead in the column. Keeping it in one component is what
- * makes seven sections read as one document rather than seven pages stacked.
- */
-export function SectionHeader({
-  id,
-  label,
-  lead,
-  action,
-  className,
-}: {
-  id?: string;
-  label: string;
-  lead?: string;
-  action?: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={cn('grid gap-4 sm:grid-cols-[var(--rail)_1fr] sm:gap-10', className)}>
-      <h2 id={id ? `${id}-heading` : undefined} className="label !text-ink">
-        {label}
-      </h2>
-      {(lead || action) && (
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          {lead && <p className="font-display text-h3 text-ink-2 max-w-2xl leading-snug">{lead}</p>}
-          {action}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * Sections are scroll targets for the pinned nav, so they carry scroll-margin
- * for the fixed header rather than relying on the smooth-scroll offset alone —
- * a deep link pasted into the address bar has no JavaScript to help it.
+ * The page was previously a single unbroken field of off-white, so seven
+ * sections read as one long undifferentiated scroll. Alternating the ground
+ * gives the eye a place to rest and makes the structure legible without adding
+ * any decoration.
  */
 export function Section({
   id,
+  band = false,
   children,
   className,
 }: {
   id: string;
+  band?: boolean;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -51,9 +21,64 @@ export function Section({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      className={cn('mx-auto max-w-[88rem] scroll-mt-28 px-5 py-14 sm:px-8 sm:py-20', className)}
+      className={cn(
+        'scroll-mt-28 py-[var(--space-section)]',
+        band && 'border-rule bg-sunk border-y',
+        className,
+      )}
     >
-      {children}
+      <div className="shell">{children}</div>
     </section>
+  );
+}
+
+/**
+ * Every section opens the same way: a mono label in the notebook rail, a
+ * display-face lead in the column. One component so seven sections read as one
+ * document rather than seven pages stacked.
+ */
+export function SectionHeader({
+  id,
+  label,
+  lead,
+  action,
+}: {
+  id?: string;
+  label: string;
+  lead?: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="rail-grid">
+      <h2 id={id ? `${id}-heading` : undefined} className="label !text-ink pt-1.5">
+        {label}
+      </h2>
+      {(lead || action) && (
+        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+          {lead && (
+            // A display-face lead needs a tighter measure than body prose:
+            // 62ch at this size runs the full column and strands orphans.
+            <p className="text-h3 font-display text-ink-2 max-w-[42ch] leading-[1.3]">{lead}</p>
+          )}
+          {action}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** The body of a section, aligned to the content column of the rail grid. */
+export function SectionBody({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn('rail-grid mt-[var(--space-block)]', className)}>
+      <div aria-hidden className="hidden md:block" />
+      <div>{children}</div>
+    </div>
   );
 }

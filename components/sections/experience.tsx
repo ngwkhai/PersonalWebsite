@@ -15,13 +15,15 @@ function Entry({ item, locale }: { item: Institution; locale: AppLocale }) {
         {from} — {to}
       </p>
       <div className="flex gap-5">
-        <Image
-          src={item.logo}
-          alt=""
-          width={44}
-          height={44}
-          className="mt-0.5 size-11 shrink-0 object-contain"
-        />
+        <span className="ring-rule mt-0.5 grid h-10 w-20 shrink-0 place-items-center rounded-sm bg-white px-2 ring-1">
+          <Image
+            src={item.logo}
+            alt=""
+            width={112}
+            height={48}
+            className="max-h-7 w-auto object-contain"
+          />
+        </span>
         <div>
           <h4 className="text-ink text-[1.02rem] font-semibold">{item.organisation}</h4>
           <p className="text-teal mt-0.5 text-[0.94rem]">{item.role[locale]}</p>
@@ -55,10 +57,10 @@ export async function Experience() {
   ];
 
   return (
-    <Section id="experience">
+    <Section id="experience" band>
       <SectionHeader id="experience" label={t('experience')} />
 
-      <div className="mt-10 space-y-12">
+      <div className="mt-[var(--space-block)] space-y-[var(--space-block)]">
         {groups
           .filter((group) => group.items.length > 0)
           .map((group) => (

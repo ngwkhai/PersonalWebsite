@@ -95,13 +95,7 @@ export const education: readonly Institution[] = [
     start: '2023-08',
     end: null,
     logo: '/img/vnu-university-logo.avif',
-    detail: [
-      { en: 'GPA: 3.5 / 4.0', vi: 'GPA: 3.5 / 4.0' },
-      {
-        en: 'Coursework across machine learning, deep learning, natural language processing, distributed computing and computer vision.',
-        vi: 'Học phần trải rộng từ học máy, học sâu, xử lý ngôn ngữ tự nhiên, tính toán phân tán tới thị giác máy tính.',
-      },
-    ],
+    detail: [{ en: 'GPA: 3.5 / 4.0', vi: 'GPA: 3.5 / 4.0' }],
   },
 ];
 

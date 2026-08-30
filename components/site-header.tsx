@@ -50,7 +50,7 @@ export function SiteHeader() {
         lifted && 'border-rule bg-paper/85 border-b backdrop-blur-xl',
       )}
     >
-      <nav className="mx-auto max-w-[88rem] px-5 sm:px-8">
+      <nav className="shell">
         <div className="flex h-14 items-center gap-6">
           <Link href="/" className="label !text-ink shrink-0 !tracking-[0.2em]">
             NGWKHAI
@@ -87,7 +87,7 @@ export function SiteHeader() {
 
         {/* Eight items do not fit one line below lg, so they get their own row
             and scroll horizontally rather than wrapping into a wall. */}
-        <ul className="label scroll-hint -mx-5 flex items-center gap-5 overflow-x-auto px-5 pb-2.5 sm:-mx-8 sm:px-8 lg:hidden">
+        <ul className="label scroll-hint -mx-5 flex items-center gap-5 overflow-x-auto px-5 pb-2.5 sm:-mx-10 sm:px-10 lg:hidden">
           {items.map((item) => (
             <li key={item.href} className="shrink-0">
               <NavItem {...item} />

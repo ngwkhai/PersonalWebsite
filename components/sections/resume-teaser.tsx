@@ -5,7 +5,7 @@ import { profile, education, experience, skills } from '@/content/cv';
 import { achievements } from '@/content/achievements';
 import { getProjects } from '@/lib/content';
 import type { AppLocale } from '@/i18n/routing';
-import { Section, SectionHeader } from './section-header';
+import { Section, SectionHeader, SectionBody } from './section-header';
 
 export async function ResumeTeaser() {
   const t = await getTranslations('nav');
@@ -20,11 +20,10 @@ export async function ResumeTeaser() {
   ];
 
   return (
-    <Section id="resume">
+    <Section id="resume" band>
       <SectionHeader id="resume" label={t('resume')} lead={ts('resumeLead')} />
 
-      <div className="mt-12 grid gap-8 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
-        <div aria-hidden className="hidden sm:block" />
+      <SectionBody>
         <div>
           <dl className="border-rule grid grid-cols-2 gap-x-8 gap-y-6 border-y py-7 sm:grid-cols-4">
             {counts.map((item) => (
@@ -53,7 +52,7 @@ export async function ResumeTeaser() {
             </a>
           </div>
         </div>
-      </div>
+      </SectionBody>
     </Section>
   );
 }

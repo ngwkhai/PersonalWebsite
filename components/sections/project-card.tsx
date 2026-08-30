@@ -16,16 +16,13 @@ export function ProjectCard({
 }) {
   return (
     <article className="group border-rule border-t">
-      <Link
-        href={`/work/${project.slug}`}
-        className="grid gap-6 py-8 sm:grid-cols-[var(--rail)_1fr] sm:gap-10 sm:py-10"
-      >
-        <div className="flex gap-4 sm:flex-col sm:gap-2">
+      <Link href={`/work/${project.slug}`} className="rail-grid py-7">
+        <div className="flex flex-row gap-4 md:flex-col md:gap-2">
           <span className="label !text-ink tabular-nums">{project.year}</span>
           <span className="label">{project.kicker}</span>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[1fr_15rem] md:items-start md:gap-10">
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_13rem] md:items-start md:gap-10">
           <div>
             <h3 className="font-display text-h2 text-ink group-hover:text-indigo leading-[1.08] transition-colors">
               {project.title}

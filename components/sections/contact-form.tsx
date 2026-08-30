@@ -12,7 +12,7 @@ const initial: ContactState = { status: 'idle' };
  * template id and public key in client JavaScript. This posts to a server
  * action instead, so nothing sensitive reaches the browser.
  */
-export function ContactForm() {
+export function ContactForm({ note }: { note: string }) {
   const t = useTranslations('contact');
   const ts = useTranslations('sections');
   const [state, action, pending] = useActionState(sendMessage, initial);
@@ -24,10 +24,10 @@ export function ContactForm() {
     <section
       id="contact"
       aria-labelledby="contact-heading"
-      className="mx-auto max-w-[88rem] scroll-mt-28 px-5 py-14 sm:px-8 sm:py-20"
+      className="shell scroll-mt-28 py-[var(--space-section)]"
     >
-      <div className="grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
-        <h2 id="contact-heading" className="label !text-ink">
+      <div className="rail-grid">
+        <h2 id="contact-heading" className="label !text-ink pt-1.5">
           {ts('contact')}
         </h2>
 
@@ -99,25 +99,28 @@ export function ContactForm() {
             </form>
           )}
 
-          <ul className="space-y-2 lg:pt-1">
-            {socials
-              .filter((s) => s.primary)
-              .map((social) => (
-                <li key={social.label}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="me noreferrer"
-                    className="group border-rule flex items-baseline justify-between gap-4 border-b py-2"
-                  >
-                    <span className="label group-hover:text-ink transition-colors">
-                      {social.label}
-                    </span>
-                    <span className="text-ink-3 font-mono text-[0.78rem]">{social.handle}</span>
-                  </a>
-                </li>
-              ))}
-          </ul>
+          <div className="lg:pt-1">
+            <p className="text-ink-2 mb-8 max-w-prose text-[0.95rem] leading-relaxed">{note}</p>
+            <ul className="space-y-2">
+              {socials
+                .filter((s) => s.primary)
+                .map((social) => (
+                  <li key={social.label}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="me noreferrer"
+                      className="group border-rule flex items-baseline justify-between gap-4 border-b py-2"
+                    >
+                      <span className="label group-hover:text-ink transition-colors">
+                        {social.label}
+                      </span>
+                      <span className="text-ink-3 font-mono text-[0.78rem]">{social.handle}</span>
+                    </a>
+                  </li>
+                ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

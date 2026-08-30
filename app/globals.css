@@ -48,8 +48,30 @@
   --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 
-  /* Width of the lab-notebook margin rail. */
-  --rail: 12rem;
+  /*
+    Layout system.
+
+    Three measurements, not fourteen ad-hoc utilities. Before this the page
+    mixed py-14 / py-16 / py-20 / py-24 and mt-1 through mt-16 with nothing
+    deciding which to use where, so nothing lined up and the rhythm read as
+    accidental.
+
+    --rail   the notebook margin. Narrowed from 12rem: it holds one uppercase
+             word, and 12rem of empty column pushed every content block off
+             centre and left a void down the right of the page.
+    --shell  the page's outer measure.
+    --measure the reading width for prose. Data blocks ignore it and span the
+             full content column, which is the distinction that makes a
+             research page read correctly.
+  */
+  --rail: 9rem;
+  --shell: 78rem;
+  --measure: 62ch;
+
+  /* Vertical scale. Every gap in the page comes from one of these. */
+  --space-section: clamp(4.5rem, 7vw, 7.5rem);
+  --space-block: clamp(2.5rem, 3.5vw, 3.5rem);
+  --space-item: 1.5rem;
 }
 
 :root {
@@ -60,9 +82,9 @@
   --ink: oklch(0.185 0.028 305);
   --ink-2: oklch(0.44 0.022 300);
   --ink-3: oklch(0.52 0.016 300);
-  --rule: oklch(0.885 0.008 300);
+  --rule: oklch(0.855 0.01 300);
   --indigo: oklch(0.44 0.13 275);
-  --teal: oklch(0.52 0.09 191);
+  --teal: oklch(0.5 0.09 191);
   --flare: oklch(0.9 0.17 105);
   --flare-wash: oklch(0.9 0.17 105 / 0.32);
 }
@@ -77,7 +99,7 @@
     --ink: oklch(0.945 0.006 300);
     --ink-2: oklch(0.73 0.014 300);
     --ink-3: oklch(0.6 0.018 300);
-    --rule: oklch(0.29 0.022 305);
+    --rule: oklch(0.325 0.024 305);
     --indigo: oklch(0.72 0.11 275);
     --teal: oklch(0.76 0.1 191);
     --flare: oklch(0.9 0.17 105);
@@ -94,7 +116,7 @@
   --ink: oklch(0.945 0.006 300);
   --ink-2: oklch(0.73 0.014 300);
   --ink-3: oklch(0.6 0.018 300);
-  --rule: oklch(0.29 0.022 305);
+  --rule: oklch(0.325 0.024 305);
   --indigo: oklch(0.72 0.11 275);
   --teal: oklch(0.76 0.1 191);
   --flare: oklch(0.9 0.17 105);
@@ -142,6 +164,37 @@
     outline: 2px solid var(--indigo);
     outline-offset: 3px;
     border-radius: 2px;
+  }
+
+  /*
+    One container, one grid. Sections used to set their own max-width and
+    padding, so their left and right edges never agreed.
+  */
+  .shell {
+    margin-inline: auto;
+    max-width: var(--shell);
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .shell {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  .rail-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .rail-grid {
+      grid-template-columns: var(--rail) minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  /* Prose gets a reading measure; tables, grids and metrics do not. */
+  .measure {
+    max-width: var(--measure);
   }
 
   /* The rail is instrumentation, not decoration: it reads like a readout. */

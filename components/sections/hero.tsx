@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { RotateCw } from 'lucide-react';
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { openChat } from '@/lib/ui-events';
 import { stripDiacritics, cn } from '@/lib/utils';
@@ -48,7 +49,13 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
  * a layout effect, before paint. Under prefers-reduced-motion nothing runs at
  * all.
  */
-export function Hero({ highlights }: { highlights: readonly { value: string; label: string }[] }) {
+export function Hero({
+  highlights,
+  headline,
+}: {
+  highlights: readonly { value: string; label: string }[];
+  headline: string;
+}) {
   const t = useTranslations('hero');
   const [restored, setRestored] = useState<Set<number>>(() => new Set(TARGETS));
   const [flashing, setFlashing] = useState<Set<number>>(() => new Set());
@@ -108,10 +115,10 @@ export function Hero({ highlights }: { highlights: readonly { value: string; lab
   const done = restored.size === TARGETS.length;
 
   return (
-    <section className="mx-auto max-w-[88rem] px-5 pt-28 pb-16 sm:px-8 sm:pt-36 sm:pb-20">
-      <div className="grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
+    <section className="shell pt-28 pb-[var(--space-section)] sm:pt-36">
+      <div className="rail-grid">
         {/* The lab-notebook margin: metadata lives beside the page, not in it. */}
-        <div className="flex flex-col gap-3 sm:pt-4">
+        <div className="flex flex-row gap-5 md:flex-col md:gap-3 md:pt-4">
           <p className="label flex items-center gap-2">
             <span
               aria-hidden
@@ -138,7 +145,9 @@ export function Hero({ highlights }: { highlights: readonly { value: string; lab
         </div>
 
         <div>
-          <h1 className="font-display text-display text-ink leading-[0.9]">
+          {/* The name takes the full content column. Sharing that row with the
+              portrait forced it onto two lines and left "Khải" stranded. */}
+          <h1 className="font-display text-display text-ink leading-[0.92]">
             {/* The accessible name is the real spelling; spans are visual only. */}
             <span className="sr-only">{NAME}</span>
             <span aria-hidden className="flex flex-wrap gap-x-[0.28em]">
@@ -164,37 +173,57 @@ export function Hero({ highlights }: { highlights: readonly { value: string; lab
             </span>
           </h1>
 
-          <p className="font-display text-h3 text-ink-2 mt-8 max-w-2xl leading-snug">
-            {t('thesis')}
-          </p>
+          {/* Portrait balances the lower half instead of squeezing the headline.
+              Aligned to the top of this row, not the bottom: matching its base
+              to the buttons left a 200px hole under the name. Restored from the
+              previous site, where it appeared twice. */}
+          <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-14">
+            <div>
+              <p className="measure font-display text-h3 text-ink-2 leading-[1.3]">{t('thesis')}</p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link
-              href="/work"
-              className="label border-ink !text-ink hover:bg-ink hover:!text-paper border px-4 py-2.5 transition-colors"
-            >
-              {t('cta')}
-            </Link>
-            <button
-              type="button"
-              onClick={() => openChat()}
-              className="label border-rule hover:border-ink-3 hover:text-ink border px-4 py-2.5 transition-colors"
-            >
-              {t('ctaAsk')}
-            </button>
-          </div>
-
-          <dl className="border-rule mt-14 grid grid-cols-2 gap-x-6 gap-y-8 border-t pt-8 sm:grid-cols-4">
-            {highlights.map((item) => (
-              <div key={item.value}>
-                <dt className="text-ink font-mono text-2xl tabular-nums sm:text-3xl">
-                  {item.value}
-                </dt>
-                <dd className="label mt-1.5 !tracking-normal !normal-case">{item.label}</dd>
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/work"
+                  className="label border-ink !text-ink hover:bg-ink hover:!text-paper border px-4 py-2.5 transition-colors"
+                >
+                  {t('cta')}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => openChat()}
+                  className="label border-rule hover:border-ink-3 hover:text-ink border px-4 py-2.5 transition-colors"
+                >
+                  {t('ctaAsk')}
+                </button>
               </div>
-            ))}
-          </dl>
+            </div>
+
+            <figure className="bg-sunk relative order-first aspect-[4/5] w-36 overflow-hidden sm:w-44 lg:order-none lg:w-full">
+              <Image
+                src="/img/1.avif"
+                alt={`${NAME} — ${headline}`}
+                fill
+                priority
+                sizes="(max-width: 1024px) 11rem, 13rem"
+                className="object-cover object-top"
+              />
+            </figure>
+          </div>
         </div>
+      </div>
+
+      <div className="rail-grid mt-[var(--space-block)]">
+        <div aria-hidden className="hidden md:block" />
+        <dl className="border-rule grid grid-cols-2 gap-x-8 gap-y-8 border-t pt-7 sm:grid-cols-4">
+          {highlights.map((item) => (
+            <div key={item.value}>
+              <dt className="text-ink font-mono text-2xl tabular-nums sm:text-[2rem]">
+                {item.value}
+              </dt>
+              <dd className="label mt-2 !tracking-normal !normal-case">{item.label}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </section>
   );

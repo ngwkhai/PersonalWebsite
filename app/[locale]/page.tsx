@@ -11,7 +11,7 @@ import { ProjectCard } from '@/components/sections/project-card';
 import { ContactForm } from '@/components/sections/contact-form';
 import { Section, SectionHeader } from '@/components/sections/section-header';
 import { getFeaturedProjects } from '@/lib/content';
-import { highlights } from '@/content/cv';
+import { highlights, profile } from '@/content/cv';
 import { routing, type AppLocale } from '@/i18n/routing';
 
 export function generateStaticParams() {
@@ -29,7 +29,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <Hero highlights={highlights.map((h) => ({ value: h.value, label: h.label[l] }))} />
+      <Hero
+        highlights={highlights.map((h) => ({ value: h.value, label: h.label[l] }))}
+        headline={profile.headline[l]}
+      />
       <Intro />
       <Skills />
 
@@ -47,7 +50,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </Link>
           }
         />
-        <div className="mt-12">
+        <div className="border-rule mt-[var(--space-block)] border-b">
           {featured.map((project, index) => (
             <ProjectCard key={project.slug} project={project} priority={index === 0} />
           ))}
@@ -58,7 +61,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <Experience />
       <WritingList limit={4} />
       <ResumeTeaser />
-      <ContactForm />
+      <ContactForm note={profile.contactNote[l]} />
     </>
   );
 }

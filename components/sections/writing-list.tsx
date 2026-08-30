@@ -35,13 +35,10 @@ export async function WritingList({ limit }: { limit?: number }) {
           {ts('writingEmpty')}
         </p>
       ) : (
-        <ul className="mt-12">
+        <ul className="border-rule mt-[var(--space-block)] border-b">
           {posts.map((post) => (
             <li key={post.slug} className="border-rule border-t">
-              <Link
-                href={`/writing/${post.slug}`}
-                className="group grid gap-3 py-6 sm:grid-cols-[var(--rail)_1fr] sm:gap-10"
-              >
+              <Link href={`/writing/${post.slug}`} className="rail-grid group py-6">
                 <time dateTime={post.date} className="label tabular-nums">
                   {post.date}
                 </time>

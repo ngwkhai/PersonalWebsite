@@ -3,16 +3,33 @@ import { skills } from '@/content/cv';
 import { getProjects } from '@/lib/content';
 import { tokenize } from '@/lib/ai/tokenize';
 import type { AppLocale } from '@/i18n/routing';
-import { Section, SectionHeader } from './section-header';
+import { Section, SectionHeader, SectionBody } from './section-header';
 
 /**
- * Skills, with the receipts attached.
+ * The usable middle of the viridis ramp: indigo, teal, green.
  *
- * A tag cloud claims; this counts. Each skill shows how many of the seven case
- * studies actually use it, computed from their `stack` and `tags` rather than
- * asserted — so the section cannot drift from the work it summarises, and a
- * skill nothing evidences shows a zero instead of quietly passing.
+ * This is the one place the palette does real work rather than decoration — a
+ * bar is coloured by how much of the portfolio evidences that skill, the way a
+ * heatmap encodes magnitude, which is the whole reason the site is built on
+ * this colormap.
+ *
+ * The ends are deliberately excluded. viridis-0 is so dark it reads as "no
+ * colour", and since most skills sit at the bottom of the range the section
+ * came out monotone; viridis-4 is a bright yellow that disappears against a
+ * light ground.
  */
+const RAMP = [
+  'var(--color-viridis-1)',
+  'var(--color-viridis-2)',
+  'var(--color-viridis-3)',
+] as const;
+
+function rampColour(count: number, max: number): string {
+  if (count <= 0) return 'transparent';
+  const position = max <= 1 ? 1 : (count - 1) / (max - 1);
+  return RAMP[Math.round(position * (RAMP.length - 1))]!;
+}
+
 export async function Skills() {
   const t = await getTranslations('nav');
   const ts = await getTranslations('sections');
@@ -34,8 +51,6 @@ export async function Skills() {
             ...project.stack,
             ...project.tags,
             ...project.metrics.map((metric) => metric.label),
-            // The case study body is evidence too — "CUDA profiling" is a
-            // finding in the prose, not a frontmatter tag.
             project.raw,
           ].join(' '),
         ),
@@ -56,27 +71,42 @@ export async function Skills() {
     ).length;
   };
 
+  const counted = skills.map((group) => ({
+    ...group,
+    items: group.items.map((item) => ({ name: item, count: usage(item) })),
+  }));
+  const max = Math.max(1, ...counted.flatMap((g) => g.items.map((i) => i.count)));
+
   return (
-    <Section id="skills">
+    <Section id="skills" band>
       <SectionHeader id="skills" label={t('skills')} lead={ts('skillsLead')} />
 
-      <div className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-[var(--rail)_1fr] sm:gap-y-12">
-        <div aria-hidden className="hidden sm:block" />
-        <div className="grid gap-x-12 gap-y-10 md:grid-cols-2">
-          {skills.map((group) => (
+      <SectionBody>
+        <div className="grid gap-x-14 gap-y-[var(--space-block)] md:grid-cols-2">
+          {counted.map((group) => (
             <div key={group.id}>
-              <h3 className="label border-rule !text-teal border-b pb-2">{group.label[locale]}</h3>
-              <ul className="mt-3">
+              <h3 className="label border-rule !text-ink border-b pb-2.5">{group.label[locale]}</h3>
+              <ul className="max-w-[27rem]">
                 {group.items.map((item) => {
-                  const count = usage(item);
+                  const ratio = item.count / max;
+                  const colour = rampColour(item.count, max);
                   return (
                     <li
-                      key={item}
-                      className="border-rule/60 flex items-baseline justify-between gap-4 border-b py-1.5"
+                      key={item.name}
+                      className="border-rule/50 grid grid-cols-[1fr_4.5rem_2rem] items-center gap-3 border-b py-2"
                     >
-                      <span className="text-ink-2 font-mono text-[0.84rem]">{item}</span>
-                      <span className="label shrink-0 tabular-nums" title={ts('usedIn', { count })}>
-                        {count > 0 ? `${count}×` : '—'}
+                      <span className="text-ink-2 font-mono text-[0.82rem]">{item.name}</span>
+                      <span aria-hidden className="bg-rule/70 h-[3px] w-full rounded-full">
+                        <span
+                          className="block h-full rounded-full"
+                          style={{
+                            width: `${Math.max(ratio * 100, item.count > 0 ? 14 : 0)}%`,
+                            background: colour,
+                          }}
+                        />
+                      </span>
+                      <span className="label justify-self-end tabular-nums">
+                        {item.count > 0 ? `${item.count}×` : '—'}
                       </span>
                     </li>
                   );
@@ -85,11 +115,11 @@ export async function Skills() {
             </div>
           ))}
         </div>
-      </div>
 
-      <p className="label mt-8 !tracking-normal !normal-case sm:ml-[calc(var(--rail)+3rem)]">
-        {ts('skillsFootnote')}
-      </p>
+        <p className="label mt-[var(--space-block)] !tracking-normal !normal-case">
+          {ts('skillsFootnote')}
+        </p>
+      </SectionBody>
     </Section>
   );
 }

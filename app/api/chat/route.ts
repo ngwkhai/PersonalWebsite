@@ -67,7 +67,9 @@ export async function POST(request: Request) {
     // that the agent is looping rather than working.
     stopWhen: stepCountIs(6),
     maxOutputTokens: 1200,
-    temperature: 0.3,
+    // temperature is deliberately absent: the GPT-5.6 models are reasoning
+    // models and the SDK warns that they ignore it. Setting it implied a
+    // control over output variance that does not exist.
     onFinish: async ({ usage }) => {
       await recordSpend(estimateCost(MODELS.chat, usage));
     },

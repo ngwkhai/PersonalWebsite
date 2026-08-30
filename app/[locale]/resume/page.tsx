@@ -84,8 +84,8 @@ export default async function ResumePage({ params }: { params: Promise<{ locale:
   const projects = getProjects(l);
 
   return (
-    <article className="mx-auto max-w-[88rem] px-5 pt-32 pb-16 sm:px-8 sm:pt-40">
-      <header className="grid gap-6 pb-10 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
+    <article className="shell pt-32 pb-[var(--space-section)] sm:pt-40">
+      <header className="rail-grid pb-10">
         <p className="label">{t('resume')}</p>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>

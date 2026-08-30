@@ -72,8 +72,8 @@ export default async function ColophonPage({ params }: { params: Promise<{ local
       ];
 
   return (
-    <section className="mx-auto max-w-[88rem] px-5 pt-32 pb-16 sm:px-8 sm:pt-40">
-      <div className="grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
+    <section className="shell pt-32 pb-[var(--space-section)] sm:pt-40">
+      <div className="rail-grid">
         <h1 className="label !text-ink">{vi ? 'Ghi chú kỹ thuật' : 'Colophon'}</h1>
 
         <div className="max-w-3xl">

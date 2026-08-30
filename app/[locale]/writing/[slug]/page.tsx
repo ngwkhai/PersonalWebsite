@@ -32,8 +32,8 @@ export default async function PostPage({
   if (!post) notFound();
 
   return (
-    <article className="mx-auto max-w-[88rem] px-5 pt-32 pb-16 sm:px-8 sm:pt-40">
-      <div className="grid gap-10 sm:grid-cols-[var(--rail)_1fr]">
+    <article className="shell pt-32 pb-[var(--space-section)] sm:pt-40">
+      <div className="rail-grid">
         <time dateTime={post.date} className="label tabular-nums">
           {post.date}
         </time>

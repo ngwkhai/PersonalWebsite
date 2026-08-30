@@ -13,6 +13,11 @@ const KIND_LABEL: Record<AchievementKind, { en: string; vi: string }> = {
   role: { en: 'Role', vi: 'Vai trò' },
 };
 
+/** The list spans the full width; each row carries the rail internally. */
+function SectionBodyList({ children }: { children: React.ReactNode }) {
+  return <ul className="border-rule mt-[var(--space-block)] border-b">{children}</ul>;
+}
+
 export async function Achievements() {
   const t = await getTranslations('nav');
   const ts = await getTranslations('sections');
@@ -27,16 +32,16 @@ export async function Achievements() {
           {ts('achievementsEmpty')}
         </p>
       ) : (
-        <ul className="mt-12">
+        <SectionBodyList>
           {achievementsByDate.map((item) => {
             const Wrapper = item.href ? 'a' : 'div';
             return (
               <li key={item.id} className="border-rule border-t">
                 <Wrapper
                   {...(item.href ? { href: item.href, target: '_blank', rel: 'noreferrer' } : {})}
-                  className="group grid gap-3 py-6 sm:grid-cols-[var(--rail)_1fr] sm:gap-10"
+                  className="rail-grid group py-5"
                 >
-                  <div className="flex gap-4 sm:flex-col sm:gap-1.5">
+                  <div className="flex flex-row gap-4 md:flex-col md:gap-1.5">
                     <span className="label !text-ink tabular-nums">
                       {formatMonth(item.date, locale)}
                     </span>
@@ -66,7 +71,7 @@ export async function Achievements() {
               </li>
             );
           })}
-        </ul>
+        </SectionBodyList>
       )}
     </Section>
   );

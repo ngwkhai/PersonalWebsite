@@ -23,13 +23,13 @@ export default async function MatchPage({ params }: { params: Promise<{ locale: 
   const t = await getTranslations('match');
 
   return (
-    <section className="mx-auto max-w-[88rem] px-5 pt-32 pb-16 sm:px-8 sm:pt-40">
-      <div className="grid gap-6 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
+    <section className="shell pt-32 pb-[var(--space-section)] sm:pt-40">
+      <div className="rail-grid">
         <h1 className="label !text-ink">{t('title')}</h1>
         <p className="font-display text-h2 text-ink max-w-2xl leading-[1.12]">{t('lead')}</p>
       </div>
 
-      <div className="mt-14 grid gap-10 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
+      <div className="rail-grid mt-14 sm:gap-10">
         <div aria-hidden />
         <MatchForm />
       </div>

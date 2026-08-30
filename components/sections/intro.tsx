@@ -19,10 +19,10 @@ export async function Intro() {
     <section
       id="about"
       aria-label={locale === 'vi' ? 'Giới thiệu' : 'About'}
-      className="mx-auto max-w-[88rem] scroll-mt-28 px-5 pb-14 sm:px-8 sm:pb-20"
+      className="shell scroll-mt-28 pb-[var(--space-section)]"
     >
-      <div className="grid gap-4 sm:grid-cols-[var(--rail)_1fr] sm:gap-10">
-        <div aria-hidden className="hidden sm:block" />
+      <div className="rail-grid">
+        <div aria-hidden className="hidden md:block" />
         <div>
           <p className="font-display text-h3 text-ink max-w-[44ch] leading-[1.25]">
             {bio.slice(0, split)}
