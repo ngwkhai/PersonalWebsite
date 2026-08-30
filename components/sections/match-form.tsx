@@ -6,6 +6,7 @@ import { experimental_useObject as useObject } from '@ai-sdk/react';
 import { Check, Minus } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { matchSchema } from '@/lib/ai/schemas';
+import { classifyChatError } from '@/lib/ai/errors';
 
 const MIN_JD = 120;
 
@@ -65,7 +66,7 @@ export function MatchForm() {
 
       {error && (
         <p role="alert" className="text-ink-2 mt-8 text-[0.9rem]">
-          {error.message.includes('429') ? tc('rateLimited') : tc('error')}
+          {tc(classifyChatError(error))}
         </p>
       )}
 

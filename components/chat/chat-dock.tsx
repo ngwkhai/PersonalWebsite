@@ -10,6 +10,7 @@ import { ArrowUp, Square, X, Trash2 } from 'lucide-react';
 import { useRouter } from '@/i18n/navigation';
 import { CHAT_OPEN } from '@/lib/ui-events';
 import { cn } from '@/lib/utils';
+import { classifyChatError } from '@/lib/ai/errors';
 import { ToolActivity } from './tool-activity';
 import { ProjectChip } from './project-chip';
 import type { ChatProject } from './types';
@@ -256,12 +257,7 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
 
           {error && (
             <p role="alert" className="text-ink-2 text-[0.86rem]">
-              {/* Rate limit and budget states come back as HTTP 429 with a reason. */}
-              {error.message.includes('429')
-                ? error.message.includes('budget')
-                  ? t('budgetExhausted')
-                  : t('rateLimited')
-                : t('error')}
+              {t(classifyChatError(error))}
             </p>
           )}
         </div>
