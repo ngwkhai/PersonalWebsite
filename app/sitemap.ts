@@ -2,11 +2,13 @@ import type { MetadataRoute } from 'next';
 import { allProjects, allWriting } from '@/lib/content';
 import { locales } from '@/i18n/routing';
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ngwkhai.dev';
+import { SITE_URL } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const alternates = (path: string) => ({
-    languages: Object.fromEntries(locales.map((locale) => [locale, `${BASE}/${locale}${path}`])),
+    languages: Object.fromEntries(
+      locales.map((locale) => [locale, `${SITE_URL}/${locale}${path}`]),
+    ),
   });
 
   const staticPaths = ['', '/work', '/writing', '/resume', '/colophon'];
@@ -14,7 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...locales.flatMap((locale) =>
       staticPaths.map((path) => ({
-        url: `${BASE}/${locale}${path}`,
+        url: `${SITE_URL}/${locale}${path}`,
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: path === '' ? 1 : 0.7,
@@ -22,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       })),
     ),
     ...allProjects.map((project) => ({
-      url: `${BASE}${project.permalink}`,
+      url: `${SITE_URL}${project.permalink}`,
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.8,
@@ -31,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...allWriting
       .filter((post) => !post.draft)
       .map((post) => ({
-        url: `${BASE}${post.permalink}`,
+        url: `${SITE_URL}${post.permalink}`,
         lastModified: new Date(post.date),
         changeFrequency: 'yearly' as const,
         priority: 0.6,

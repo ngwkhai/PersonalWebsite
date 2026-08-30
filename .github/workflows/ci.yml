@@ -12,7 +12,7 @@ concurrency:
 env:
   # The knowledge index falls back to BM25 without a key, so the build works on
   # forks. Retrieval tests that need embeddings skip themselves.
-  NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100
+  SITE_URL: http://127.0.0.1:3100
 
 jobs:
   verify:

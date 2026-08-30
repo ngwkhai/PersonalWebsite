@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Fraunces, Archivo, IBM_Plex_Mono } from 'next/font/google';
 import { routing, type AppLocale } from '@/i18n/routing';
+import { SITE_URL } from '@/lib/site';
 import { profile } from '@/content/cv';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
@@ -59,10 +60,9 @@ export async function generateMetadata({
   const { locale } = await params;
   const tHero = await getTranslations({ locale, namespace: 'hero' });
   const l = locale as AppLocale;
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ngwkhai.dev';
 
   return {
-    metadataBase: new URL(base),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: `${profile.name} — ${profile.headline[l]}`,
       template: `%s — ${profile.name}`,

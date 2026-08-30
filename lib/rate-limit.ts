@@ -38,10 +38,30 @@ export const contactLimit = limiter(3, '1 h', 'rl:contact');
 
 export type LimitOutcome = { ok: true } | { ok: false; reason: 'rate' | 'budget' };
 
+/**
+ * Identifies the caller for rate limiting.
+ *
+ * Header order matters for security. `x-forwarded-for` is attacker-controlled
+ * unless something upstream overwrites it: a client can send any value it
+ * likes, and rotating it would defeat per-IP limiting entirely. Vercel sets
+ * `x-vercel-forwarded-for` at its edge and it cannot be forged from outside,
+ * so that is preferred wherever it exists, with the weaker headers as a
+ * fallback for other hosts and local development.
+ *
+ * Falling back to a single shared 'anonymous' bucket is deliberate: an
+ * unidentifiable caller sharing one quota with every other unidentifiable
+ * caller is the safe failure, and is far better than handing each of them a
+ * private allowance.
+ */
 export function clientKey(headers: Headers): string {
-  const forwarded = headers.get('x-forwarded-for');
-  const ip = forwarded?.split(',')[0]?.trim() || headers.get('x-real-ip') || 'anonymous';
-  return ip;
+  const trusted = headers.get('x-vercel-forwarded-for')?.trim();
+  if (trusted) return trusted.split(',')[0]!.trim();
+
+  const real = headers.get('x-real-ip')?.trim();
+  if (real) return real;
+
+  const forwarded = headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  return forwarded || 'anonymous';
 }
 
 /**

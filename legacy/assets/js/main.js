@@ -21,7 +21,7 @@ const contactForm = document.getElementById('contact-form'),
 const sendEmail = (e) =>{
     e.preventDefault()
     
-    emailjs.sendForm('service_p6udvnd', 'template_eur7nel', '#contact-form', 'Lsr-fhdMEJ9WPhh93')
+    emailjs.sendForm('service_p6udvnd', 'template_eur7nel', '#contact-form', '')
         .then(() => {
             contactMessage.textContent = 'Message sent successfully!'
 

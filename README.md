@@ -70,18 +70,22 @@ thresholds were measured against this corpus, not guessed — see the comments i
 Model routing keeps the bill small: `gpt-5.6-terra` for chat, `gpt-5.6-sol` only
 for job-description analysis, `gpt-5.6-luna` for summary rewrites.
 
+Measured against the live deployment, one grounded chat message with retrieval
+costs about **$0.0022**, so the default $1 ceiling is roughly 450 messages a day
+before the assistant starts declining.
+
 ## Deploying
 
 Set these in Vercel before the first deploy:
 
-| Variable                                             | Required                                                                               |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `OPENAI_API_KEY`                                     | For the agent                                                                          |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes.** Without them the AI routes return 503 rather than run without a spend ceiling |
-| `AI_DAILY_BUDGET_USD`                                | Defaults to 2                                                                          |
-| `NEXT_PUBLIC_SITE_URL`                               | Canonical URLs, sitemap, OG images                                                     |
-| `RESEND_API_KEY`, `CONTACT_EMAIL`                    | Contact form delivery                                                                  |
-| `GITHUB_TOKEN`                                       | Optional; raises the GitHub API rate limit                                             |
+| Variable                                             | Required                                                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `OPENAI_API_KEY`                                     | For the agent                                                                                    |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | **Yes.** Without them the AI routes return 503 rather than run without a spend ceiling           |
+| `AI_DAILY_BUDGET_USD`                                | Defaults to 2                                                                                    |
+| `SITE_URL`                                           | Optional on Vercel — the production domain is detected automatically. Set it for a custom domain |
+| `RESEND_API_KEY`, `CONTACT_EMAIL`                    | Contact form delivery                                                                            |
+| `GITHUB_TOKEN`                                       | Optional; raises the GitHub API rate limit                                                       |
 
 Also set a hard spend limit in the OpenAI dashboard as a last line of defence.
 
