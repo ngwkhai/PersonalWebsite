@@ -59,8 +59,9 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const tHero = await getTranslations({ locale, namespace: 'hero' });
   const l = locale as AppLocale;
+  const bio = profile.bio[l];
+  const summary = bio.slice(0, bio.indexOf('. ') + 1);
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -68,7 +69,8 @@ export async function generateMetadata({
       default: `${profile.name} — ${profile.headline[l]}`,
       template: `%s — ${profile.name}`,
     },
-    description: tHero('thesis'),
+    // His own first sentence, rather than a line written for him.
+    description: summary,
     alternates: {
       canonical: `/${locale}`,
       languages: { en: '/en', vi: '/vi', 'x-default': '/en' },
@@ -79,7 +81,8 @@ export async function generateMetadata({
       url: `/${locale}`,
       siteName: profile.name,
       title: `${profile.name} — ${profile.headline[l]}`,
-      description: tHero('thesis'),
+      // His own first sentence, rather than a line written for him.
+      description: summary,
       images: [{ url: `/api/og?locale=${locale}`, width: 1200, height: 630, alt: profile.name }],
     },
     twitter: { card: 'summary_large_image' },

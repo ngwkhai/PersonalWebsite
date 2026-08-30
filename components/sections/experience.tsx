@@ -15,13 +15,13 @@ function Entry({ item, locale }: { item: Institution; locale: AppLocale }) {
         {from} — {to}
       </p>
       <div className="flex gap-5">
-        <span className="ring-rule mt-0.5 grid h-10 w-20 shrink-0 place-items-center rounded-sm bg-white px-2 ring-1">
+        <span className="ring-rule mt-0.5 grid h-16 w-32 shrink-0 place-items-center rounded-sm bg-white px-3 ring-1">
           <Image
             src={item.logo}
             alt=""
-            width={112}
-            height={48}
-            className="max-h-7 w-auto object-contain"
+            width={192}
+            height={96}
+            className="max-h-12 w-auto object-contain"
           />
         </span>
         <div>

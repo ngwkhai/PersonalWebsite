@@ -22,7 +22,7 @@ export function ProjectCard({
           <span className="label">{project.kicker}</span>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_22rem] md:items-start md:gap-10">
+        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_15rem] md:items-start md:gap-10">
           <div>
             <h3 className="font-display text-h2 text-ink group-hover:text-indigo leading-[1.08] transition-colors">
               {project.title}
@@ -48,7 +48,7 @@ export function ProjectCard({
             alt=""
             fill
             priority={priority}
-            sizes="(max-width: 768px) 100vw, 22rem"
+            sizes="(max-width: 768px) 100vw, 15rem"
             wrapperClassName="aspect-4/3 md:aspect-[5/4]"
             className="object-cover group-hover:scale-[1.03]"
           />

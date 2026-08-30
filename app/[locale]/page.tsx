@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { Hero } from '@/components/sections/hero';
-import { Intro } from '@/components/sections/intro';
 import { Skills } from '@/components/sections/skills';
 import { Achievements } from '@/components/sections/achievements';
 import { Experience } from '@/components/sections/experience';
@@ -32,8 +31,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <Hero
         highlights={highlights.map((h) => ({ value: h.value, label: h.label[l] }))}
         headline={profile.headline[l]}
+        bio={profile.bio[l]}
       />
-      <Intro />
       <Skills />
 
       <Section id="work">
