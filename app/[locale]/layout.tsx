@@ -131,8 +131,11 @@ export default async function LocaleLayout({
             {t('skipToContent')}
           </a>
           <SiteHeader />
-          <main id="main">{children}</main>
-          <SiteFooter />
+          {/* Narrowed rather than covered when the chat dock opens. */}
+          <div className="site-flow">
+            <main id="main">{children}</main>
+            <SiteFooter />
+          </div>
           <CommandPalette projects={projects} />
           <ChatDock projects={projects} />
           <JsonLd locale={locale as AppLocale} />

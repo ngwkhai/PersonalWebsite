@@ -73,9 +73,15 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
       onOpenChange={setOpen}
       label={t('open')}
       shouldFilter={false}
-      className="bg-ink/25 fixed inset-0 z-90 grid place-items-start justify-center pt-[12vh] backdrop-blur-[2px]"
+      // The backdrop and the panel must be styled through these two props, not
+      // through className. className lands on the Command root, which Radix
+      // renders *inside* its content element — so a full-screen backdrop built
+      // there counted every click as inside the dialog, and clicking away
+      // never closed it.
+      overlayClassName="bg-ink/25 fixed inset-0 z-90 backdrop-blur-[2px]"
+      contentClassName="border-rule bg-paper shadow-ink/10 fixed top-[12vh] left-1/2 z-90 w-[min(38rem,calc(100vw-2rem))] -translate-x-1/2 border shadow-2xl"
     >
-      <div className="border-rule bg-paper shadow-ink/10 w-[min(38rem,calc(100vw-2rem))] border shadow-2xl">
+      <div>
         <Command.Input
           ref={field}
           value={query}
@@ -84,7 +90,9 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
           className="border-rule text-ink placeholder:text-ink-3 w-full border-b bg-transparent px-5 py-4 text-[0.95rem] outline-none"
         />
 
-        <Command.List className="max-h-[min(24rem,55vh)] overflow-y-auto p-2">
+        {/* overscroll-contain stops a wheel gesture that reaches the end of
+            the list from scrolling the page behind the dialog. */}
+        <Command.List className="max-h-[min(24rem,55vh)] overflow-y-auto overscroll-contain p-2">
           <Command.Empty className="text-ink-3 px-3 py-6 text-center text-[0.9rem]">
             {t('empty')}
           </Command.Empty>

@@ -96,6 +96,18 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
+  // The page narrows to make room rather than being covered. Driven by a
+  // document attribute so the CSS can move the fixed header too, which a
+  // margin on the flow cannot reach.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (open) root.dataset.chat = 'open';
+    else delete root.dataset.chat;
+    return () => {
+      delete root.dataset.chat;
+    };
+  }, [open]);
+
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight, behavior: 'smooth' });
   }, [messages]);
@@ -114,11 +126,13 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
   return (
     <>
       {open && (
+        // Only below lg, where the dock still covers the page. Above it the
+        // content is beside the dock and stays interactive.
         <button
           type="button"
           aria-label={t('close')}
           onClick={() => setOpen(false)}
-          className="bg-ink/20 fixed inset-0 z-60 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none"
+          className="bg-ink/20 fixed inset-0 z-60 backdrop-blur-[2px] lg:hidden"
         />
       )}
 
@@ -128,7 +142,7 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
         inert={!open}
         className={cn(
           'border-rule bg-paper fixed inset-y-0 right-0 z-70 flex w-full flex-col border-l',
-          'transition-transform duration-500 ease-[var(--ease-out-quint)] sm:w-[30rem]',
+          'transition-transform duration-500 ease-[var(--ease-out-quint)] sm:w-[var(--dock)]',
           open ? 'translate-x-0' : 'translate-x-full',
         )}
       >

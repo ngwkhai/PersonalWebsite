@@ -72,6 +72,9 @@
   --space-section: clamp(4.5rem, 7vw, 7.5rem);
   --space-block: clamp(2.5rem, 3.5vw, 3.5rem);
   --space-item: 1.5rem;
+
+  /* Width the chat dock claims from the page when open. */
+  --dock: 30rem;
 }
 
 :root {
@@ -408,5 +411,44 @@
   .prose-notebook :where(table) {
     display: block;
     overflow-x: auto;
+  }
+}
+
+/*
+  The chat dock takes its own column rather than covering the page. Everything
+  else narrows to meet it, so nothing is hidden behind it and the layout inside
+  — the shell, the rail grid, the section bands — reflows on its own.
+
+  Deliberately outside every @layer, and written with logical properties.
+  Tailwind's `inset-x-0` compiles to `inset-inline: 0`, and a physical `right`
+  does not reliably override a logical inset that targets the same edge — the
+  two cascade as one property and the logical declaration was winning. Setting
+  `inset-inline-end` speaks the same language, so the cascade resolves as
+  intended.
+
+  The header is fixed, so a margin on the flow cannot move it; its right edge is
+  pulled in separately. Below the dock's breakpoint there is no room to share,
+  and it stays a full-screen sheet.
+*/
+.site-flow,
+.site-header {
+  transition:
+    margin-inline-end 500ms var(--ease-out-quint),
+    inset-inline-end 500ms var(--ease-out-quint);
+}
+
+@media (min-width: 1024px) {
+  :root[data-chat='open'] .site-flow {
+    margin-inline-end: var(--dock);
+  }
+  :root[data-chat='open'] .site-header {
+    inset-inline-end: var(--dock);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-flow,
+  .site-header {
+    transition: none;
   }
 }
