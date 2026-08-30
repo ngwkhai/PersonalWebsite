@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { education, profile } from '../content/cv';
 
 test.describe('navigation', () => {
   test('redirects the bare root to a locale', async ({ page }) => {
@@ -41,15 +42,16 @@ test.describe('navigation', () => {
 
   test('opens a case study and shows its headline metric', async ({ page }) => {
     await page.goto('/en/work/neural-machine-translation');
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Diacritics');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Neural Machine Translation');
     // The figure appears twice: the metric strip and the ablation table.
     await expect(page.getByRole('definition').filter({ hasText: '81.31' })).toBeVisible();
   });
 
   test('serves the résumé as real text, not only a PDF', async ({ page }) => {
     await page.goto('/en/resume');
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Nguyễn Đình Khải');
-    await expect(page.getByText('GPA: 3.5 / 4.0')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(profile.nameVi);
+    // Asserted from the source of truth so a reformat cannot silently drift it.
+    await expect(page.getByText(education[0]!.detail[0]!.en)).toBeVisible();
   });
 
   test('404s an unknown path', async ({ page }) => {

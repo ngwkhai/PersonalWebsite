@@ -95,7 +95,7 @@ export const education: readonly Institution[] = [
     start: '2023-08',
     end: null,
     logo: '/img/vnu-university-logo.avif',
-    detail: [{ en: 'GPA: 3.5 / 4.0', vi: 'GPA: 3.5 / 4.0' }],
+    detail: [{ en: 'GPA: 3.5/4', vi: 'GPA: 3.5/4' }],
   },
 ];
 
