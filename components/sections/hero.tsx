@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { RotateCw } from 'lucide-react';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { openChat } from '@/lib/ui-events';
@@ -117,39 +116,16 @@ export function Hero({
     return clearTimers;
   }, [play]);
 
-  const done = restored.size === TARGETS.length;
-
   return (
     // id="about" lives here now: the biography moved into the hero, so the
     // separate intro section it used to anchor no longer exists.
     <section id="about" className="shell scroll-mt-28 pt-28 pb-[var(--space-section)] sm:pt-36">
       <div className="rail-grid">
-        {/* The lab-notebook margin: metadata lives beside the page, not in it. */}
-        <div className="flex flex-row gap-5 md:flex-col md:gap-3 md:pt-4">
-          <p className="label flex items-center gap-2">
-            <span
-              aria-hidden
-              className={cn(
-                'inline-block size-1.5 rounded-full transition-colors',
-                done ? 'bg-teal' : 'bg-flare animate-pulse',
-              )}
-            />
-            <span aria-live="polite">{done ? t('restored') : t('restoring')}</span>
-          </p>
-          <button
-            type="button"
-            onClick={play}
-            className="label group hover:text-ink flex w-fit items-center gap-1.5 transition-colors"
-          >
-            <RotateCw
-              size={11}
-              strokeWidth={2}
-              aria-hidden
-              className="transition-transform group-hover:-rotate-180"
-            />
-            replay
-          </button>
-        </div>
+        {/* The rail stays empty here so the hero aligns with every section
+            below it. It used to carry a "restored / replay" readout for the
+            name animation, which was a caption for something that plays once,
+            for a second, and that most visitors never see. */}
+        <div aria-hidden className="hidden md:block" />
 
         {/* items-start so the portrait's top edge lines up with the top of the
             name, rather than floating below it. */}

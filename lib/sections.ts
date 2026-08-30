@@ -15,10 +15,9 @@ export const HOME_SECTIONS = [
 ] as const;
 
 /**
- * Viridis, sampled. The page walks this ramp as you scroll: the colorbar in
- * the margin shows where you are, and each section takes its accent from the
- * same position. Colour therefore encodes depth into the document rather than
- * decorating it.
+ * Viridis, sampled. Each section takes its accent from its own position in the
+ * document, so the page cools and warms as you descend and colour encodes
+ * depth rather than decorating it. Same ramp as the evidence bars in Skills.
  *
  * Sampled from the middle of the ramp — the ends are unusable as ink, being
  * either near-black or a yellow that vanishes on a light ground.

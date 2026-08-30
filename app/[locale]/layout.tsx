@@ -11,7 +11,6 @@ import { SiteFooter } from '@/components/site-footer';
 import { SmoothScroll } from '@/components/motion/smooth-scroll';
 import { ThemeScript } from '@/components/theme-script';
 import { CommandPalette } from '@/components/command-palette';
-import { Colorbar } from '@/components/colorbar';
 import { ChatDock } from '@/components/chat/chat-dock';
 import { getProjects } from '@/lib/content';
 import { JsonLd } from '@/components/json-ld';
@@ -132,7 +131,6 @@ export default async function LocaleLayout({
             {t('skipToContent')}
           </a>
           <SiteHeader />
-          <Colorbar />
           <main id="main">{children}</main>
           <SiteFooter />
           <CommandPalette projects={projects} />

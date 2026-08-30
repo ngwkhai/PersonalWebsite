@@ -22,8 +22,8 @@ export function Section({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
-      // --accent walks the viridis ramp with the section's position, so the
-      // colorbar in the margin and the section's own ink agree about depth.
+      // --accent walks the viridis ramp with the section's position in the
+      // document, so colour tracks depth instead of being decorative.
       style={
         {
           '--accent': sectionAccent(HOME_SECTIONS.findIndex((section) => section.id === id)),
@@ -62,8 +62,7 @@ export function SectionHeader({
         id={id ? `${id}-heading` : undefined}
         className="label !text-ink flex items-center gap-2.5 pt-1.5"
       >
-        {/* A swatch at the section's own place on the ramp, so the margin
-            colorbar and the heading agree about where you are. */}
+        {/* A swatch at the section's own place on the ramp. */}
         <span
           aria-hidden
           className="inline-block h-[3px] w-5 shrink-0 rounded-full"

@@ -17,9 +17,11 @@ test.describe('the restore signature', () => {
   });
 
   test('does not animate under prefers-reduced-motion', async ({ page }) => {
-    // The project config sets reducedMotion: 'reduce', so the name should be
-    // fully restored on the very first frame.
+    // The project config sets reducedMotion: 'reduce', so no glyph should ever
+    // be shown stripped — the name is complete from the first frame.
     await page.goto('/en');
-    await expect(page.getByText('restored', { exact: true })).toBeVisible();
+    const heading = page.getByRole('heading', { level: 1 });
+    await expect(heading).toHaveAccessibleName('Nguyễn Đình Khải');
+    await expect(heading).toContainText('Nguyễn Đình Khải');
   });
 });
