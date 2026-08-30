@@ -320,11 +320,30 @@
     color: var(--ink);
   }
 
+  /* Signal recovery, applied to the imagery. The degraded state is set on the
+     client only, so server-rendered HTML always carries the finished image. */
+  .resolving img {
+    transition:
+      filter 900ms var(--ease-out-quint),
+      transform 900ms var(--ease-out-quint),
+      opacity 900ms var(--ease-out-quint);
+  }
+  .resolving[data-resolving] img {
+    filter: grayscale(1) blur(10px);
+    transform: scale(1.03);
+    opacity: 0.7;
+  }
+
   /* The mobile nav row scrolls horizontally; without an edge fade it just
      looks clipped. Masked rather than a scrollbar, which iOS hides anyway. */
   .scroll-hint {
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 2.5rem), transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(100% - 2.5rem),
+      transparent 100%
+    );
     mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 2.5rem), transparent 100%);
   }
   .scroll-hint::-webkit-scrollbar {

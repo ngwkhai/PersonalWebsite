@@ -10,6 +10,15 @@ cover: /img/project-nlp.avif
 repo: https://github.com/ngwkhai/Neural-Machine-Translation
 role: Dataset construction, model implementation, evaluation design
 stack: [PyTorch, Transformer, LSTM, GRU, RNN, sacreBLEU]
+points:
+  - >-
+    Built the first large-scale Vietnamese diacritic restoration dataset (12.5M sentence pairs without → with diacritics).
+  - >-
+    Implemented Seq2Seq models (RNN, GRU, LSTM, Transformer) from scratch using PyTorch.
+  - >-
+    Designed and conducted comprehensive model evaluation with BLEU and ChrF++ metrics, achieving BLEU 81.31 and ChrF++ 88.57 with Transformer, significantly outperforming RNN and GRU baselines.
+  - >-
+    Contributed across data construction, model development, and performance evaluation, leading to a robust prototype system for Vietnamese text restoration.
 metrics:
   - { label: BLEU, value: "81.31", note: Transformer, on held-out test }
   - { label: ChrF++, value: "88.57", note: character-level agreement }

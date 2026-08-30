@@ -10,6 +10,15 @@ cover: /img/project-tsc.avif
 repo: https://github.com/ngwkhai/Text-Sentiment-Classification-Hadoop-Spark
 role: Cài đặt pipeline và đo đạc so sánh
 stack: [Apache Hadoop, Apache Spark, Naive Bayes, SVM, Sentiment140]
+points:
+  - >-
+    Dự án khảo sát khai phá văn bản, phân tích cảm xúc và tính toán song song/phân tán với Apache Hadoop và Apache Spark.
+  - >-
+    Hệ thống được triển khai trên bộ dữ liệu Sentiment140 (1,6 triệu tweet) dùng Naive Bayes và SVM.
+  - >-
+    Kết quả cho thấy Naive Bayes đạt 75% độ chính xác với tốc độ xử lý nhanh hơn, trong khi SVM đạt độ chính xác cao hơn (80%–82%) nhưng cần thời gian huấn luyện lâu hơn trên Hadoop.
+  - >-
+    Spark vượt Hadoop về thời gian thực thi và khả năng mở rộng với dữ liệu quy mô lớn.
 metrics:
   - { label: Dữ liệu, value: "1.6M", note: tweet, Sentiment140 }
   - { label: Độ chính xác SVM, value: "80–82%", note: huấn luyện chậm hơn }

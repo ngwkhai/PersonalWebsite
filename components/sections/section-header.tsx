@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { HOME_SECTIONS, sectionAccent } from '@/lib/sections';
 
 /**
  * The page was previously a single unbroken field of off-white, so seven
@@ -21,6 +22,13 @@ export function Section({
     <section
       id={id}
       aria-labelledby={`${id}-heading`}
+      // --accent walks the viridis ramp with the section's position, so the
+      // colorbar in the margin and the section's own ink agree about depth.
+      style={
+        {
+          '--accent': sectionAccent(HOME_SECTIONS.findIndex((section) => section.id === id)),
+        } as React.CSSProperties
+      }
       className={cn(
         'scroll-mt-28 py-[var(--space-section)]',
         band && 'border-rule bg-sunk border-y',
@@ -50,7 +58,17 @@ export function SectionHeader({
 }) {
   return (
     <div className="rail-grid">
-      <h2 id={id ? `${id}-heading` : undefined} className="label !text-ink pt-1.5">
+      <h2
+        id={id ? `${id}-heading` : undefined}
+        className="label !text-ink flex items-center gap-2.5 pt-1.5"
+      >
+        {/* A swatch at the section's own place on the ramp, so the margin
+            colorbar and the heading agree about where you are. */}
+        <span
+          aria-hidden
+          className="inline-block h-[3px] w-5 shrink-0 rounded-full"
+          style={{ background: 'var(--accent, var(--color-teal))' }}
+        />
         {label}
       </h2>
       {(lead || action) && (

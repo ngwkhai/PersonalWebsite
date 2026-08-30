@@ -10,6 +10,15 @@ cover: /img/project-yolov1.avif
 demo: https://www.kaggle.com/code/ngwdinhkhai/yolov1-cbam-from-scratch-for-test-label
 role: Full implementation — dataset, loss function, attention module, training
 stack: [PyTorch, YOLOv1, CBAM, ReduceLROnPlateau]
+points:
+  - >-
+    This project rebuilt the YOLOv1 model from scratch using PyTorch, where I implemented FruitDataset and YoloLoss, and integrated CBAM (Convolutional Block Attention Module) to enhance feature extraction, with a total of 269,168,434 parameters.
+  - >-
+    The model employed the ReduceLROnPlateau scheduler to optimize the training process.
+  - >-
+    Training results showed a Train mAP of 0.8829 and a Best Validation mAP of 0.6994.
+  - >-
+    These results demonstrate that CBAM provides significant improvements in object detection performance.
 metrics:
   - { label: Train mAP, value: "0.8829" }
   - { label: Best val mAP, value: "0.6994" }

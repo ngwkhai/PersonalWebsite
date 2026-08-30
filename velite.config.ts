@@ -33,6 +33,14 @@ const projects = defineCollection({
       repo: s.string().url().optional(),
       demo: s.string().url().optional(),
       paper: s.string().url().optional(),
+      /**
+       * The project's own description, verbatim from the previous site.
+       *
+       * Kept as discrete lines rather than folded into the prose: these are
+       * his words about his own work, and the rewrite had compressed them into
+       * a one-sentence summary, which read as the detail having disappeared.
+       */
+      points: s.array(s.string()).default([]),
       metrics: s.array(metric).default([]),
       /** Rendered as the "Role" line — what Khai personally did. */
       role: s.string(),

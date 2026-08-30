@@ -10,6 +10,17 @@ cover: /img/project-gpu.avif
 paper: https://drive.google.com/file/d/1f7F2ligbgD0-W9qFn60VqmJeOjNoPYka/view?usp=sharing
 role: Phương pháp đo đạc, profiling, phân tích
 stack: [TensorRT, ONNX Runtime, TorchScript, torch.compile, Nsight, CUDA]
+points:
+  - >-
+    Dự án tập trung tối ưu suy luận AI trên GPU cho ResNet50 và DistilBERT thông qua FP16, INT8, TorchScript/torch.compile và ONNX.
+  - >-
+    Kết quả cho thấy FP16 mang lại cải thiện đáng kể, đặc biệt với DistilBERT: thông lượng tăng từ 305 → 1202 mẫu/s ở batch size 8 (≈4×).
+  - >-
+    INT8 (TensorRT) đạt tăng tốc 2–5× nhưng đòi hỏi hiệu chuẩn cẩn thận để giữ được độ chính xác.
+  - >-
+    Tối ưu đồ thị cho tăng tốc 1,2–1,8×, trong khi profiling CUDA xác định các nút thắt chính nằm ở kernel GEMM và ReLU.
+  - >-
+    Dự án chứng minh mixed-precision và lượng tử hoá là những cách tiếp cận hiệu quả nhất cho suy luận quy mô lớn.
 metrics:
   - { label: Thông lượng FP16, value: "4×", note: DistilBERT, 305 → 1202 mẫu/s @ bs8 }
   - { label: Tăng tốc INT8, value: "2–5×", note: TensorRT, nhạy với hiệu chuẩn }

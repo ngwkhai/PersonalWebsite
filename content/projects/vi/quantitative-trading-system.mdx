@@ -10,6 +10,13 @@ cover: /img/project-qts.avif
 repo: https://github.com/ngwkhai/Quantitative_trading_system
 role: Toàn bộ — kỹ thuật đặc trưng, mô hình, pipeline huấn luyện
 stack: [PyTorch, Transformer, Time2Vec, MACD, RSI, Bollinger Bands, ATR]
+points:
+  - >-
+    Hệ thống giao dịch định lượng xây dựng từ đầu bằng PyTorch, dùng mô hình Transformer để dự đoán tín hiệu MUA/BÁN/GIỮ từ các chỉ báo tài chính và dữ liệu giao dịch lịch sử, với pipeline xử lý 3,4 triệu mẫu huấn luyện và 351 nghìn mẫu phát triển.
+  - >-
+    Hệ thống tích hợp các đặc trưng như log-volume, chỉ báo kỹ thuật (MACD, RSI, Bollinger Bands, ATR) và Time2Vec với chuẩn hoá hai bước.
+  - >-
+    Đạt Validation Accuracy 92.75% và Test Accuracy 92.50%.
 metrics:
   - { label: Độ chính xác validation, value: "92.75%" }
   - { label: Độ chính xác test, value: "92.50%", note: chênh 0.25 điểm — không overfit }

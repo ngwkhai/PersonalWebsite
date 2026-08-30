@@ -10,6 +10,15 @@ cover: /img/project-tsc.avif
 repo: https://github.com/ngwkhai/Text-Sentiment-Classification-Hadoop-Spark
 role: Pipeline implementation and comparative benchmarking
 stack: [Apache Hadoop, Apache Spark, Naive Bayes, SVM, Sentiment140]
+points:
+  - >-
+    This project explored text mining, sentiment analysis, and parallel/distributed computing with Apache Hadoop and Apache Spark.
+  - >-
+    The system was implemented on the Sentiment140 dataset (1.6M tweets) using Naive Bayes and SVM.
+  - >-
+    Results showed that Naive Bayes achieved 75% accuracy with faster processing speed, while SVM reached higher accuracy (80%–82%) but required longer training time on Hadoop.
+  - >-
+    Spark outperformed Hadoop in execution time and scalability for large-scale data.
 metrics:
   - { label: Dataset, value: "1.6M", note: tweets, Sentiment140 }
   - { label: SVM accuracy, value: "80–82%", note: slower to train }

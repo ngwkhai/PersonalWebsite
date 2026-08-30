@@ -1,51 +1,80 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+export interface SectionPosition {
+  id: string;
+  /** Where the section starts, as a fraction of total scrollable distance. */
+  at: number;
+}
 
 /**
- * Tracks which section is in view, for the pinned nav.
+ * Which section the reader is in, plus where every section sits in the
+ * document and how far through it they are.
  *
- * Uses IntersectionObserver rather than a scroll handler: a scroll listener
- * recomputes on every frame and fights Lenis for the main thread, and this
- * needs to be free.
+ * Returns all three from one measurement on purpose. An earlier version had the
+ * colorbar's marker driven by scroll fraction while its label came from a
+ * separate IntersectionObserver, and the two disagreed: the marker sat near the
+ * top of the bar while the label still read the previous section.
  *
- * `rootMargin` pulls the detection band up under the fixed header and keeps it
- * shallow, so the active item changes when a section's heading reaches the top
- * — which is what a reader perceives as "being in" that section — rather than
- * when its midpoint crosses the middle of the viewport.
+ * "Active" is the last section whose heading has passed under the header —
+ * which is what a reader means by being in a section. An observer band instead
+ * kept a tall section active while the next one's heading was already on
+ * screen, because the tall section's tail was still inside the band.
  */
-export function useScrollSpy(ids: readonly string[], offset = 96): string | null {
+export function useScrollSpy(ids: readonly string[], offset = 120) {
   const [active, setActive] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [positions, setPositions] = useState<SectionPosition[]>([]);
+  const frame = useRef(0);
 
   useEffect(() => {
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter((element): element is HTMLElement => element !== null);
-    if (sections.length === 0) return;
+    if (ids.length === 0) {
+      frame.current = requestAnimationFrame(() => {
+        setActive(null);
+        setPositions([]);
+      });
+      return () => cancelAnimationFrame(frame.current);
+    }
 
-    const visible = new Map<string, number>();
+    const measure = () => {
+      const doc = document.documentElement;
+      const span = doc.scrollHeight - doc.clientHeight;
+      const y = doc.scrollTop;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
-          else visible.delete(entry.target.id);
-        }
+      setProgress(span > 0 ? Math.min(1, Math.max(0, y / span)) : 0);
 
-        // Document order wins ties, so scrolling never jumps backwards through
-        // the nav while two sections are both in the band.
-        const first = ids.find((id) => visible.has(id));
-        if (first) setActive(first);
-      },
-      {
-        rootMargin: `-${offset}px 0px -70% 0px`,
-        threshold: [0, 0.01],
-      },
-    );
+      const tops: SectionPosition[] = [];
+      let current: string | null = null;
 
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
+      for (const id of ids) {
+        const element = document.getElementById(id);
+        if (!element) continue;
+        const top = element.getBoundingClientRect().top + y;
+        tops.push({ id, at: span > 0 ? Math.min(1, Math.max(0, top / span)) : 0 });
+        if (top - offset <= y) current = id;
+      }
+
+      setPositions(tops);
+      setActive(current);
+    };
+
+    const onScroll = () => {
+      cancelAnimationFrame(frame.current);
+      frame.current = requestAnimationFrame(measure);
+    };
+
+    // Deferred a frame rather than called inline: reading layout is fine, but
+    // setting state synchronously inside the effect body cascades a render.
+    frame.current = requestAnimationFrame(measure);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      cancelAnimationFrame(frame.current);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [ids, offset]);
 
-  return active;
+  return { active, progress, positions };
 }

@@ -177,7 +177,7 @@ export function Hero({
               Aligned to the top of this row, not the bottom: matching its base
               to the buttons left a 200px hole under the name. Restored from the
               previous site, where it appeared twice. */}
-          <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-14">
+          <div className="mt-8 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-14">
             <div>
               <p className="measure font-display text-h3 text-ink-2 leading-[1.3]">{t('thesis')}</p>
 
@@ -198,13 +198,13 @@ export function Hero({
               </div>
             </div>
 
-            <figure className="bg-sunk relative order-first aspect-[4/5] w-36 overflow-hidden sm:w-44 lg:order-none lg:w-full">
+            <figure className="bg-sunk relative order-first aspect-[4/5] w-40 overflow-hidden sm:w-52 lg:order-none lg:w-full">
               <Image
                 src="/img/1.avif"
                 alt={`${NAME} — ${headline}`}
                 fill
                 priority
-                sizes="(max-width: 1024px) 11rem, 13rem"
+                sizes="(max-width: 1024px) 13rem, 17rem"
                 className="object-cover object-top"
               />
             </figure>

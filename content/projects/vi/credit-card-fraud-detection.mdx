@@ -10,6 +10,19 @@ cover: /img/project-ccfd.avif
 repo: https://github.com/ngwkhai/Card-fraud-detection
 role: Tiền xử lý, tái lấy mẫu, so sánh mô hình, đánh giá
 stack: [XGBoost, Random Forest, Decision Tree, Logistic Regression, SMOTE, ADASYN]
+points:
+  - >-
+    Thực hiện phát hiện gian lận trên bộ dữ liệu Kaggle (284.807 giao dịch, chỉ 492 giao dịch gian lận → 0,172%).
+  - >-
+    Áp dụng SMOTE và ADASYN để xử lý mất cân bằng lớp nghiêm trọng.
+  - >-
+    Cài đặt và so sánh Logistic Regression, Decision Tree, Random Forest và XGBoost.
+  - >-
+    Đạt ROC-AUC 0.9817 và Recall 0.735 với XGBoost trên dữ liệu mất cân bằng.
+  - >-
+    Cải thiện Recall lên 0.816 với ADASYN trong khi vẫn giữ ROC-AUC cao (0.9744), vượt các mô hình còn lại.
+  - >-
+    Đóng góp vào tiền xử lý dữ liệu, tái lấy mẫu, phát triển mô hình và đánh giá, tạo ra một nguyên mẫu vững vàng cho phát hiện gian lận tài chính.
 metrics:
   - { label: ROC-AUC, value: "0.9817", note: XGBoost trên dữ liệu mất cân bằng }
   - { label: Recall, value: "0.816", note: với ADASYN, tăng từ 0.735 }

@@ -21,7 +21,7 @@ export function SiteHeader() {
 
   const onHome = pathname === '/';
   // The observer only runs on the homepage; elsewhere there is nothing to spy.
-  const active = useScrollSpy(onHome ? SECTION_IDS : []);
+  const { active } = useScrollSpy(onHome ? SECTION_IDS : []);
 
   useEffect(() => {
     const onScroll = () => setLifted(window.scrollY > 24);

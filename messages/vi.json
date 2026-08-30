@@ -59,7 +59,8 @@
     "audienceEngineer": "kỹ sư",
     "audienceResearcher": "nhà nghiên cứu",
     "explainRunning": "Đang viết lại tóm tắt",
-    "explainReset": "Xem bản gốc"
+    "explainReset": "Xem bản gốc",
+    "inBrief": "Tóm lược"
   },
   "chat": {
     "title": "Hỏi về công việc của tôi",

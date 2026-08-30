@@ -10,6 +10,15 @@ cover: /img/project-yolov1.avif
 demo: https://www.kaggle.com/code/ngwdinhkhai/yolov1-cbam-from-scratch-for-test-label
 role: Cài đặt toàn bộ — dataset, hàm mất mát, module attention, huấn luyện
 stack: [PyTorch, YOLOv1, CBAM, ReduceLROnPlateau]
+points:
+  - >-
+    Dự án dựng lại mô hình YOLOv1 từ đầu bằng PyTorch, trong đó tôi cài đặt FruitDataset và YoloLoss, đồng thời tích hợp CBAM (Convolutional Block Attention Module) để tăng cường trích xuất đặc trưng, với tổng cộng 269.168.434 tham số.
+  - >-
+    Mô hình sử dụng bộ lập lịch ReduceLROnPlateau để tối ưu quá trình huấn luyện.
+  - >-
+    Kết quả huấn luyện cho thấy Train mAP đạt 0.8829 và Best Validation mAP đạt 0.6994.
+  - >-
+    Những kết quả này chứng minh CBAM mang lại cải thiện đáng kể cho hiệu năng phát hiện đối tượng.
 metrics:
   - { label: mAP huấn luyện, value: "0.8829" }
   - { label: mAP validation tốt nhất, value: "0.6994" }

@@ -10,6 +10,19 @@ cover: /img/project-ccfd.avif
 repo: https://github.com/ngwkhai/Card-fraud-detection
 role: Preprocessing, resampling, model comparison, evaluation
 stack: [XGBoost, Random Forest, Decision Tree, Logistic Regression, SMOTE, ADASYN]
+points:
+  - >-
+    Conducted fraud detection on the Kaggle dataset (284,807 transactions, only 492 fraud → 0.172%).
+  - >-
+    Applied SMOTE and ADASYN to handle severe class imbalance.
+  - >-
+    Implemented and compared Logistic Regression, Decision Tree, Random Forest, and XGBoost.
+  - >-
+    Achieved ROC-AUC 0.9817 and Recall 0.735 with XGBoost on imbalanced data.
+  - >-
+    Improved Recall to 0.816 with ADASYN while maintaining high ROC-AUC (0.9744), outperforming other models.
+  - >-
+    Contributed to data preprocessing, resampling, model development, and evaluation, delivering a robust prototype for financial fraud detection.
 metrics:
   - { label: ROC-AUC, value: "0.9817", note: XGBoost on imbalanced data }
   - { label: Recall, value: "0.816", note: with ADASYN, up from 0.735 }

@@ -59,7 +59,8 @@
     "audienceEngineer": "an engineer",
     "audienceResearcher": "a researcher",
     "explainRunning": "Rewriting the summary",
-    "explainReset": "Show the original"
+    "explainReset": "Show the original",
+    "inBrief": "In brief"
   },
   "chat": {
     "title": "Ask about my work",

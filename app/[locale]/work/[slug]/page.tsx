@@ -115,6 +115,16 @@ export default async function ProjectPage({
             {project.title}
           </h1>
           <p className="text-ink-2 mt-6 max-w-2xl text-lg leading-relaxed">{project.summary}</p>
+          {project.points.length > 0 && (
+            <ul className="border-rule mt-8 space-y-3 border-l-2 pl-5">
+              {project.points.map((point) => (
+                <li key={point} className="text-ink-2 max-w-[68ch] text-[0.95rem] leading-relaxed">
+                  {point}
+                </li>
+              ))}
+            </ul>
+          )}
+
           <ExplainAtDepth slug={project.slug} original={project.summary} />
         </div>
       </header>

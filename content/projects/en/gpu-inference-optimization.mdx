@@ -10,6 +10,17 @@ cover: /img/project-gpu.avif
 paper: https://drive.google.com/file/d/1f7F2ligbgD0-W9qFn60VqmJeOjNoPYka/view?usp=sharing
 role: Benchmarking methodology, profiling, analysis
 stack: [TensorRT, ONNX Runtime, TorchScript, torch.compile, Nsight, CUDA]
+points:
+  - >-
+    The project focuses on optimizing AI inference on GPUs for ResNet50 and DistilBERT through FP16, INT8, TorchScript/torch.compile, and ONNX.
+  - >-
+    Results show that FP16 provides significant improvement, especially for DistilBERT: throughput increased from 305 → 1202 samples/s at batch size 8 (≈4×).
+  - >-
+    INT8 (TensorRT) achieves 2–5× speedup but requires careful calibration to maintain accuracy.
+  - >-
+    Graph optimization yields a 1.2–1.8× speedup, while CUDA profiling identifies the main bottlenecks in GEMM and ReLU kernels.
+  - >-
+    The project demonstrates that mixed-precision and quantization are the most effective approaches for large-scale inference optimization.
 metrics:
   - { label: FP16 throughput, value: "4×", note: DistilBERT, 305 → 1202 samples/s @ bs8 }
   - { label: INT8 speedup, value: "2–5×", note: TensorRT, calibration-sensitive }

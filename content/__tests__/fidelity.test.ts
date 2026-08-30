@@ -100,6 +100,44 @@ describe('fidelity to the previous site', () => {
     }
   });
 
+  it('reproduces every project description line, word for word', () => {
+    // The rewrite compressed four to six bullets per project into a single
+    // summary sentence, so from the site it looked as though the detail had
+    // been deleted. These are his own words about his own work.
+    const legacyPoints = [...legacy.matchAll(/projects__description">([\s\S]*?)<\/p>/g)].map(
+      (match) =>
+        match[1]!
+          .split(/<br\s*\/?>/)
+          .map((line) => line.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+          .filter(Boolean),
+    );
+
+    const order = [
+      'neural-machine-translation',
+      'license-plate-recognition',
+      'quantitative-trading-system',
+      'credit-card-fraud-detection',
+      'text-sentiment-classification',
+      'yolov1-cbam',
+      'gpu-inference-optimization',
+    ];
+
+    expect(legacyPoints).toHaveLength(order.length);
+
+    for (const [index, slug] of order.entries()) {
+      const project = projects.find((p) => p.slug === slug && p.locale === 'en')!;
+      expect(project.points, `${slug} lost description lines`).toEqual(legacyPoints[index]);
+    }
+  });
+
+  it('keeps the same number of description lines in both locales', () => {
+    for (const slug of [...new Set(projects.map((p) => p.slug))]) {
+      const en = projects.find((p) => p.slug === slug && p.locale === 'en')!;
+      const vi = projects.find((p) => p.slug === slug && p.locale === 'vi')!;
+      expect(vi.points.length, `${slug} is missing a translated line`).toBe(en.points.length);
+    }
+  });
+
   it('still shows the contact line the original ended on', () => {
     expect(legacyText).toContain(profile.contactNote.en);
   });

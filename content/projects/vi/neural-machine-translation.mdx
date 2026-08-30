@@ -10,6 +10,15 @@ cover: /img/project-nlp.avif
 repo: https://github.com/ngwkhai/Neural-Machine-Translation
 role: Xây dựng dữ liệu, cài đặt mô hình, thiết kế đánh giá
 stack: [PyTorch, Transformer, LSTM, GRU, RNN, sacreBLEU]
+points:
+  - >-
+    Xây dựng bộ dữ liệu khôi phục dấu tiếng Việt quy mô lớn đầu tiên (12,5 triệu cặp câu không dấu → có dấu).
+  - >-
+    Cài đặt các mô hình Seq2Seq (RNN, GRU, LSTM, Transformer) từ đầu bằng PyTorch.
+  - >-
+    Thiết kế và thực hiện đánh giá mô hình toàn diện với các chỉ số BLEU và ChrF++, đạt BLEU 81.31 và ChrF++ 88.57 với Transformer, vượt trội đáng kể so với các mốc cơ sở RNN và GRU.
+  - >-
+    Đóng góp xuyên suốt từ xây dựng dữ liệu, phát triển mô hình tới đánh giá hiệu năng, tạo ra một hệ thống nguyên mẫu vững vàng cho khôi phục văn bản tiếng Việt.
 metrics:
   - { label: BLEU, value: "81.31", note: Transformer, trên tập test }
   - { label: ChrF++, value: "88.57", note: khớp ở mức ký tự }
