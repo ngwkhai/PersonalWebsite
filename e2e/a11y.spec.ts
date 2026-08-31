@@ -4,8 +4,8 @@ import AxeBuilder from '@axe-core/playwright';
 const PAGES = [
   ['/en', 'homepage'],
   ['/vi', 'homepage, Vietnamese'],
-  ['/en/work', 'work index'],
-  ['/en/work/gpu-inference-optimization', 'case study'],
+  ['/en/projects', 'work index'],
+  ['/en/projects/gpu-inference-optimization', 'case study'],
   ['/en/resume', 'résumé'],
   ['/en/match', 'job matcher'],
   ['/en/colophon', 'colophon'],

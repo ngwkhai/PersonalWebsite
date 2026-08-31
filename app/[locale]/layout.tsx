@@ -109,7 +109,7 @@ export default async function LocaleLayout({
     kicker: project.kicker,
     year: project.year,
     cover: project.cover,
-    href: `/work/${project.slug}`,
+    href: `/projects/${project.slug}`,
   }));
 
   return (

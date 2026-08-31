@@ -1,6 +1,6 @@
 {
   "nav": {
-    "work": "Work",
+    "projects": "Projects",
     "writing": "Writing",
     "about": "About",
     "ask": "Ask",
@@ -10,16 +10,17 @@
     "close": "Close",
     "match": "Match",
     "skills": "Skills",
+    "education": "Education",
     "achievements": "Achievements",
     "experience": "Experience",
     "resume": "Resume"
   },
   "hero": {
-    "cta": "Read the work",
+    "cta": "Read the projects",
     "ctaAsk": "Ask about my work"
   },
   "sections": {
-    "work": "Selected work",
+    "projects": "Selected projects",
     "about": "About",
     "education": "Education",
     "experience": "Experience",
@@ -33,7 +34,8 @@
     "resumeDownload": "Download PDF",
     "achievementsEmpty": "Nothing listed yet.",
     "viewAll": "See all",
-    "research": "Research"
+    "research": "Research",
+    "work": "Work"
   },
   "project": {
     "role": "Role",
@@ -42,7 +44,7 @@
     "repo": "Source",
     "demo": "Demo",
     "paper": "Report",
-    "backToWork": "All work",
+    "backToProjects": "All projects",
     "next": "Next project",
     "readingTime": "{minutes} min read",
     "explainAs": "Explain this for",
@@ -113,10 +115,10 @@
   },
   "palette": {
     "open": "Search",
-    "placeholder": "Search work, writing, or ask a question",
+    "placeholder": "Search projects, writing, or ask a question",
     "empty": "Nothing matches that.",
     "groupPages": "Pages",
-    "groupWork": "Work",
+    "groupProjects": "Projects",
     "groupActions": "Actions",
     "askAbout": "Ask the agent about \"{query}\"",
     "downloadCV": "Download CV"

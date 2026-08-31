@@ -27,8 +27,11 @@ export interface Institution {
   readonly role: Localized;
   readonly start: string;
   readonly end: string | null;
+  /** Empty where the repository has no logo for the organisation. */
   readonly logo: string;
   readonly detail: readonly Localized[];
+  /** Groups the entry inside Experience. Defaults to work. */
+  readonly kind?: 'work' | 'research';
 }
 
 export interface SkillGroup {
@@ -99,9 +102,49 @@ export const education: readonly Institution[] = [
   },
 ];
 
+/** Newest first, by start date. */
 export const experience: readonly Institution[] = [
   {
+    organisation: 'VinSmart Feature',
+    role: { en: 'AI Intern', vi: 'Thực tập sinh AI' },
+    start: '2026-07',
+    end: '2026-08',
+    logo: '',
+    detail: [
+      {
+        en: 'Built the data collection and quality-control pipeline for a travel dataset: crawling and ingestion through to the verification pass that decides what is fit to keep.',
+        vi: 'Xây dựng pipeline thu thập và kiểm soát chất lượng dữ liệu du lịch: từ khâu thu thập, nạp dữ liệu cho tới bước rà soát, xác minh để quyết định dữ liệu nào đủ điều kiện giữ lại.',
+      },
+    ],
+  },
+  {
+    organisation: 'Viettel Network',
+    role: { en: 'AI Intern', vi: 'Thực tập sinh AI' },
+    start: '2025-09',
+    end: '2026-01',
+    logo: '',
+    detail: [
+      {
+        en: 'NL2PPlanner: turning a natural-language technical specification into a complete project directory tree, targeting the structural blindness and nesting hallucinations that large language models show on hierarchical output.',
+        vi: 'NL2PPlanner: chuyển tài liệu đặc tả kỹ thuật bằng ngôn ngữ tự nhiên thành cây thư mục dự án hoàn chỉnh, nhằm khắc phục hiện tượng "mù cấu trúc" và ảo giác lồng ghép phân cấp thường gặp ở các mô hình ngôn ngữ lớn.',
+      },
+      {
+        en: 'Solved the data scarcity by mining real repositories in reverse with DeepSeek-R1, extracting and inverting them into a training set, and linearised each tree through a purpose-built structural token scheme.',
+        vi: 'Giải bài toán khan hiếm dữ liệu bằng cách dùng DeepSeek-R1 khai thác ngược tri thức từ các kho mã nguồn thực tế, trích xuất và đảo ngược thành tập dữ liệu huấn luyện, đồng thời tuyến tính hoá cây thư mục qua một hệ thống thẻ token cấu trúc đặc thù.',
+      },
+      {
+        en: 'Fine-tuned two compact models — Phi-3.5 (3.8B) and CodeLlama 7B — with LoRA and a Hybrid Loss weighted 50-30-20 to match the evaluation metric: tree edit distance, Jaccard overlap and semantic similarity.',
+        vi: 'Tinh chỉnh hai mô hình nhỏ gọn — Phi-3.5 (3,8 tỷ tham số) và CodeLlama 7B — bằng LoRA cùng hàm Hybrid Loss theo tỷ lệ 50-30-20, thiết kế đồng bộ với bộ chỉ số đánh giá: tree edit distance, Jaccard overlap và semantic similarity.',
+      },
+      {
+        en: 'CodeLlama 7B with the Hybrid Loss scored highest overall, beating the raw reasoning of far larger control models — GPT-OSS 120B and Qwen3-Coder-Next 80B — on hierarchical accuracy at a fraction of the parameters.',
+        vi: 'CodeLlama 7B kết hợp Hybrid Loss đạt hiệu năng tổng hợp cao nhất, vượt đáng kể về độ chính xác phân cấp so với khả năng suy luận nguyên bản của các mô hình đối chứng lớn hơn nhiều lần như GPT-OSS 120B và Qwen3-Coder-Next 80B.',
+      },
+    ],
+  },
+  {
     organisation: 'NLP Lab',
+    kind: 'research',
     role: { en: 'Member', vi: 'Thành viên' },
     start: '2025-06',
     end: null,

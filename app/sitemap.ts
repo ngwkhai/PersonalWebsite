@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ),
   });
 
-  const staticPaths = ['', '/work', '/writing', '/resume', '/colophon'];
+  const staticPaths = ['', '/projects', '/writing', '/resume', '/colophon'];
 
   return [
     ...locales.flatMap((locale) =>
@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'yearly' as const,
       priority: 0.8,
-      alternates: alternates(`/work/${project.slug}`),
+      alternates: alternates(`/projects/${project.slug}`),
     })),
     ...allWriting
       .filter((post) => !post.draft)

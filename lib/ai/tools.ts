@@ -56,8 +56,9 @@ export function buildTools(locale: AppLocale) {
         target: z
           .enum([
             'home',
+            'education',
             'skills',
-            'work',
+            'projects',
             'achievements',
             'experience',
             'writing',

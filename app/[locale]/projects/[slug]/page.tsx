@@ -27,8 +27,8 @@ export async function generateMetadata({
     title: project.title,
     description: project.summary,
     alternates: {
-      canonical: `/${locale}/work/${slug}`,
-      languages: { en: `/en/work/${slug}`, vi: `/vi/work/${slug}` },
+      canonical: `/${locale}/projects/${slug}`,
+      languages: { en: `/en/projects/${slug}`, vi: `/vi/projects/${slug}` },
     },
     openGraph: {
       type: 'article',
@@ -62,9 +62,9 @@ export default async function ProjectPage({
 
   return (
     <article className="shell pt-28 pb-8 sm:pt-36">
-      <Link href="/work" className="label hover:text-ink inline-flex items-center gap-2">
+      <Link href="/projects" className="label hover:text-ink inline-flex items-center gap-2">
         <ArrowLeft size={12} strokeWidth={2} aria-hidden />
-        {t('backToWork')}
+        {t('backToProjects')}
       </Link>
 
       {/* On mobile the rail stacks above the title, which put a screenful of
@@ -151,7 +151,7 @@ export default async function ProjectPage({
 
       {next && (
         <nav className="border-rule mt-28 border-t pt-8">
-          <Link href={`/work/${next.slug}`} className="rail-grid group">
+          <Link href={`/projects/${next.slug}`} className="rail-grid group">
             <span className="label">{t('next')}</span>
             <span className="font-display text-h3 text-ink group-hover:text-indigo flex items-center gap-3 transition-colors">
               {next.title}

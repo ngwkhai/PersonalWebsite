@@ -27,7 +27,7 @@ describe('SITE_URL', () => {
 
   it('strips a trailing slash so paths never double up', async () => {
     const { absoluteUrl } = await load({ SITE_URL: 'https://khai.dev/' });
-    expect(absoluteUrl('/en/work')).toBe('https://khai.dev/en/work');
+    expect(absoluteUrl('/en/projects')).toBe('https://khai.dev/en/projects');
   });
 
   it('falls back to the stable production domain, not the deployment host', async () => {
@@ -53,7 +53,7 @@ describe('SITE_URL', () => {
 
   it('joins paths with exactly one slash', async () => {
     const { absoluteUrl } = await load({ SITE_URL: 'https://khai.dev' });
-    expect(absoluteUrl('en/work')).toBe('https://khai.dev/en/work');
-    expect(absoluteUrl('/en/work')).toBe('https://khai.dev/en/work');
+    expect(absoluteUrl('en/projects')).toBe('https://khai.dev/en/projects');
+    expect(absoluteUrl('/en/projects')).toBe('https://khai.dev/en/projects');
   });
 });

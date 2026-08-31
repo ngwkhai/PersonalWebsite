@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { Hero } from '@/components/sections/hero';
+import { Education } from '@/components/sections/education';
 import { Skills } from '@/components/sections/skills';
 import { Achievements } from '@/components/sections/achievements';
 import { Experience } from '@/components/sections/experience';
@@ -33,15 +34,16 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         headline={profile.headline[l]}
         bio={profile.bio[l]}
       />
+      <Education />
       <Skills />
 
-      <Section id="work">
+      <Section id="projects">
         <SectionHeader
-          id="work"
-          label={tn('work')}
+          id="projects"
+          label={tn('projects')}
           action={
             <Link
-              href="/work"
+              href="/projects"
               className="label border-rule hover:border-ink-3 hover:text-ink border px-3.5 py-2 transition-colors"
             >
               {t('viewAll')} →

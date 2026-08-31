@@ -5,8 +5,9 @@
  * `key` indexes the `nav` message namespace.
  */
 export const HOME_SECTIONS = [
+  { id: 'education', key: 'education' },
   { id: 'skills', key: 'skills' },
-  { id: 'work', key: 'work' },
+  { id: 'projects', key: 'projects' },
   { id: 'achievements', key: 'achievements' },
   { id: 'experience', key: 'experience' },
   { id: 'writing', key: 'writing' },
@@ -23,6 +24,7 @@ export const HOME_SECTIONS = [
  * either near-black or a yellow that vanishes on a light ground.
  */
 export const VIRIDIS = [
+  'oklch(0.28 0.09 305)',
   'oklch(0.32 0.11 300)',
   'oklch(0.42 0.13 285)',
   'oklch(0.46 0.11 262)',

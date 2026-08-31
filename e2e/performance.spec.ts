@@ -91,7 +91,7 @@ test.describe('performance', () => {
       if (type.startsWith('image/')) formats.add(type);
     });
 
-    await page.goto('/en/work/gpu-inference-optimization', { waitUntil: 'load' });
+    await page.goto('/en/projects/gpu-inference-optimization', { waitUntil: 'load' });
     await page.waitForTimeout(1000);
 
     expect([...formats].filter((f) => f.includes('png'))).toEqual([]);

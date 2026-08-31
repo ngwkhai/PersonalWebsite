@@ -141,13 +141,13 @@ export default async function ResumePage({ params }: { params: Promise<{ locale:
         </dl>
       </Block>
 
-      <Block title={t('work')}>
+      <Block title={t('projects')}>
         <ul className="space-y-5">
           {projects.map((project) => (
             <li key={project.slug}>
               <div className="flex flex-wrap items-baseline justify-between gap-x-4">
                 <Link
-                  href={`/work/${project.slug}`}
+                  href={`/projects/${project.slug}`}
                   className="text-ink hover:text-indigo text-[1.02rem] font-semibold transition-colors"
                 >
                   {project.title}

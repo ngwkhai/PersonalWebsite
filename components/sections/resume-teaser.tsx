@@ -13,7 +13,7 @@ export async function ResumeTeaser() {
   const locale = (await getLocale()) as AppLocale;
 
   const counts = [
-    { value: getProjects(locale).length, label: t('work') },
+    { value: getProjects(locale).length, label: t('projects') },
     { value: skills.reduce((total, group) => total + group.items.length, 0), label: t('skills') },
     { value: achievements.length, label: t('achievements') },
     { value: education.length + experience.length, label: t('experience') },

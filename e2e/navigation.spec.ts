@@ -10,8 +10,9 @@ test.describe('navigation', () => {
   test('reaches every homepage section from the pinned nav', async ({ page }) => {
     await page.goto('/en');
     for (const id of [
+      'education',
       'skills',
-      'work',
+      'projects',
       'achievements',
       'experience',
       'writing',
@@ -34,14 +35,14 @@ test.describe('navigation', () => {
   });
 
   test('switches locale without leaving the page', async ({ page }) => {
-    await page.goto('/en/work');
+    await page.goto('/en/projects');
     await page.getByRole('button', { name: 'VI', exact: true }).click();
-    await expect(page).toHaveURL(/\/vi\/work$/);
+    await expect(page).toHaveURL(/\/vi\/projects$/);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   });
 
   test('opens a case study and shows its headline metric', async ({ page }) => {
-    await page.goto('/en/work/neural-machine-translation');
+    await page.goto('/en/projects/neural-machine-translation');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Neural Machine Translation');
     // The figure appears twice: the metric strip and the ablation table.
     await expect(page.getByRole('definition').filter({ hasText: '81.31' })).toBeVisible();
@@ -55,7 +56,7 @@ test.describe('navigation', () => {
   });
 
   test('404s an unknown path', async ({ page }) => {
-    const response = await page.goto('/en/work/does-not-exist');
+    const response = await page.goto('/en/projects/does-not-exist');
     expect(response?.status()).toBe(404);
   });
 });

@@ -57,7 +57,7 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
 
   const pages = [
     { label: tn('skills'), href: '/#skills' },
-    { label: tn('work'), href: '/work' },
+    { label: tn('projects'), href: '/projects' },
     { label: tn('achievements'), href: '/#achievements' },
     { label: tn('experience'), href: '/#experience' },
     { label: tn('writing'), href: '/writing' },
@@ -126,12 +126,12 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
                 )}
 
                 {matchedProjects.length > 0 && (
-                  <Command.Group heading={t('groupWork')} className="palette-group">
+                  <Command.Group heading={t('groupProjects')} className="palette-group">
                     {matchedProjects.map((project) => (
                       <Command.Item
                         key={project.slug}
                         value={project.slug}
-                        onSelect={() => run(() => router.push(`/work/${project.slug}`))}
+                        onSelect={() => run(() => router.push(`/projects/${project.slug}`))}
                         className="palette-item"
                       >
                         <span className="truncate">{project.title}</span>

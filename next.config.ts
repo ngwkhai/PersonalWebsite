@@ -20,6 +20,20 @@ const nextConfig: NextConfig = {
   // type check so a mid-write partial file never fails the build.
   typescript: { ignoreBuildErrors: false },
 
+  // The section was called "work" until it was renamed; links to a case study
+  // are the kind of URL people paste into applications, so the old paths keep
+  // resolving rather than 404ing.
+  async redirects() {
+    return [
+      { source: '/:locale(en|vi)/work', destination: '/:locale/projects', permanent: true },
+      {
+        source: '/:locale(en|vi)/work/:slug',
+        destination: '/:locale/projects/:slug',
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

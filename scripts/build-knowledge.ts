@@ -95,7 +95,7 @@ function splitByHeading(markdown: string): { heading: string; body: string }[] {
 
 function projectChunks(project: RawProject): Chunk[] {
   const locale = project.locale as Locale;
-  const url = `/${locale}/work/${project.slug}`;
+  const url = `/${locale}/projects/${project.slug}`;
   const chunks: Chunk[] = [];
 
   // A dedicated summary chunk, so "what is project X about" retrieves the

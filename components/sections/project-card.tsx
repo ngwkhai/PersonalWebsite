@@ -16,7 +16,7 @@ export function ProjectCard({
 }) {
   return (
     <article className="group border-rule border-t">
-      <Link href={`/work/${project.slug}`} className="rail-grid py-7">
+      <Link href={`/projects/${project.slug}`} className="rail-grid py-7">
         <div className="flex flex-row gap-4 md:flex-col md:gap-2">
           <span className="label !text-ink tabular-nums">{project.year}</span>
           <span className="label">{project.kicker}</span>

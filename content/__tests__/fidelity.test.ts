@@ -26,6 +26,14 @@ const PROJECT_NAMES: Record<string, string> = {
   'gpu-inference-optimization': 'Optimization for AI Inference Engines on GPUs',
 };
 
+/**
+ * Entries Khai added after the rewrite, from his own account rather than from
+ * the previous site. They are listed here by name so the fidelity checks below
+ * still hold every legacy entry to the original wording: a new organisation
+ * has to be declared here deliberately, it cannot slip in by being unmatched.
+ */
+const ADDED_SINCE_LEGACY = new Set(['Viettel Network', 'VinSmart Feature']);
+
 /** Every headline figure the previous site published. */
 const METRICS = [
   '12.5M',
@@ -78,9 +86,9 @@ describe('fidelity to the previous site', () => {
 
   it('does not invent biography that the original never claimed', () => {
     // Each factual detail line must be traceable to the previous site.
-    const claims = [...education, ...experience, ...leadership].flatMap((entry) =>
-      entry.detail.map((line) => line.en),
-    );
+    const claims = [...education, ...experience, ...leadership]
+      .filter((entry) => !ADDED_SINCE_LEGACY.has(entry.organisation))
+      .flatMap((entry) => entry.detail.map((line) => line.en));
 
     const unsupported = claims.filter((claim) => {
       // Compare on the distinctive opening of the claim; the original wraps
@@ -94,6 +102,7 @@ describe('fidelity to the previous site', () => {
 
   it('keeps the organisations and roles the original listed', () => {
     for (const entry of [...education, ...experience, ...leadership]) {
+      if (ADDED_SINCE_LEGACY.has(entry.organisation)) continue;
       expect(legacyText, `${entry.organisation} is not in the original`).toContain(
         entry.organisation,
       );
@@ -108,7 +117,12 @@ describe('fidelity to the previous site', () => {
       (match) =>
         match[1]!
           .split(/<br\s*\/?>/)
-          .map((line) => line.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim())
+          .map((line) =>
+            line
+              .replace(/<[^>]+>/g, ' ')
+              .replace(/\s+/g, ' ')
+              .trim(),
+          )
           .filter(Boolean),
     );
 

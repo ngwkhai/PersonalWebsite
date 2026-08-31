@@ -10,7 +10,7 @@ test.describe('capture', () => {
 
   const PAGES = [
     ['/en', 'home'],
-    ['/en/work/gpu-inference-optimization', 'case-study'],
+    ['/en/projects/gpu-inference-optimization', 'case-study'],
     ['/en/resume', 'resume'],
     ['/en/match', 'match'],
   ] as const;

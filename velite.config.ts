@@ -56,7 +56,7 @@ const projects = defineCollection({
         .pop()!
         .replace(/\.mdx$/, '');
       const locale = localeFromPath(path);
-      return { ...data, slug, locale, permalink: `/${locale}/work/${slug}` };
+      return { ...data, slug, locale, permalink: `/${locale}/projects/${slug}` };
     }),
 });
 

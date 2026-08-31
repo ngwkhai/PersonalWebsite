@@ -17,8 +17,9 @@ import type { ChatProject } from './types';
 
 /** Targets that are anchors on the homepage rather than routes of their own. */
 const SECTION_TARGETS = new Set([
+  'education',
   'skills',
-  'work',
+  'projects',
   'achievements',
   'experience',
   'about',
@@ -55,7 +56,7 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
 
       const path =
         target === 'project' && slug
-          ? `/work/${slug}`
+          ? `/projects/${slug}`
           : target === 'home'
             ? '/'
             : SECTION_TARGETS.has(target)

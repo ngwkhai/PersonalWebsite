@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'sections' });
-  return { title: t('work') };
+  return { title: t('projects') };
 }
 
 export default async function WorkPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -28,7 +28,7 @@ export default async function WorkPage({ params }: { params: Promise<{ locale: s
   return (
     <section className="shell pt-32 pb-[var(--space-section)] sm:pt-40">
       <div className="rail-grid">
-        <h1 className="label !text-ink">{t('work')}</h1>
+        <h1 className="label !text-ink">{t('projects')}</h1>
       </div>
 
       <div className="border-rule mt-[var(--space-block)] border-b">
