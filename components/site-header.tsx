@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/navigation';
 import { ThemeToggle } from './theme-toggle';
@@ -8,6 +9,7 @@ import { LanguageToggle } from './language-toggle';
 import { cn } from '@/lib/utils';
 import { openChat, openPalette } from '@/lib/ui-events';
 import { HOME_SECTIONS, SECTION_IDS } from '@/lib/sections';
+import { profile } from '@/content/cv';
 import { useScrollSpy } from '@/lib/use-scrollspy';
 
 /** Routes that are pages of their own rather than sections of the homepage. */
@@ -52,8 +54,25 @@ export function SiteHeader() {
     >
       <nav className="shell">
         <div className="flex h-14 items-center gap-6">
-          <Link href="/" className="label !text-ink shrink-0 !tracking-[0.2em]">
-            NGWKHAI
+          {/* The mark is the portrait rather than a monogram. On a portfolio
+              the person is the brand, and a reader who has seen the header
+              recognises the face in the hero as the same one. */}
+          <Link
+            href="/"
+            aria-label={profile.name}
+            className="group flex shrink-0 items-center gap-2.5"
+          >
+            <span className="border-rule group-hover:border-ink-3 bg-sunk relative block size-9 overflow-hidden rounded-full border transition-colors">
+              <Image
+                src="/img/avatar.avif"
+                alt=""
+                fill
+                priority
+                sizes="36px"
+                className="object-cover"
+              />
+            </span>
+            <span className="label !text-ink !tracking-[0.2em]">NGWKHAI</span>
           </Link>
 
           <ul className="label hidden items-center gap-5 lg:flex">

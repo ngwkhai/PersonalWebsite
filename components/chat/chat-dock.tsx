@@ -173,7 +173,13 @@ export function ChatDock({ projects }: { projects: readonly ChatProject[] }) {
           </button>
         </header>
 
-        <div ref={scroller} className="flex-1 space-y-6 overflow-y-auto px-5 py-6">
+        {/* Same as the palette: Lenis runs on the window and would otherwise
+            claim a wheel gesture aimed at the transcript. */}
+        <div
+          ref={scroller}
+          data-lenis-prevent
+          className="flex-1 space-y-6 overflow-y-auto overscroll-contain px-5 py-6"
+        >
           {messages.length === 0 && (
             <ul className="space-y-2">
               {suggestions.map((suggestion) => (

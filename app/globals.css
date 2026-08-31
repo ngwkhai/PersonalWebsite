@@ -375,6 +375,18 @@
     color: var(--ink);
   }
 
+  /* A visible rail, so it is obvious the list scrolls rather than ends. */
+  .palette-list {
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+  }
+  .palette-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  .palette-list::-webkit-scrollbar-thumb {
+    background: var(--rule);
+  }
+
   /* Tables are the native artifact of this field — an ablation table is the
      result. They get real treatment rather than default borders. */
   .prose-notebook table {
@@ -450,5 +462,170 @@
   .site-flow,
   .site-header {
     transition: none;
+  }
+}
+
+/*
+  The floating way in to the agent.
+
+  Fixed bottom-right, outside every @layer for the same reason the dock rules
+  are: it keys off `:root[data-chat]`, which the dock sets, and the two need to
+  read as one system.
+
+  The pulse is deliberate. Everything else on this site is still — a page of
+  rules, mono labels and no motion for its own sake — so one breathing object
+  in the corner is the whole attention budget, spent on the one control a
+  first-time reader would otherwise never find. It stops entirely under
+  prefers-reduced-motion, and disappears while the dock it opens is open.
+*/
+.chat-fab {
+  position: fixed;
+  inset-block-end: max(1.25rem, env(safe-area-inset-bottom));
+  inset-inline-end: 1.25rem;
+  /* Above the page, below the dock (70), its scrim (60) and the palette (90). */
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.92);
+  pointer-events: none;
+  transition:
+    opacity 600ms var(--ease-out-quint),
+    transform 600ms var(--ease-out-quint);
+}
+.chat-fab[data-ready] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+:root[data-chat='open'] .chat-fab {
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.92);
+  pointer-events: none;
+}
+
+/* The bubble says "chat"; the label says what it is about. Hover only, and
+   only where there is room for it. */
+.chat-fab-label {
+  display: none;
+  border: 1px solid var(--rule);
+  background: var(--raised);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.45rem 0.7rem;
+  opacity: 0;
+  transform: translateX(0.4rem);
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    transform 300ms var(--ease-out-quint);
+}
+@media (min-width: 640px) {
+  .chat-fab-label {
+    display: block;
+  }
+}
+.chat-fab:hover .chat-fab-label,
+.chat-fab:focus-within .chat-fab-label {
+  opacity: 1;
+  transform: none;
+}
+
+.chat-fab-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 3.5rem;
+  block-size: 3.5rem;
+  border-radius: 9999px;
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  animation: chat-fab-glow 3.4s ease-in-out infinite;
+  transition: transform 300ms var(--ease-out-quint);
+}
+.chat-fab-button:hover {
+  transform: scale(1.06);
+}
+.chat-fab-button:focus-visible {
+  outline: 2px solid var(--flare);
+  outline-offset: 3px;
+}
+
+/* Two rings, half a cycle apart, so the corner is never quite at rest. */
+.chat-fab-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid var(--flare);
+  animation: chat-fab-ping 2.8s var(--ease-out-quint) infinite;
+}
+.chat-fab-ring-late {
+  animation-delay: 1.4s;
+}
+
+.chat-fab-dot {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-end: 0.3rem;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: 9999px;
+  background: var(--flare);
+  animation: chat-fab-blink 1.9s ease-in-out infinite;
+}
+
+@keyframes chat-fab-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 22px -10px var(--flare-wash),
+      0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow:
+      0 10px 30px -8px var(--flare),
+      0 0 24px 2px var(--flare-wash);
+  }
+}
+
+@keyframes chat-fab-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  70%,
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes chat-fab-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-fab,
+  .chat-fab-label,
+  .chat-fab-button {
+    transition: none;
+  }
+  .chat-fab-button,
+  .chat-fab-dot {
+    animation: none;
+  }
+  .chat-fab-ring {
+    display: none;
   }
 }

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useTheme } from './theme-toggle';
 import { PALETTE_OPEN, openChat } from '@/lib/ui-events';
+import { useScrollLock } from '@/lib/scroll-lock';
 import { stripDiacritics } from '@/lib/utils';
 import { profile } from '@/content/cv';
 import type { ChatProject } from './chat/types';
@@ -25,6 +26,9 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const field = useRef<HTMLInputElement>(null);
+
+  // While it is open the wheel belongs to the list, not to the page behind it.
+  useScrollLock(open);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -90,9 +94,15 @@ export function CommandPalette({ projects }: { projects: readonly ChatProject[] 
           className="border-rule text-ink placeholder:text-ink-3 w-full border-b bg-transparent px-5 py-4 text-[0.95rem] outline-none"
         />
 
-        {/* overscroll-contain stops a wheel gesture that reaches the end of
-            the list from scrolling the page behind the dialog. */}
-        <Command.List className="max-h-[min(24rem,55vh)] overflow-y-auto overscroll-contain p-2">
+        {/* Two different escapes to plug. overscroll-contain stops a wheel
+            gesture that reaches the end of the list from continuing into the
+            page; data-lenis-prevent stops Lenis from claiming the gesture
+            before the list ever sees it. Without the second one the list
+            never scrolled at all — the page did. */}
+        <Command.List
+          data-lenis-prevent
+          className="palette-list max-h-[min(24rem,55vh)] overflow-y-auto overscroll-contain p-2"
+        >
           <Command.Empty className="text-ink-3 px-3 py-6 text-center text-[0.9rem]">
             {t('empty')}
           </Command.Empty>

@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Lenis from 'lenis';
+import { onScrollLock } from '@/lib/scroll-lock';
 
 /**
  * Lenis smooth scrolling, mounted once in the layout.
@@ -41,7 +42,11 @@ export function SmoothScroll() {
     };
     document.addEventListener('click', onClick);
 
+    // An open modal owns the wheel; the page behind it must not move.
+    const release = onScrollLock((locked) => (locked ? lenis.stop() : lenis.start()));
+
     return () => {
+      release();
       document.removeEventListener('click', onClick);
       cancelAnimationFrame(frame);
       lenis.destroy();

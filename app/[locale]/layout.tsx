@@ -12,6 +12,7 @@ import { SmoothScroll } from '@/components/motion/smooth-scroll';
 import { ThemeScript } from '@/components/theme-script';
 import { CommandPalette } from '@/components/command-palette';
 import { ChatDock } from '@/components/chat/chat-dock';
+import { ChatFab } from '@/components/chat/chat-fab';
 import { getProjects } from '@/lib/content';
 import { JsonLd } from '@/components/json-ld';
 import '../globals.css';
@@ -138,6 +139,7 @@ export default async function LocaleLayout({
           </div>
           <CommandPalette projects={projects} />
           <ChatDock projects={projects} />
+          <ChatFab />
           <JsonLd locale={locale as AppLocale} />
         </NextIntlClientProvider>
       </body>

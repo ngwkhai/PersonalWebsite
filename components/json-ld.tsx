@@ -13,6 +13,8 @@ export function JsonLd({ locale }: { locale: AppLocale }) {
     name: profile.name,
     alternateName: profile.nameVi,
     url: `${SITE_URL}/${locale}`,
+    // The same face the header, the tab icon and the hero use.
+    image: `${SITE_URL}/img/avatar.webp`,
     jobTitle: profile.headline[locale],
     description: profile.bio[locale].slice(0, 300),
     knowsLanguage: ['vi', 'en'],
