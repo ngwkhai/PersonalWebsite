@@ -32,7 +32,7 @@ const PROJECT_NAMES: Record<string, string> = {
  * still hold every legacy entry to the original wording: a new organisation
  * has to be declared here deliberately, it cannot slip in by being unmatched.
  */
-const ADDED_SINCE_LEGACY = new Set(['Viettel Network', 'VinSmart Feature']);
+const ADDED_SINCE_LEGACY = new Set(['Viettel Networks', 'VinSmart Feature']);
 
 /** Every headline figure the previous site published. */
 const METRICS = [

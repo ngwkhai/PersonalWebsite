@@ -7,9 +7,9 @@
 export const HOME_SECTIONS = [
   { id: 'education', key: 'education' },
   { id: 'skills', key: 'skills' },
+  { id: 'experience', key: 'experience' },
   { id: 'projects', key: 'projects' },
   { id: 'achievements', key: 'achievements' },
-  { id: 'experience', key: 'experience' },
   { id: 'writing', key: 'writing' },
   { id: 'resume', key: 'resume' },
   { id: 'contact', key: 'contact' },

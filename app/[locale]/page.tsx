@@ -36,6 +36,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       />
       <Education />
       <Skills />
+      <Experience />
 
       <Section id="projects">
         <SectionHeader
@@ -58,7 +59,6 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </Section>
 
       <Achievements />
-      <Experience />
       <WritingList limit={4} />
       <ResumeTeaser />
       <ContactForm note={profile.contactNote[l]} />

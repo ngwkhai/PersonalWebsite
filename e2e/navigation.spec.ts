@@ -12,9 +12,9 @@ test.describe('navigation', () => {
     for (const id of [
       'education',
       'skills',
+      'experience',
       'projects',
       'achievements',
-      'experience',
       'writing',
       'resume',
       'contact',
