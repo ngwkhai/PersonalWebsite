@@ -478,12 +478,26 @@
   first-time reader would otherwise never find. It stops entirely under
   prefers-reduced-motion, and disappears while the dock it opens is open.
 */
+/*
+  The bubble's footprint, named once. The footer reserves exactly this much
+  below itself, so the two cannot drift apart.
+*/
+:root {
+  --fab-size: 3.5rem;
+  --fab-gap: 1.5rem;
+}
+@media (min-width: 640px) {
+  :root {
+    --fab-gap: 2.5rem;
+  }
+}
+
 .chat-fab {
   position: fixed;
   /* On the page's grid rather than in the viewport corner: it clears the
      bottom by the shell's own gutter, and below 640px that gutter is also
      where the content column ends. */
-  inset-block-end: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
+  inset-block-end: max(var(--fab-gap), calc(env(safe-area-inset-bottom) + 1rem));
   inset-inline-end: 1.25rem;
   /* Above the page, below the dock (70), its scrim (60) and the palette (90). */
   z-index: 55;
@@ -505,9 +519,18 @@
 */
 @media (min-width: 640px) {
   .chat-fab {
-    inset-block-end: max(2.5rem, calc(env(safe-area-inset-bottom) + 1.25rem));
+    inset-block-end: max(var(--fab-gap), calc(env(safe-area-inset-bottom) + 1.25rem));
     inset-inline-end: calc(max(0px, (100% - var(--shell)) / 2) + 2.5rem);
   }
+}
+
+/*
+  Everything the bubble floats over scrolls out from under it — except the last
+  line of the footer, where there is nothing left to scroll. So the page ends
+  with the bubble's footprint reserved, and the copyright clears it.
+*/
+.site-flow > footer {
+  padding-block-end: calc(var(--fab-gap) + var(--fab-size) + 1rem);
 }
 
 .chat-fab[data-ready] {
@@ -555,8 +578,8 @@
   position: relative;
   display: grid;
   place-items: center;
-  inline-size: 3.5rem;
-  block-size: 3.5rem;
+  inline-size: var(--fab-size);
+  block-size: var(--fab-size);
   border-radius: 9999px;
   background: var(--ink);
   color: var(--paper);
