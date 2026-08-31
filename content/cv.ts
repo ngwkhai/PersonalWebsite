@@ -98,7 +98,7 @@ export const education: readonly Institution[] = [
     start: '2023-08',
     end: null,
     logo: '/img/vnu-university-logo.avif',
-    detail: [{ en: 'GPA: 3.5/4', vi: 'GPA: 3.5/4' }],
+    detail: [{ en: 'GPA: 3.61/4', vi: 'GPA: 3.61/4' }],
   },
 ];
 
@@ -220,5 +220,5 @@ export const highlights = [
     label: { en: 'BLEU, Vietnamese restoration', vi: 'BLEU, khôi phục dấu tiếng Việt' },
   },
   { value: '4×', label: { en: 'inference throughput gain', vi: 'tăng thông lượng suy luận' } },
-  { value: '7', label: { en: 'shipped ML systems', vi: 'hệ thống ML đã hoàn thiện' } },
+  { value: '8', label: { en: 'shipped ML systems', vi: 'hệ thống ML đã hoàn thiện' } },
 ] as const satisfies readonly { value: string; label: Localized }[];

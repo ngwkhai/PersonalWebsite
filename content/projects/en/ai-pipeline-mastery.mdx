@@ -1,0 +1,47 @@
+---
+title: AI Pipeline Mastery
+kicker: Course & portal
+summary: >-
+  A 40-hour course that takes one complete PyTorch training pipeline apart — Dataset, DataLoader, Model, training loop, validation — and the internal portal that delivers it: 20 lessons in four parts, plus a Next.js system where students sign in to read and download the material.
+year: 2026
+order: 6
+featured: false
+tags: [Teaching, PyTorch, Next.js, Firebase, Cloudflare R2]
+cover: /img/project-apm.avif
+role: Solo — curriculum design, lesson production, and the portal that serves it
+stack: [PyTorch, Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Tailwind v4]
+points:
+  - >-
+    Twenty lessons of two hours each — 40 hours — split evenly across four parts: Data Pipeline, Model, Training Loop, Validation.
+  - >-
+    Every lesson carries the same three pieces: the knowledge (slides and a written reference), the practice (a notebook and a script), and a multiple-choice check.
+  - >-
+    Each concept follows one thread on purpose — the line of code, what it actually runs, the theory underneath it, and how it fails when you get it wrong.
+  - >-
+    The portal is a second repository: Next.js 16 with server actions, Google sign-in against an email whitelist, and materials in private storage, where the browser never talks to the data store directly.
+metrics:
+  - { label: Lessons, value: '20' }
+  - { label: Hours, value: '40' }
+  - { label: Parts, value: '4' }
+---
+
+## The shape of the course
+
+Most introductions to deep learning start from theory and arrive at code. This one starts from a complete PyTorch training pipeline and works backwards into the theory of each link: **Dataset → DataLoader → Model → Training loop → Validation.**
+
+The four parts are four questions:
+
+1. **Data Pipeline** — how does data get from disk into the model?
+2. **Model** — what is "learning" actually adjusting?
+3. **Training Loop** — what do the four steps of one iteration do?
+4. **Validation** — how do you know a model is genuinely good rather than memorising?
+
+Every concept is taught on the same thread: the line of code, what it runs, the theory it rests on, and the failure you see when it is wrong. The last one matters most — a concept you have only seen working is a concept you cannot debug.
+
+## The portal
+
+Delivering a course is a systems problem, not a content problem, so the second repository is a real application: an admin publishes lessons and materials, a student signs in and downloads them.
+
+The security rule runs through the whole design: **the browser never speaks to the data store.** The client uses authentication only to obtain an identity token; every read and write goes through a server that has verified the session cookie, file downloads are handed out as time-limited signed URLs, and the database rules deny everything by default.
+
+That constraint is also what separates the portal from the course landing page — the landing page is a static export, the portal needs a server to verify sessions and sign URLs, so they are two apps deployed independently.

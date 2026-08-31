@@ -1,0 +1,40 @@
+---
+title: Classroom Trash Detection
+kicker: Split inference
+summary: A webcam watching a classroom for litter with YOLOv8. The interesting part is not the detector but the split — camera, dashboard and database stay on the local machine, while inference runs on a remote GPU behind an HTTP API.
+year: 2026
+order: 8
+featured: false
+tags: [Object Detection, YOLOv8, ONNX, FastAPI, Flask]
+cover: /img/project-ai-server.avif
+repo: https://github.com/ngwkhai/AI_Server
+role: Full system — detection client, dashboard, inference service, ONNX export
+stack: [Python, YOLOv8, ONNX Runtime, FastAPI, Flask, SQLite]
+points:
+  - >-
+    Started as a monolith: one process read the camera stream, ran YOLO locally, served a Flask dashboard and wrote to SQLite. Inference was then split out onto a remote GPU reached over a single POST endpoint.
+  - >-
+    The client keeps everything stateful — webcam capture, an MJPEG stream with boxes drawn on it, the SQLite history, and endpoints for live status, the latest record, the last twenty records and recent alerts.
+  - >-
+    The inference service is a FastAPI app with a health check and a detect endpoint that returns per-class counts, a score, a classification and every box with its confidence.
+  - >-
+    Exported the model to ONNX at half precision and cut the client's upload cost by skipping frames and capping frame width before sending.
+---
+
+## Why split it at all
+
+The first version did everything on one machine, which is the natural thing to build and the wrong thing to run. A model is the expensive part, and it is the part that wants a GPU; a webcam, a dashboard and a small database want to be near the room they are watching.
+
+So the system became two: a **client** that owns the camera and all state, and an **inference service** that owns the model. They meet at one endpoint — `POST /api/detect`, an image in, detections out.
+
+## What the split buys
+
+The client no longer needs a GPU at all, so it runs on whatever machine is already in the room. The model can move — a different GPU, a different host — without touching the client, because the contract between them is a JSON response, not a shared process.
+
+The response is deliberately small: counts per class, a score, a classification and the boxes with confidences. Everything else — drawing the boxes, keeping history, deciding what counts as an alert — stays on the client, where the state already lives.
+
+## Cost, and what it forced
+
+Sending every frame over the network would make latency the bottleneck instead of the model. Two things fix most of it: **skip frames** — inference does not need every one — and **cap the frame width** before uploading, since the detector does not benefit from resolution the model immediately downsamples away.
+
+On the model side, exporting to **ONNX at half precision** was the other half: the same weights, a runtime built for inference rather than training, and a smaller memory footprint per request.

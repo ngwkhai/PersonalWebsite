@@ -1,0 +1,42 @@
+---
+title: Detoura
+kicker: Game engine
+summary: A two-player strategy game on a 9×9 board. Each turn is one step or one of ten walls, and no wall may ever leave a player without a route to the far side — the rule that turns a simple board into a game about shaping someone else's future.
+year: 2026
+order: 4
+featured: true
+tags: [Game, TypeScript, WebSocket, Monorepo, Cloud Run]
+cover: /img/project-detoura.avif
+role: Solo — planning, scaffold, realtime layer, deployment; engine and interface in progress
+stack: [TypeScript, WebSocket, Cloud Run, GitHub Actions]
+points:
+  - >-
+    Two players race across a 9×9 board. Each turn is either a move of one square or the placement of one of ten walls, and whoever touches the opposite edge first wins.
+  - >-
+    One rule holds the whole game together: a wall may never completely cut off any player's route to their goal. Every placement has to be validated against that invariant before it is accepted.
+  - >-
+    Built stage by stage under a gated workflow — idea, research, scope, PRD, ADR, contract, cards, build, review, deploy, verify-live — where a gate that does not pass stops the next stage from opening.
+  - >-
+    Scaffold, CI/CD and a ten-minute WebSocket smoke test are verified against the deployed URL, not a local dev server. The rules engine and the interface are the cards currently in progress.
+metrics:
+  - { label: Board, value: '9 × 9' }
+  - { label: Walls per player, value: '10' }
+---
+
+## The rule that makes it a game
+
+A 9×9 board and two pawns racing to opposite edges is a footrace, not a game. What makes Detoura a game is the wall: ten of them per player, and placing one is an alternative to moving.
+
+The constraint is what matters. **A wall may never leave a player with no route at all to their goal.** You can lengthen someone's path, force them around, cost them four turns — you cannot lock them out. Every wall placement therefore requires a reachability check for both players before it is legal, which is the one piece of real algorithmic work in the rules and the piece that decides whether the game is fair.
+
+## How it is being built
+
+The project follows a gated workflow: eleven stages from idea to a verified live URL, and a stage does not open until the previous gate passes. Planning artefacts live in `flow/`, build work is cut into cards, and each card is one session with its own scope and its own done-evidence.
+
+The point of the discipline is that "done" means something checkable. **C-001 is done because the deployed URL passed a ten-minute WebSocket smoke test** — not because the code compiles locally.
+
+## Where it stands
+
+Scaffold, CI/CD and the realtime transport are live on Cloud Run. The engine — movement, jumping over an adjacent pawn, the win condition — and the interface are the next two cards, deliberately built in parallel against a mocked interface so neither blocks the other.
+
+Stack is a TypeScript monorepo, deployed to Cloud Run, with the interface tokens measured from a reference design in the browser rather than eyeballed.

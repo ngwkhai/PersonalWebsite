@@ -1,0 +1,47 @@
+---
+title: AI Pipeline Mastery
+kicker: Khóa học & cổng học viên
+summary: >-
+  Khóa học 40 giờ bóc tách một training pipeline PyTorch hoàn chỉnh — Dataset, DataLoader, Model, vòng lặp huấn luyện, validation — cùng hệ thống nội bộ phục vụ nó: 20 bài chia bốn phần, kèm một cổng Next.js để học viên đăng nhập đọc và tải tài liệu.
+year: 2026
+order: 6
+featured: false
+tags: [Giảng dạy, PyTorch, Next.js, Firebase, Cloudflare R2]
+cover: /img/project-apm.avif
+role: Làm một mình — thiết kế chương trình, sản xuất bài giảng và xây cổng học viên
+stack: [PyTorch, Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Tailwind v4]
+points:
+  - >-
+    Hai mươi bài, mỗi bài hai giờ — tổng 40 giờ — chia đều cho bốn phần: Data Pipeline, Model, Training Loop, Validation.
+  - >-
+    Mỗi bài đều gồm ba phần giống nhau: kiến thức (slide và tài liệu viết), thực hành (notebook và script), và bài kiểm tra trắc nghiệm.
+  - >-
+    Mỗi khái niệm đi theo đúng một sợi chỉ đỏ — dòng code, nó chạy ra cái gì, lý thuyết nằm dưới nó, và nó hỏng thế nào khi làm sai.
+  - >-
+    Cổng học viên là một repo thứ hai: Next.js 16 với server action, đăng nhập Google có whitelist email, tài liệu nằm trong kho lưu trữ riêng tư, và trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu.
+metrics:
+  - { label: Số bài, value: '20' }
+  - { label: Số giờ, value: '40' }
+  - { label: Số phần, value: '4' }
+---
+
+## Hình dạng của khóa học
+
+Phần lớn khóa nhập môn học sâu đi từ lý thuyết rồi mới tới code. Khóa này bắt đầu từ một training pipeline PyTorch hoàn chỉnh rồi lần ngược về lý thuyết của từng mắt xích: **Dataset → DataLoader → Model → Training loop → Validation.**
+
+Bốn phần là bốn câu hỏi:
+
+1. **Data Pipeline** — dữ liệu đi từ ổ cứng vào model bằng cách nào?
+2. **Model** — "học" thực chất là đang điều chỉnh cái gì?
+3. **Training Loop** — bốn bước trong một vòng lặp huấn luyện làm gì?
+4. **Validation** — làm sao biết model thực sự giỏi chứ không phải học vẹt?
+
+Mọi khái niệm đều được dạy theo cùng một sợi chỉ: dòng code, nó chạy ra gì, lý thuyết đứng sau, và lỗi hiện ra thế nào khi làm sai. Vế cuối quan trọng nhất — một khái niệm chỉ từng thấy lúc nó chạy đúng là khái niệm bạn không debug được.
+
+## Cổng học viên
+
+Đưa một khóa học tới người học là bài toán hệ thống chứ không phải bài toán nội dung, nên repo thứ hai là một ứng dụng thật: admin đăng bài giảng và tài liệu, học viên đăng nhập và tải về.
+
+Nguyên tắc bảo mật chạy xuyên suốt thiết kế: **trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu.** Client chỉ dùng phần đăng nhập để lấy token danh tính; mọi thao tác đọc/ghi đi qua server đã xác minh session cookie, file được phát ra dưới dạng URL ký có hạn, và luật của cơ sở dữ liệu mặc định chặn tất cả.
+
+Ràng buộc đó cũng là thứ tách cổng học viên khỏi trang giới thiệu khóa học — trang giới thiệu là bản xuất tĩnh, còn cổng cần server để xác minh phiên và ký URL, nên đây là hai ứng dụng triển khai độc lập.

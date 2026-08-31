@@ -1,0 +1,42 @@
+---
+title: Detoura
+kicker: Game engine
+summary: Game chiến thuật hai người trên bàn cờ 9×9. Mỗi lượt đi một ô hoặc đặt một trong mười bức tường, và không bức tường nào được phép làm mất hoàn toàn đường về đích của đối phương — chính luật đó biến một bàn cờ đơn giản thành trò chơi về việc định hình tương lai người khác.
+year: 2026
+order: 4
+featured: true
+tags: [Game, TypeScript, WebSocket, Monorepo, Cloud Run]
+cover: /img/project-detoura.avif
+role: Làm một mình — lập kế hoạch, dựng khung, tầng realtime, triển khai; engine và giao diện đang làm
+stack: [TypeScript, WebSocket, Cloud Run, GitHub Actions]
+points:
+  - >-
+    Hai người chơi đua nhau băng qua bàn cờ 9×9. Mỗi lượt hoặc đi một ô, hoặc đặt một trong mười bức tường; ai chạm mép đối diện trước thì thắng.
+  - >-
+    Một luật giữ toàn bộ trò chơi: một bức tường không bao giờ được phép chặn đứng hoàn toàn đường về đích của bất kỳ người chơi nào. Mọi nước đặt tường đều phải kiểm tra ràng buộc đó trước khi được chấp nhận.
+  - >-
+    Xây theo quy trình có cổng, đi từng chặng — ý tưởng, nghiên cứu, phạm vi, PRD, ADR, hợp đồng, card, build, review, deploy, kiểm chứng trên môi trường thật — chặng sau chỉ mở khi cổng trước đã qua.
+  - >-
+    Khung dự án, CI/CD và bài kiểm tra WebSocket mười phút đã được xác nhận trên URL đã deploy, không phải trên máy cục bộ. Engine luật chơi và giao diện là hai card đang làm.
+metrics:
+  - { label: Bàn cờ, value: '9 × 9' }
+  - { label: Tường mỗi người, value: '10' }
+---
+
+## Luật làm nên trò chơi
+
+Một bàn cờ 9×9 với hai quân đua về hai mép đối diện chỉ là một cuộc chạy đua, chưa phải trò chơi. Thứ biến Detoura thành trò chơi là bức tường: mỗi người mười bức, và đặt tường là lựa chọn thay cho việc đi.
+
+Ràng buộc mới là điểm cốt lõi. **Một bức tường không bao giờ được phép khiến một người chơi mất sạch đường về đích.** Bạn có thể kéo dài đường đi của đối phương, ép họ vòng lại, làm họ mất bốn lượt — nhưng không được nhốt họ. Vì thế mỗi nước đặt tường đều cần kiểm tra khả năng tới đích cho cả hai bên trước khi hợp lệ; đó là phần thuật toán thật sự của bộ luật, và là phần quyết định trò chơi có công bằng hay không.
+
+## Cách dự án được xây
+
+Dự án đi theo quy trình có cổng: mười một chặng từ ý tưởng tới một URL đã chạy thật, chặng sau chỉ mở khi cổng trước đã qua. Tài liệu kế hoạch nằm trong `flow/`, phần build được cắt thành các card, mỗi card là một phiên làm việc với phạm vi riêng và bằng chứng hoàn thành riêng.
+
+Điểm của kỷ luật này là để chữ "xong" có thể kiểm chứng được. **C-001 xong vì URL đã deploy vượt qua bài kiểm tra WebSocket mười phút** — không phải vì code biên dịch được trên máy.
+
+## Hiện trạng
+
+Khung dự án, CI/CD và tầng truyền tin realtime đã chạy trên Cloud Run. Engine — di chuyển, nhảy qua quân kề, điều kiện thắng — và giao diện là hai card kế tiếp, chủ ý làm song song trên một giao diện mock để không bên nào chặn bên nào.
+
+Stack là monorepo TypeScript, deploy Cloud Run; token giao diện được đo từ một thiết kế tham chiếu ngay trong trình duyệt thay vì ước lượng bằng mắt.

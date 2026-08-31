@@ -1,0 +1,40 @@
+---
+title: Phát hiện rác phòng học
+kicker: Tách suy luận
+summary: Một webcam theo dõi rác trong phòng học bằng YOLOv8. Điểm đáng nói không nằm ở bộ phát hiện mà ở cách tách hệ thống — camera, dashboard và cơ sở dữ liệu ở lại máy cục bộ, còn suy luận chạy trên GPU từ xa sau một API HTTP.
+year: 2026
+order: 8
+featured: false
+tags: [Phát hiện đối tượng, YOLOv8, ONNX, FastAPI, Flask]
+cover: /img/project-ai-server.avif
+repo: https://github.com/ngwkhai/AI_Server
+role: Toàn bộ hệ thống — client phát hiện, dashboard, dịch vụ suy luận, xuất ONNX
+stack: [Python, YOLOv8, ONNX Runtime, FastAPI, Flask, SQLite]
+points:
+  - >-
+    Ban đầu là một khối duy nhất: một tiến trình đọc luồng camera, chạy YOLO ngay tại chỗ, phục vụ dashboard Flask và ghi vào SQLite. Sau đó phần suy luận được tách ra một GPU từ xa, gọi qua đúng một endpoint POST.
+  - >-
+    Client giữ toàn bộ phần có trạng thái — thu hình webcam, luồng MJPEG đã vẽ khung, lịch sử trong SQLite, cùng các endpoint cho trạng thái realtime, bản ghi mới nhất, hai mươi bản ghi gần nhất và cảnh báo gần đây.
+  - >-
+    Dịch vụ suy luận là một ứng dụng FastAPI với endpoint health check và endpoint detect, trả về số lượng theo từng lớp, điểm số, nhãn phân loại và mọi khung kèm độ tin cậy.
+  - >-
+    Xuất mô hình sang ONNX ở half precision, đồng thời giảm chi phí gửi ảnh của client bằng cách bỏ bớt khung hình và giới hạn chiều rộng ảnh trước khi gửi.
+---
+
+## Vì sao phải tách
+
+Bản đầu tiên làm mọi thứ trên một máy — cách tự nhiên để dựng, nhưng là cách sai để vận hành. Mô hình là phần tốn kém, và là phần cần GPU; còn webcam, dashboard và một cơ sở dữ liệu nhỏ thì muốn ở gần chính căn phòng đang được theo dõi.
+
+Vậy nên hệ thống tách làm hai: một **client** sở hữu camera và toàn bộ trạng thái, và một **dịch vụ suy luận** sở hữu mô hình. Hai bên gặp nhau ở đúng một điểm — `POST /api/detect`, đưa ảnh vào, nhận kết quả phát hiện ra.
+
+## Việc tách mang lại gì
+
+Client không còn cần GPU, nên chạy được trên bất kỳ máy nào sẵn có trong phòng. Mô hình có thể chuyển chỗ — GPU khác, máy chủ khác — mà không phải đụng vào client, vì hợp đồng giữa hai bên là một phản hồi JSON chứ không phải một tiến trình dùng chung.
+
+Phản hồi được giữ nhỏ có chủ ý: số lượng theo lớp, điểm số, nhãn phân loại và các khung kèm độ tin cậy. Mọi thứ còn lại — vẽ khung, lưu lịch sử, quyết định thế nào là một cảnh báo — nằm ở client, nơi trạng thái vốn đã ở đó.
+
+## Cái giá, và điều nó buộc phải làm
+
+Gửi mọi khung hình qua mạng sẽ khiến độ trễ thành nút thắt thay vì mô hình. Hai việc xử lý được phần lớn: **bỏ bớt khung hình** — suy luận không cần từng khung một — và **giới hạn chiều rộng ảnh** trước khi gửi, vì bộ phát hiện chẳng được lợi gì từ độ phân giải mà mô hình lập tức giảm mẫu bỏ đi.
+
+Về phía mô hình, việc **xuất sang ONNX ở half precision** là nửa còn lại: vẫn trọng số ấy, nhưng chạy trên runtime dựng cho suy luận thay vì huấn luyện, và tốn ít bộ nhớ hơn cho mỗi yêu cầu.

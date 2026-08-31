@@ -34,6 +34,20 @@ const PROJECT_NAMES: Record<string, string> = {
  */
 const ADDED_SINCE_LEGACY = new Set(['Viettel Networks', 'VinSmart Feature']);
 
+/**
+ * Projects written after the rewrite. Declared by slug for the same reason as
+ * the organisations above: the seven legacy case studies still have to match
+ * the previous site exactly, and a new one has to be added here on purpose.
+ */
+const PROJECTS_SINCE_LEGACY = new Set(['detoura', 'ai-pipeline-mastery', 'ai-server']);
+
+/**
+ * A claim the previous site made that Khai has since updated. The old wording
+ * is kept beside the new one so this file still says what changed and why the
+ * legacy text no longer matches.
+ */
+const UPDATED_SINCE_LEGACY = new Map([['GPA: 3.61/4', 'GPA: 3.5/4 in the previous site']]);
+
 /** Every headline figure the previous site published. */
 const METRICS = [
   '12.5M',
@@ -60,6 +74,7 @@ const METRICS = [
 describe('fidelity to the previous site', () => {
   it('keeps every project under its original name, in both locales', () => {
     for (const project of projects) {
+      if (PROJECTS_SINCE_LEGACY.has(project.slug)) continue;
       expect(
         project.title,
         `${project.locale}/${project.slug} was renamed — project names are facts, not copy`,
@@ -67,9 +82,10 @@ describe('fidelity to the previous site', () => {
     }
   });
 
-  it('covers all seven projects and no others', () => {
-    const slugs = [...new Set(projects.map((p) => p.slug))].sort();
-    expect(slugs).toEqual(Object.keys(PROJECT_NAMES).sort());
+  it('still carries all seven legacy projects, and nothing undeclared', () => {
+    const slugs = [...new Set(projects.map((p) => p.slug))];
+    const legacy = slugs.filter((slug) => !PROJECTS_SINCE_LEGACY.has(slug)).sort();
+    expect(legacy, 'a legacy case study disappeared').toEqual(Object.keys(PROJECT_NAMES).sort());
   });
 
   it('still publishes every metric the previous site did', () => {
@@ -91,6 +107,7 @@ describe('fidelity to the previous site', () => {
       .flatMap((entry) => entry.detail.map((line) => line.en));
 
     const unsupported = claims.filter((claim) => {
+      if (UPDATED_SINCE_LEGACY.has(claim)) return false;
       // Compare on the distinctive opening of the claim; the original wraps
       // and punctuates differently, so a whole-string match would be brittle.
       const probe = claim.replace(/\s+/g, ' ').slice(0, 40);
