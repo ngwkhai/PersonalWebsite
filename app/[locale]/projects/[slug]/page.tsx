@@ -129,7 +129,9 @@ export default async function ProjectPage({
         </div>
       </header>
 
-      <div className="bg-sunk relative mt-14 aspect-21/9 overflow-hidden">
+      {/* 3:2, not 21:9: the covers are built so their artwork survives a 3:2
+          crop, and a wider band cut the top and bottom off every one of them. */}
+      <div className="bg-sunk relative mt-14 aspect-3/2 overflow-hidden">
         <Image
           src={project.cover}
           alt=""

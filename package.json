@@ -19,6 +19,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "knowledge": "tsx scripts/build-knowledge.ts",
+    "covers": "node scripts/build-covers.mjs",
     "test:a11y": "playwright test e2e/a11y.spec.ts --project=desktop",
     "check:contrast": "node scripts/check-contrast.mjs",
     "verify": "pnpm typecheck && pnpm lint && pnpm check:contrast && pnpm test",

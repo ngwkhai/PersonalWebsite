@@ -49,7 +49,7 @@ export function ProjectCard({
             fill
             priority={priority}
             sizes="(max-width: 768px) 100vw, 15rem"
-            wrapperClassName="aspect-4/3 md:aspect-[5/4]"
+            wrapperClassName="aspect-4/3 md:aspect-[5/4] bg-sunk"
             className="object-cover group-hover:scale-[1.03]"
           />
         </div>
