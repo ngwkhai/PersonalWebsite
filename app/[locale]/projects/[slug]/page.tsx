@@ -129,8 +129,8 @@ export default async function ProjectPage({
         </div>
       </header>
 
-      {/* 3:2, not 21:9: the covers are built so their artwork survives a 3:2
-          crop, and a wider band cut the top and bottom off every one of them. */}
+      {/* The frame the covers are actually built at, and the same one the
+          cards use — so the picture is never cropped a second time here. */}
       <div className="bg-sunk relative mt-14 aspect-3/2 overflow-hidden">
         <Image
           src={project.cover}

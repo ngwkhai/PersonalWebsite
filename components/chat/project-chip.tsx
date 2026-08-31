@@ -12,7 +12,7 @@ export function ProjectChip({ project }: { project: ChatProject }) {
       className="group border-rule hover:border-ink-3 my-2 flex items-center gap-3 border p-2 transition-colors"
     >
       <div className="bg-sunk relative size-12 shrink-0 overflow-hidden">
-        <Image src={project.cover} alt="" fill sizes="48px" className="object-cover" />
+        <Image src={project.coverSquare} alt="" fill sizes="48px" className="object-cover" />
       </div>
       <div className="min-w-0">
         <p className="label">

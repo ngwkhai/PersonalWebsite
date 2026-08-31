@@ -110,6 +110,7 @@ export default async function LocaleLayout({
     kicker: project.kicker,
     year: project.year,
     cover: project.cover,
+    coverSquare: project.coverSquare,
     href: `/projects/${project.slug}`,
   }));
 

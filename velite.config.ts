@@ -56,7 +56,11 @@ const projects = defineCollection({
         .pop()!
         .replace(/\.mdx$/, '');
       const locale = localeFromPath(path);
-      return { ...data, slug, locale, permalink: `/${locale}/projects/${slug}` };
+      // The cover is built at two shapes: 3:2 for the card and the case study
+      // head, 1:1 for the chip in the chat. Derived rather than a second
+      // frontmatter field, so the two can never name different pictures.
+      const coverSquare = data.cover.replace(/(\.\w+)$/, '-square$1');
+      return { ...data, coverSquare, slug, locale, permalink: `/${locale}/projects/${slug}` };
     }),
 });
 
