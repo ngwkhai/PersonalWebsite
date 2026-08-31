@@ -480,7 +480,10 @@
 */
 .chat-fab {
   position: fixed;
-  inset-block-end: max(1.25rem, env(safe-area-inset-bottom));
+  /* On the page's grid rather than in the viewport corner: it clears the
+     bottom by the shell's own gutter, and below 640px that gutter is also
+     where the content column ends. */
+  inset-block-end: max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem));
   inset-inline-end: 1.25rem;
   /* Above the page, below the dock (70), its scrim (60) and the palette (90). */
   z-index: 55;
@@ -494,6 +497,19 @@
     opacity 600ms var(--ease-out-quint),
     transform 600ms var(--ease-out-quint);
 }
+/*
+  Above the shell's max width the column stops short of the viewport, so the
+  bubble follows it in rather than floating out in the margin — its right edge
+  lands on the column's right edge. The max() collapses to the gutter alone on
+  anything narrower, where the column already reaches that far.
+*/
+@media (min-width: 640px) {
+  .chat-fab {
+    inset-block-end: max(2.5rem, calc(env(safe-area-inset-bottom) + 1.25rem));
+    inset-inline-end: calc(max(0px, (100% - var(--shell)) / 2) + 2.5rem);
+  }
+}
+
 .chat-fab[data-ready] {
   opacity: 1;
   transform: none;
