@@ -446,7 +446,8 @@
 .site-header {
   transition:
     margin-inline-end 500ms var(--ease-out-quint),
-    inset-inline-end 500ms var(--ease-out-quint);
+    inset-inline-end 500ms var(--ease-out-quint),
+    padding-block-end 400ms var(--ease-out-quint);
 }
 
 @media (min-width: 1024px) {
@@ -461,6 +462,140 @@
 @media (prefers-reduced-motion: reduce) {
   .site-flow,
   .site-header {
+    transition: none;
+  }
+}
+
+/*
+  On a phone the dock stops being a column and becomes a bottom sheet.
+
+  A full-screen panel was the wrong shape here for one specific reason: the
+  agent's own `navigateTo` tool opens a page, and the reader could not see the
+  page it had opened. So the sheet keeps a height it can trade — a peek, a
+  half, a full — the page above it stays visible, scrollable and tappable, and
+  the agent drops the sheet to a peek the moment it navigates.
+
+  Heights are named on :root, not on the sheet, because the page's own bottom
+  padding has to reserve exactly the same amount: the last section of a page
+  must be scrollable clear of the sheet, the way the footer already clears the
+  bubble. `dvh` rather than `vh` so the collapsing browser chrome is counted.
+
+  `--kb` is the on-screen keyboard's height, published by the dock from the
+  visual viewport. It is 0 whenever there is no keyboard, so every expression
+  below is the plain one until the moment it is not.
+*/
+:root {
+  --sheet-peek: max(30dvh, 13rem);
+  --sheet-half: 58dvh;
+  --sheet-full: calc(100dvh - 3.5rem);
+  --sheet: var(--sheet-half);
+}
+:root[data-chat-sheet='peek'] {
+  --sheet: var(--sheet-peek);
+}
+:root[data-chat-sheet='full'] {
+  --sheet: var(--sheet-full);
+}
+
+@media (max-width: 767px) {
+  .chat-dock {
+    /* Anchored to the bottom, and to the top of the keyboard when there is
+       one — iOS does not shrink the layout viewport, so `bottom: 0` alone
+       puts the composer underneath the keys. */
+    inset-block: auto var(--kb, 0px);
+    inset-inline: 0;
+    inline-size: 100%;
+    block-size: min(var(--sheet), calc(100dvh - var(--kb, 0px) - 2.5rem));
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--rule);
+    /* The page is still lit behind it, so the sheet needs an edge of its own
+       to sit on rather than a border alone. */
+    box-shadow: 0 -1.5rem 3rem -1.75rem oklch(0 0 0 / 0.45);
+    transform: translateY(calc(100% + var(--kb, 0px)));
+    transition:
+      transform 460ms var(--ease-out-quint),
+      block-size 380ms var(--ease-out-quint);
+  }
+  :root[data-chat='open'] .chat-dock {
+    transform: translateY(0);
+  }
+  /* Under the finger the sheet follows it exactly; a transition would lag. */
+  .chat-dock[data-dragging] {
+    transition: none;
+  }
+
+  /* The page keeps its own scroll while the sheet is up, so its end has to
+     clear the sheet — otherwise the last section is unreadable for as long as
+     the thread is open. */
+  :root[data-chat='open'] .site-flow {
+    padding-block-end: var(--sheet);
+  }
+
+  /* No scrim at peek or half: the page beside the sheet is the point. At full
+     height the sheet has taken the screen, and the scrim says so. */
+  .chat-scrim {
+    display: none;
+  }
+  :root[data-chat-sheet='full'] .chat-scrim {
+    display: block;
+  }
+
+  /* Below 16px iOS zooms the whole page in on focus and never zooms back
+     out — the one place on this site where the type scale does not decide. */
+  .chat-composer textarea {
+    font-size: 1rem;
+  }
+  .chat-composer {
+    padding-block-end: calc(0.625rem + env(safe-area-inset-bottom));
+  }
+  /* The keyboard is up: every line of the sheet belongs to the thread. */
+  :root[data-chat-sheet='peek'] .chat-disclaimer {
+    display: none;
+  }
+}
+
+/*
+  The sheet's handle. Wide target, thin mark: it is the control that trades
+  page for transcript, and a drag on it has to beat the page's own scroll,
+  hence `touch-action: none`.
+*/
+.chat-grip {
+  /* A phone control: on the side panel there is nothing to trade. */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 1.75rem;
+  flex-shrink: 0;
+  touch-action: none;
+  cursor: grab;
+}
+.chat-grip:active {
+  cursor: grabbing;
+}
+.chat-grip-bar {
+  inline-size: 2.5rem;
+  block-size: 0.1875rem;
+  border-radius: 9999px;
+  background: var(--rule);
+  transition: background 200ms var(--ease-out-quint);
+}
+.chat-grip:hover .chat-grip-bar,
+.chat-grip:focus-visible .chat-grip-bar {
+  background: var(--ink-3);
+}
+.chat-grip:focus-visible {
+  outline: 2px solid var(--flare);
+  outline-offset: -2px;
+}
+@media (max-width: 767px) {
+  .chat-grip {
+    display: flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-dock {
     transition: none;
   }
 }

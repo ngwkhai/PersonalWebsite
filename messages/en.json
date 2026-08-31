@@ -78,7 +78,10 @@
     },
     "disclaimer": "Answers come from this site's content. Verify anything that matters.",
     "close": "Close",
-    "unconfigured": "The assistant is not switched on right now. Everything it would tell you is in the case studies."
+    "unconfigured": "The assistant is not switched on right now. Everything it would tell you is in the case studies.",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "placeholderShort": "Ask about this work…"
   },
   "match": {
     "title": "Job description matcher",

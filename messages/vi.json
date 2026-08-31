@@ -78,7 +78,10 @@
     },
     "disclaimer": "Câu trả lời lấy từ nội dung của chính trang này. Hãy kiểm chứng lại những gì quan trọng.",
     "close": "Đóng",
-    "unconfigured": "Trợ lý hiện chưa được bật. Mọi thứ nó định nói đều đã nằm trong các case study."
+    "unconfigured": "Trợ lý hiện chưa được bật. Mọi thứ nó định nói đều đã nằm trong các case study.",
+    "expand": "Mở rộng",
+    "collapse": "Thu gọn",
+    "placeholderShort": "Hỏi về công việc này…"
   },
   "match": {
     "title": "Đối chiếu mô tả công việc",
