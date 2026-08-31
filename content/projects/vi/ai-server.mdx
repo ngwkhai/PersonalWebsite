@@ -1,40 +1,73 @@
 ---
 title: Phát hiện rác phòng học
-kicker: Tách suy luận
-summary: Một webcam theo dõi rác trong phòng học bằng YOLOv8. Điểm đáng nói không nằm ở bộ phát hiện mà ở cách tách hệ thống — camera, dashboard và cơ sở dữ liệu ở lại máy cục bộ, còn suy luận chạy trên GPU từ xa sau một API HTTP.
+kicker: Suy luận phân tán
+summary: >-
+  Một hệ thống thị giác máy tính tách qua ranh giới mạng. Một client có trạng thái nắm phần thu hình, hiển thị và lưu trữ trên phần cứng thông thường; một service FastAPI phi trạng thái nắm model trên GPU; và mọi thứ ở giữa — băng thông, độ trễ, lỗi và tính di động — đều được thiết kế ngay tại mối nối.
 year: 2026
 order: 8
 featured: false
-tags: [Phát hiện đối tượng, YOLOv8, ONNX, FastAPI, Flask]
+tags: [Computer Vision, YOLOv8, ONNX Runtime, FastAPI, Docker, GPU serverless]
 cover: /img/project-ai-server.avif
 repo: https://github.com/ngwkhai/AI_Server
-role: Toàn bộ hệ thống — client phát hiện, dashboard, dịch vụ suy luận, xuất ONNX
-stack: [Python, YOLOv8, ONNX Runtime, FastAPI, Flask, SQLite]
+role: Toàn hệ thống — kiến trúc phân tán, client, service suy luận, tối ưu runtime, triển khai
+stack: [Python, YOLOv8, ONNX Runtime, FastAPI, Flask, OpenCV, SQLite, Docker, Modal]
 points:
   - >-
-    Ban đầu là một khối duy nhất: một tiến trình đọc luồng camera, chạy YOLO ngay tại chỗ, phục vụ dashboard Flask và ghi vào SQLite. Sau đó phần suy luận được tách ra một GPU từ xa, gọi qua đúng một endpoint POST.
+    Một ứng dụng chạy trong một tiến trình được tái cấu trúc thành hai đơn vị triển khai gặp nhau ở đúng một hợp đồng HTTP — ảnh vào, kết quả phát hiện có cấu trúc ra, xác thực bằng key trên header — nên nửa nặng về tính toán sống được trên GPU còn phần còn lại chạy trên bất kỳ phần cứng nào sẵn có.
   - >-
-    Client giữ toàn bộ phần có trạng thái — thu hình webcam, luồng MJPEG đã vẽ khung, lịch sử trong SQLite, cùng các endpoint cho trạng thái realtime, bản ghi mới nhất, hai mươi bản ghi gần nhất và cảnh báo gần đây.
+    Đường tách vạch theo trạng thái: client sở hữu phần thu hình, luồng video có chú thích, lưu trữ cục bộ và một API trạng thái; service suy luận sở hữu model và không sở hữu gì khác. Một service phi trạng thái có thể dời chỗ, dựng lại hay nhân bản mà client không hề biết.
   - >-
-    Dịch vụ suy luận là một ứng dụng FastAPI với endpoint health check và endpoint detect, trả về số lượng theo từng lớp, điểm số, nhãn phân loại và mọi khung kèm độ tin cậy.
+    Nguồn đầu vào là cấu hình chứ không phải một nhánh code — một thiết bị cục bộ hoặc một luồng video qua mạng, có dò các endpoint ứng viên và tự kết nối lại trên luồng nền — nên đổi phần cứng camera chỉ đổi một biến môi trường và không đổi gì trên server.
   - >-
-    Xuất mô hình sang ONNX ở half precision, đồng thời giảm chi phí gửi ảnh của client bằng cách bỏ bớt khung hình và giới hạn chiều rộng ảnh trước khi gửi.
+    Băng thông được thiết kế một cách tường minh: khung hình bị hạ kích thước về một bề ngang cố định trước khi truyền, và toạ độ trả về được nhân lại đúng hệ số đó, nên chú thích khớp đúng vào luồng độ phân giải đầy đủ chứ không khớp vào gói dữ liệu đã gửi đi.
+  - >-
+    Thông lượng được thiết kế tách bạch: suy luận chạy theo mẫu thay vì chạy mỗi khung, kết quả được cache ở khoảng giữa, nên video giữ nguyên tốc độ khung hình trong khi mạng và GPU chỉ gánh một phần nhỏ tải.
+  - >-
+    Lỗi được tính trước. Một cơ chế dự phòng chạy cục bộ giữ pipeline sống khi service từ xa không với tới được, và API trạng thái công bố backend nào thật sự phục vụ mỗi yêu cầu cùng độ trễ đo được — nên một phàn nàn về hiệu năng quy được về đường truyền hoặc về model thay vì dừng ở phỏng đoán.
+  - >-
+    Chi phí phục vụ được giảm ở tầng runtime: export ONNX ở nửa độ chính xác, định dạng model phân giải lúc nạp giữa PyTorch, ONNX và TensorRT, làm nóng ngay khi tiến trình khởi động để không request nào phải trả giá đường lạnh, và một endpoint health báo đúng artifact đang được nạp.
+  - >-
+    Cùng một ứng dụng FastAPI triển khai được ba kiểu mà không sửa gì — GPU trong notebook sau một đường hầm, một image Docker, và một hàm GPU serverless — biến quyết định hạ tầng thành một lựa chọn lúc chạy chứ không phải một lần viết lại.
+metrics:
+  - { label: Định dạng model, value: '3', note: 'PyTorch, ONNX, TensorRT' }
+  - { label: Bề ngang gửi lên, value: '640 px' }
+  - { label: Nơi triển khai, value: '3' }
 ---
 
-## Vì sao phải tách
+## Tách một tiến trình thành hai
 
-Bản đầu tiên làm mọi thứ trên một máy — cách tự nhiên để dựng, nhưng là cách sai để vận hành. Mô hình là phần tốn kém, và là phần cần GPU; còn webcam, dashboard và một cơ sở dữ liệu nhỏ thì muốn ở gần chính căn phòng đang được theo dõi.
+Bản đầu tiên là một tiến trình làm mọi việc: đọc nguồn video, chạy model, phục vụ dashboard và ghi cơ sở dữ liệu. Đó là hình dạng tự nhiên để xây và sai để vận hành, vì các bộ phận của nó cần phần cứng khác nhau. Model cần GPU. Camera, dashboard và một cơ sở dữ liệu nhỏ thì cần ở gần chính thứ chúng đang theo dõi.
 
-Vậy nên hệ thống tách làm hai: một **client** sở hữu camera và toàn bộ trạng thái, và một **dịch vụ suy luận** sở hữu mô hình. Hai bên gặp nhau ở đúng một điểm — `POST /api/detect`, đưa ảnh vào, nhận kết quả phát hiện ra.
+Thế nên hệ thống được tái cấu trúc thành hai đơn vị triển khai gặp nhau ở đúng một hợp đồng HTTP — ảnh vào, kết quả phát hiện có cấu trúc ra, xác thực bằng key trên header.
 
-## Việc tách mang lại gì
+Đường tách vạch theo **trạng thái**, ranh giới thật sự đáng kể. Client sở hữu mọi thứ có trạng thái: luồng thu hình, luồng video có chú thích, lưu trữ cục bộ, API trạng thái. Service suy luận sở hữu model và không giữ gì lại giữa hai yêu cầu. Một service phi trạng thái có thể chuyển sang phần cứng khác, dựng lại, hoặc chạy nhiều bản mà client không cần biết, còn phần phản hồi cố ý giữ gọn để hợp đồng đủ hẹp mà cài đặt lại được.
 
-Client không còn cần GPU, nên chạy được trên bất kỳ máy nào sẵn có trong phòng. Mô hình có thể chuyển chỗ — GPU khác, máy chủ khác — mà không phải đụng vào client, vì hợp đồng giữa hai bên là một phản hồi JSON chứ không phải một tiến trình dùng chung.
+Cùng kỷ luật đó áp cho đầu vào. Nguồn video là cấu hình chứ không phải nhánh code — một thiết bị cục bộ hoặc một luồng qua mạng, phân giải lúc khởi động, có dò endpoint ứng viên và tự kết nối lại trên luồng nền. Đổi phần cứng camera là một biến môi trường, và service suy luận không bao giờ biết tới chuyện đó.
 
-Phản hồi được giữ nhỏ có chủ ý: số lượng theo lớp, điểm số, nhãn phân loại và các khung kèm độ tin cậy. Mọi thứ còn lại — vẽ khung, lưu lịch sử, quyết định thế nào là một cảnh báo — nằm ở client, nơi trạng thái vốn đã ở đó.
+## Thiết kế đường truyền
 
-## Cái giá, và điều nó buộc phải làm
+Khi suy luận đi qua mạng, mạng trở thành một thành phần phải thiết kế, không còn là cái ống được cho không.
 
-Gửi mọi khung hình qua mạng sẽ khiến độ trễ thành nút thắt thay vì mô hình. Hai việc xử lý được phần lớn: **bỏ bớt khung hình** — suy luận không cần từng khung một — và **giới hạn chiều rộng ảnh** trước khi gửi, vì bộ phát hiện chẳng được lợi gì từ độ phân giải mà mô hình lập tức giảm mẫu bỏ đi.
+Hai cơ chế gánh phần lớn việc đó. Khung hình được **hạ kích thước về một bề ngang cố định trước khi truyền**, vì bộ phát hiện vốn lấy mẫu lại mọi thứ lớn hơn và số byte thừa không mua được gì — nhưng kết quả trả về nằm trong hệ toạ độ của thứ đã gửi, nên client giữ lại hệ số thu nhỏ và nhân mọi kết quả ngược lên trước khi vẽ. Nhờ đó chú thích khớp đúng vào luồng độ phân giải đầy đủ mà người ta đang thật sự nhìn. Và suy luận **chạy theo mẫu thay vì chạy mỗi khung**, kết quả được cache ở khoảng giữa: video giữ nguyên tốc độ khung hình trong khi mạng và GPU chỉ chở một phần lưu lượng.
 
-Về phía mô hình, việc **xuất sang ONNX ở half precision** là nửa còn lại: vẫn trọng số ấy, nhưng chạy trên runtime dựng cho suy luận thay vì huấn luyện, và tốn ít bộ nhớ hơn cho mỗi yêu cầu.
+Hai cơ chế đó tách rời hai thứ vốn thường bị buộc phải đi cùng nhau — độ mượt hiển thị và chi phí suy luận — và đó là lý do cùng một hệ thống chạy chấp nhận được cả trên đường mạng nội bộ nhanh lẫn đường từ xa chậm.
+
+## Hỏng đẹp, và biết mình đang hỏng
+
+Một hệ thống camera dừng hẳn khi server biến mất thì tệ hơn một hệ thống xuống cấp, nên client có thể quay về chạy model ngay tại chỗ khi lời gọi từ xa hỏng. Tính sẵn sàng sống sót qua việc mất bộ tăng tốc; chỉ chất lượng dịch vụ thay đổi.
+
+Khả năng quan sát được xây ngay vào mối nối đó. Mọi lời gọi từ xa đều được bấm giờ, và API trạng thái công bố cả độ trễ đo được lẫn **backend nào thật sự phục vụ yêu cầu**. Đó là một lượng code rất nhỏ nhưng đổi hẳn tính chất của mọi cuộc trao đổi về hiệu năng: "thấy chậm" quy được về đường truyền hoặc về model, kèm một con số.
+
+Cùng trực giác đó định hình phía đầu ra. Thông báo **kích theo cạnh và có trần tần suất** — phát khi trạng thái chuyển, rồi nhiều nhất một lần mỗi khoảng trong lúc điều kiện còn kéo dài — vì cảnh báo theo từng sự kiện tạo ra lượng tin nhắn dạy người ta thói quen phớt lờ cả kênh. Việc lưu trữ lấy mẫu theo thời gian ở một nhịp cố định chứ không ghi theo từng khung. Cả hai đều thiết kế quanh thứ một con người hành động được, không phải quanh thứ model tình cờ sinh ra.
+
+## Giảm chi phí phục vụ model
+
+Model được export sang **ONNX ở nửa độ chính xác**: vẫn bộ trọng số đó, một runtime dựng cho suy luận chứ không cho huấn luyện, và ít bộ nhớ hơn cho mỗi yêu cầu. Định dạng phân giải lúc nạp giữa weights PyTorch, ONNX và TensorRT, nên chuyển qua lại là một thay đổi cấu hình chứ không phải một lần sửa code — và bộ công cụ export luôn tìm về đúng trọng số huấn luyện gốc bất kể đường dẫn runtime đang trỏ vào đâu.
+
+Service nạp model ngay khi tiến trình khởi động chứ không đợi yêu cầu đầu tiên, nên không người dùng nào phải trả giá đường lạnh, và endpoint health báo đúng định dạng cùng artifact đang được nạp. Chi tiết cuối cùng đó là câu trả lời rẻ nhất cho câu hỏi triển khai phổ biến nhất: thứ đang chạy có đúng là thứ mình vừa ship không?
+
+## Một ứng dụng, ba nơi triển khai
+
+Service viết một lần và chạy ba kiểu mà không sửa gì: một GPU notebook sau đường hầm để lặp nhanh, một image Docker cho bất cứ đâu nhận container, và một hàm GPU serverless nạp thẳng chính đối tượng ứng dụng đó.
+
+Không có gì trong client biết bên nào đang trả lời, vì thứ duy nhất nó phụ thuộc vào là hợp đồng. Hạ tầng vì thế thành một quyết định lúc chạy — theo chi phí, độ trễ hay tính sẵn sàng của từng thời điểm — chứ không phải một cam kết kiến trúc chọn một lần rồi trả giá mãi.

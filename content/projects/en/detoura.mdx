@@ -1,42 +1,83 @@
 ---
 title: Detoura
-kicker: Game engine
-summary: A two-player strategy game on a 9×9 board. Each turn is one step or one of ten walls, and no wall may ever leave a player without a route to the far side — the rule that turns a simple board into a game about shaping someone else's future.
+kicker: Realtime platform
+summary: >-
+  A TypeScript monorepo that turned a single online board game into a platform. Rules plug into one typed interface, the server treats a match as opaque state, one set of Zod schemas is both the validator and the published API spec, and a second service runs automated tournaments between bots over WebSocket.
 year: 2026
 order: 4
 featured: true
-tags: [Game, TypeScript, WebSocket, Monorepo, Cloud Run]
+tags: [Realtime, TypeScript, Zod, WebSocket, PostgreSQL, Cloud Run]
 cover: /img/project-detoura.avif
-role: Solo — planning, scaffold, realtime layer, deployment; engine and interface in progress
-stack: [TypeScript, WebSocket, Cloud Run, GitHub Actions]
+demo: https://detoura-175412711513.asia-southeast1.run.app
+role: Solo — architecture, rules engine, protocol, arena service, search algorithms, deployment
+stack: [TypeScript, Zod, ws, React, Vite, PostgreSQL, Docker, Cloud Run, GitHub Actions]
 points:
   - >-
-    Two players race across a 9×9 board. Each turn is either a move of one square or the placement of one of ten walls, and whoever touches the opposite edge first wins.
+    A pnpm monorepo of nine workspaces around one dependency-free core: the rules package imports nothing, touches no clock and no randomness, and is therefore deterministic — which is what later made replay, simulation and server-side search possible without a second implementation.
   - >-
-    One rule holds the whole game together: a wall may never completely cut off any player's route to their goal. Every placement has to be validated against that invariant before it is accepted.
+    Game logic plugs into a single typed interface. The platform holds a match as opaque state and asks the module every question it has, so supporting a second game is a rules package plus a render layer, with no change to the room, protocol or transport code.
   - >-
-    Built stage by stage under a gated workflow — idea, research, scope, PRD, ADR, contract, cards, build, review, deploy, verify-live — where a gate that does not pass stops the next stage from opening.
+    One set of Zod schemas is the single source of truth: it validates every inbound message and it generates `/openapi.json` and a live `/spec` covering the fourteen-message WebSocket catalog that OpenAPI cannot express. Documentation cannot fall behind the server because it is produced by the server.
   - >-
-    Scaffold, CI/CD and a ten-minute WebSocket smoke test are verified against the deployed URL, not a local dev server. The rules engine and the interface are the cards currently in progress.
+    A contract-drift suite runs against the deployed URL on every release, checking the design document against the spec the live service is actually serving. Producer/consumer drift — one shape shipped, another assumed, both test suites green — becomes a build failure instead of a bug report.
+  - >-
+    The tournament service is its own process on Postgres with hand-written parameterised SQL: API keys stored only as hashes and compared in constant time, schedules generated in one transaction, standings served from a SQL view recomputed on read, and matches persisted as action logs that replay deterministically instead of as duplicated state.
+  - >-
+    Hardened at the transport layer with per-connection token-bucket rate limiting, a frame-size ceiling, a server-owned Fischer clock the game state never sees, and a structured event log that makes every rejection auditable after the fact.
+  - >-
+    Shipped as containers on Cloud Run through GitHub Actions with Workload Identity Federation — no long-lived credentials — behind a gate of contract tests, Playwright end-to-end runs and a WebSocket smoke test executed against the real deployment.
 metrics:
-  - { label: Board, value: '9 × 9' }
-  - { label: Walls per player, value: '10' }
+  - { label: Workspace packages, value: '9' }
+  - { label: Interfaces under contract, value: '5' }
+  - { label: Protocol messages, value: '14' }
 ---
 
-## The rule that makes it a game
+## A core with nothing underneath it
 
-A 9×9 board and two pawns racing to opposite edges is a footrace, not a game. What makes Detoura a game is the wall: ten of them per player, and placing one is an alternative to moving.
+The architecture starts from one constraint: the rules package has **zero dependencies**. No UI import, no network import, no clock, no randomness. Pure functions in, pure values out.
 
-The constraint is what matters. **A wall may never leave a player with no route at all to their goal.** You can lengthen someone's path, force them around, cost them four turns — you cannot lock them out. Every wall placement therefore requires a reachability check for both players before it is legal, which is the one piece of real algorithmic work in the rules and the piece that decides whether the game is fair.
+That is a small rule with large consequences. Because the core is deterministic, the same code can run in the browser for instant local feedback and on the server as the authority, with no risk of two implementations disagreeing. Because it has no clock, a match can be replayed from its move log rather than stored as snapshots. Because it has no randomness, a search algorithm can simulate thousands of futures against the real rules instead of an approximation of them.
 
-## How it is being built
+Around it sits a pnpm monorepo of nine workspaces: the core, a module interface, spec generation, shared HTTP utilities, one package per game, the web client, the realtime server, and the tournament service. Boundaries are enforced by package export maps rather than by convention, so a layer cannot quietly reach into another one's internals.
 
-The project follows a gated workflow: eleven stages from idea to a verified live URL, and a stage does not open until the previous gate passes. Planning artefacts live in `flow/`, build work is cut into cards, and each card is one session with its own scope and its own done-evidence.
+## One interface, any number of games
 
-The point of the discipline is that "done" means something checkable. **C-001 is done because the deployed URL passed a ten-minute WebSocket smoke test** — not because the code compiles locally.
+The platform does not know which game is running. Rules plug in through a single typed interface — initialise, apply an action, list what is legal, report an outcome, and project the state into three flat arrays that the shared renderer draws.
 
-## Where it stands
+The server therefore holds a match as **opaque state**: it never reads a field, it asks the module. That inversion is what makes the platform extensible in the cheap direction. Adding a game is a rules package and a render layer; the room lifecycle, the protocol, the reconnection logic, the clock and the persistence layer are written once and reused unchanged.
 
-Scaffold, CI/CD and the realtime transport are live on Cloud Run. The engine — movement, jumping over an adjacent pawn, the win condition — and the interface are the next two cards, deliberately built in parallel against a mocked interface so neither blocks the other.
+Small decisions follow the same logic. Seats are indices rather than colours, so games with different conventions do not fight the type. The outcome type carried every terminal case from the first commit rather than the ones the first game happened to need — retrofitting one later would have meant changing the protocol, the schema and the scoring logic in the same week.
 
-Stack is a TypeScript monorepo, deployed to Cloud Run, with the interface tokens measured from a reference design in the browser rather than eyeballed.
+## The schema is the API, the API is the test
+
+Everything on the wire is described by Zod schemas, and those schemas do three jobs from one definition.
+
+They **validate**: every inbound message is parsed before it reaches any logic, so malformed input is a typed rejection rather than a runtime surprise. They **document**: `/openapi.json` and a live `/spec` page are generated from them, including the WebSocket message catalogue, which is where most of a realtime contract lives and which OpenAPI has no way to express. And they **anchor the tests**: a drift suite runs on every release against the deployed URL, checking that every endpoint, message and error code in the design document is present in the spec the running service serves.
+
+The benefit is specific. Documentation cannot go stale, because nobody writes it. Frontend and backend cannot drift apart quietly, because the divergence fails a build rather than surfacing as a bug three weeks later. And a new client — a browser, a bot, a test harness — can be written against a spec that is guaranteed to describe the service as deployed.
+
+## A second service, kept separate on purpose
+
+Automated tournaments run as their own process, with their own database and their own deployment pipeline, and are structurally forbidden from touching the protocol that serves live players. One system's growth cannot destabilise another's traffic.
+
+Its data layer is hand-written parameterised SQL over Postgres — no ORM, and every response object built field by field, so a new column can never leak outward by accident. Authentication is API-key based with keys stored only as hashes and compared in constant time, with both sides hashed first so the comparison neither short-circuits nor leaks a length. Schedules are generated in a single transaction. Standings are a **SQL view recomputed on read**, which removes an entire class of bug: a derived table that silently disagrees with the rows it was derived from.
+
+Matches persist as **action logs, not snapshots**. Because the core is deterministic, a replay is a fold over the log — cheaper to store, and structurally incapable of contradicting the record it came from.
+
+## Realtime, defended
+
+The transport is a WebSocket server where the backend is the sole authority; the client runs the same rules only to render optimistically. Sessions survive a dropped connection through an opaque reconnection token, so a lost network is a pause rather than a forfeit.
+
+Abuse is budgeted rather than trusted: token-bucket rate limiting per connection, a hard ceiling on frame size, and automatic forfeiture on sustained protocol violation. Every one of those events is written to a structured audit log, separate from the match record, so an operator can reconstruct what a client did without inferring it from behaviour.
+
+The clock is a Fischer time bank the server owns outright and the game state never sees. Keeping time out of the state is what allows the same state to be replayed, simulated and hashed without a timestamp changing the result.
+
+## Search, as a calibration exercise
+
+Two full search algorithms were built against the deployed service to characterise how the platform behaves under real automated load: **minimax with alpha-beta pruning and iterative deepening**, bounded by the remaining time budget rather than a fixed depth, and **Monte Carlo Tree Search with UCT**, with rollouts weighted toward informed play so the statistics converge in a usable number of iterations.
+
+Both are held to one architectural rule: the action actually transmitted always comes from the server's own list of legal actions, and local simulation is used only to score deeper branches. A defect in client-side simulation can degrade decision quality; it can never produce an invalid request. That is the difference between a client that is trusted and a client that is merely useful.
+
+## Delivery
+
+Two Cloud Run services, built as containers by GitHub Actions and authenticated with Workload Identity Federation, so no long-lived credential is ever stored in CI. Release is gated on the contract suite, Playwright end-to-end runs and a WebSocket smoke test — all executed against the real deployment rather than a local build, because the only environment whose behaviour matters is the one users reach.

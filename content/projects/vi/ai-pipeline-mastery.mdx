@@ -1,47 +1,72 @@
 ---
 title: AI Pipeline Mastery
-kicker: Khóa học & cổng học viên
+kicker: Nền tảng học
 summary: >-
-  Khóa học 40 giờ bóc tách một training pipeline PyTorch hoàn chỉnh — Dataset, DataLoader, Model, vòng lặp huấn luyện, validation — cùng hệ thống nội bộ phục vụ nó: 20 bài chia bốn phần, kèm một cổng Next.js để học viên đăng nhập đọc và tải tài liệu.
+  Một hệ thống dạy học được xây như phần mềm: một pipeline Python sinh ra tài liệu khoá học từ nguồn rồi kiểm chứng bằng cách chạy chúng, cùng một nền tảng Next.js lo xác thực học viên, phục vụ tài liệu từ kho lưu trữ riêng tư, và chạy code của họ hoặc ngay trong trình duyệt hoặc trên một pool GPU từ xa.
 year: 2026
 order: 6
 featured: false
-tags: [Giảng dạy, PyTorch, Next.js, Firebase, Cloudflare R2]
+tags: [Next.js, Firestore, Cloudflare R2, Pyodide, Điều phối GPU, PyTorch]
 cover: /img/project-apm.avif
-role: Làm một mình — thiết kế chương trình, sản xuất bài giảng và xây cổng học viên
-stack: [PyTorch, Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Tailwind v4]
+role: Làm một mình — kiến trúc nền tảng, điều phối GPU, bộ công cụ build, sản xuất nội dung
+stack: [Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Pyodide, Kaggle API, Tailwind v4]
 points:
   - >-
-    Hai mươi bài, mỗi bài hai giờ — tổng 40 giờ — chia đều cho bốn phần: Data Pipeline, Model, Training Loop, Validation.
+    Tài liệu khoá học được sinh ra chứ không lắp bằng tay: một chuỗi công cụ Python dựng slide và tài liệu tham khảo qua `python-pptx` và `python-docx`, đồng thời biên dịch bài thực hành và bài kiểm tra thành JSON từ nguồn của từng phần — nên một thay đổi ở nguồn lan tới mọi nơi thay vì phải chép lại thủ công.
   - >-
-    Mỗi bài đều gồm ba phần giống nhau: kiến thức (slide và tài liệu viết), thực hành (notebook và script), và bài kiểm tra trắc nghiệm.
+    Chất lượng được ép bằng cách chạy chứ không bằng cách đọc. Cổng kiểm chạy mọi lời giải tham chiếu và bắt chúng phải pass, chạy mọi file starter và bắt chúng phải hỏng đúng kiểu đã định, dựng lại các file được sinh rồi so từng byte, và chặn phát hành khi có bất kỳ chỗ lệch nào. Tính đúng đắn trở thành thứ pipeline bảo đảm thay vì thứ ai đó nhớ ra để kiểm.
   - >-
-    Mỗi khái niệm đi theo đúng một sợi chỉ đỏ — dòng code, nó chạy ra cái gì, lý thuyết nằm dưới nó, và nó hỏng thế nào khi làm sai.
+    Nền tảng là Next.js 16 trên App Router với server action và không có tầng API nội bộ — trang và action truy vấn thẳng tầng dữ liệu trên server, thứ bỏ đi được một chặng, một bộ route handler, và cả phần trôi dạt vốn hay nằm giữa chúng.
   - >-
-    Cổng học viên là một repo thứ hai: Next.js 16 với server action, đăng nhập Google có whitelist email, tài liệu nằm trong kho lưu trữ riêng tư, và trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu.
+    Đúng một luật bảo mật định hình cả thiết kế: trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu. Đăng nhập chỉ cho ra một token danh tính, token đó được đổi lấy một session cookie đã verify, mọi đọc/ghi chạy phía server sau phép kiểm đó, file được phục vụ bằng URL ký có hạn từ bucket private, và luật cơ sở dữ liệu mặc định từ chối tất cả.
+  - >-
+    Code học viên chạy theo hai đường sau cùng một giao diện — trong trình duyệt bằng Pyodide cho mọi thứ vừa sức CPU, và trên GPU từ xa qua một hàng đợi job biết mượn một tài khoản trong pool, gửi việc đi, theo dõi tới khi xong, gom log và file kết quả về object storage, rồi trả tài khoản kèm hạn mức đã tính.
+  - >-
+    Hàng đợi thiết kế cho môi trường serverless: không request nào ngồi chờ một job dài. Tiến độ theo dõi bằng client polling trong lúc học viên còn xem, kèm một nhịp quét định kỳ làm lưới đỡ cho việc mà trang đã đóng, và một trần đồng thời giữ mức dùng tài nguyên trên mỗi học viên luôn có biên.
+  - >-
+    Toàn bộ đường GPU có một chế độ mô phỏng tự bật khi chưa cấu hình credential, nên hàng đợi, máy trạng thái và giao diện đều chạy thử trọn vẹn được trên laptop — khác biệt giữa một hệ điều phối phát triển được và một hệ chỉ deploy rồi cầu may.
+  - >-
+    Giao dưới dạng hai ứng dụng triển khai độc lập: một trang giới thiệu export tĩnh và một nền tảng có server, nên nội dung công khai phát hành theo nhịp riêng mà không phải deploy lại hệ thống đang giữ dữ liệu học viên.
 metrics:
-  - { label: Số bài, value: '20' }
-  - { label: Số giờ, value: '40' }
-  - { label: Số phần, value: '4' }
+  - { label: Slide đã sinh, value: '383' }
+  - { label: Hình đã render, value: '129' }
+  - { label: Đường chạy code, value: '2', note: 'trong trình duyệt và GPU từ xa' }
 ---
 
-## Hình dạng của khóa học
+## Tài liệu khoá học như một sản phẩm build
 
-Phần lớn khóa nhập môn học sâu đi từ lý thuyết rồi mới tới code. Khóa này bắt đầu từ một training pipeline PyTorch hoàn chỉnh rồi lần ngược về lý thuyết của từng mắt xích: **Dataset → DataLoader → Model → Training loop → Validation.**
+Tiền đề là: tài liệu dạy học chính là phần mềm — nó có nguồn, có bước build, và có bài kiểm.
 
-Bốn phần là bốn câu hỏi:
+Slide và tài liệu tham khảo được tạo bằng chương trình qua `python-pptx` và `python-docx` — tới nay là 383 slide và 129 hình, trong đó hình được script render từ dataset thật chứ không vẽ một lần rồi dán đi dán lại. Bài thực hành và bài kiểm tra thì được **biên dịch**: một bước build đọc nguồn của từng phần rồi phát ra đúng JSON mà nền tảng tiêu thụ. Không thứ gì được viết hai lần.
 
-1. **Data Pipeline** — dữ liệu đi từ ổ cứng vào model bằng cách nào?
-2. **Model** — "học" thực chất là đang điều chỉnh cái gì?
-3. **Training Loop** — bốn bước trong một vòng lặp huấn luyện làm gì?
-4. **Validation** — làm sao biết model thực sự giỏi chứ không phải học vẹt?
+Lợi ích chính là lợi ích của mọi hệ thống build. Một lần sửa ở nguồn xuất hiện trong mọi sản phẩm dẫn xuất. Sinh lại rẻ tới mức làm được thường xuyên, nên tài liệu luôn mới thay vì tích tụ những chỗ lệch nhỏ. Và vì đầu ra là dữ liệu chứ không phải một văn bản, nền tảng render, chấm và đánh phiên bản được cho nó mà không cần một bước chép tay nào ở giữa.
 
-Mọi khái niệm đều được dạy theo cùng một sợi chỉ: dòng code, nó chạy ra gì, lý thuyết đứng sau, và lỗi hiện ra thế nào khi làm sai. Vế cuối quan trọng nhất — một khái niệm chỉ từng thấy lúc nó chạy đúng là khái niệm bạn không debug được.
+## Kiểm chứng bằng cách chạy
 
-## Cổng học viên
+Cổng chất lượng không đọc tài liệu. Nó chạy tài liệu.
 
-Đưa một khóa học tới người học là bài toán hệ thống chứ không phải bài toán nội dung, nên repo thứ hai là một ứng dụng thật: admin đăng bài giảng và tài liệu, học viên đăng nhập và tải về.
+Mọi lời giải tham chiếu đều được chạy và phải pass bài kiểm của chính nó. Mọi file starter đều được chạy và phải hỏng đúng kiểu đã định — đó chính là thứ chứng minh bài tập thật sự có nội dung bên trong. Các sản phẩm được sinh sẽ dựng lại rồi so từng byte với thứ đang nằm trên đĩa, nên một bài đã phát hành không bao giờ lệch được khỏi lời giải sinh ra nó. Các phép kiểm cấu trúc — tính đầy đủ của tài nguyên, tính nhất quán của thuật ngữ, quy ước tài liệu — chạy trong cùng một lượt, và bất kỳ lỗi nào cũng chặn phát hành.
 
-Nguyên tắc bảo mật chạy xuyên suốt thiết kế: **trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu.** Client chỉ dùng phần đăng nhập để lấy token danh tính; mọi thao tác đọc/ghi đi qua server đã xác minh session cookie, file được phát ra dưới dạng URL ký có hạn, và luật của cơ sở dữ liệu mặc định chặn tất cả.
+Điều này biến tính đúng đắn từ thứ con người phải nhớ kiểm thành thứ pipeline bảo đảm. Đó là khác biệt giữa tài liệu được review và tài liệu được test.
 
-Ràng buộc đó cũng là thứ tách cổng học viên khỏi trang giới thiệu khóa học — trang giới thiệu là bản xuất tĩnh, còn cổng cần server để xác minh phiên và ký URL, nên đây là hai ứng dụng triển khai độc lập.
+## Nền tảng
+
+Hệ thống phân phối là Next.js 16 trên App Router, với server action và Tailwind v4. Cố ý không có tầng API nội bộ: server component và server action gọi thẳng tầng dữ liệu, vì một trang vốn đã chạy trên server thì chẳng được gì khi nói chuyện với chính nó qua HTTP. Bỏ được một chặng, một bộ route handler, và cả phần trôi dạt hợp đồng hay nằm giữa chúng.
+
+Định tuyến chia thành khu quản trị và khu học viên, mỗi khu có một phép kiểm quyền đặt ở ranh giới layout thay vì lặp lại ở từng trang — kiểm soát truy cập mang tính cấu trúc, nên một trang mới thừa hưởng nó chỉ nhờ nằm đúng chỗ.
+
+Một luật bảo mật định hình tất cả: **trình duyệt không bao giờ nói chuyện trực tiếp với kho dữ liệu.** Đăng nhập Google trên whitelist email được mời cho ra một token danh tính, token đó đổi một lần lấy session cookie đã verify; mọi đọc/ghi diễn ra phía server sau phép kiểm đó; file nằm trong object store private và được cấp bằng URL ký có hạn; luật cơ sở dữ liệu mặc định từ chối tất cả. Mọi lượt truy cập ghi vào nhật ký kiểm toán có xuất CSV, biến câu hỏi "ai đang có gì" thành một truy vấn.
+
+## Chạy code của người khác, theo hai đường
+
+Bài thực hành ra đề như bài phỏng vấn code: học viên thấy hàm cần cài đặt, còn fixture, assertion và phần báo cáo nằm trong một harness được ghép vào bài nộp ngay lúc chạy.
+
+Nền tảng không chứa một dòng Python nào. Bộ chạy test được sinh từ đúng một nguồn mà bộ công cụ ở máy cá nhân cũng dùng, và toàn bộ giao kèo giữa hai hệ thống là một dòng in ra mang kết quả JSON. Nhờ vậy một ứng dụng TypeScript không bao giờ phải hiểu ngữ nghĩa Python, và chạy bài ở máy với chạy bài trên nền tảng luôn là cùng một bộ code.
+
+Từ đó là hai làn sau cùng một giao diện. Việc vừa sức CPU chạy **trong trình duyệt bằng Pyodide** — không hàng đợi, không hạ tầng, không tốn phí mỗi lần chạy. Việc cần tăng tốc đi vào một **hàng đợi job GPU**: mượn một tài khoản trong pool, gửi việc đi, theo dõi tới khi xong, kéo log và file kết quả về object storage, trả tài khoản kèm hạn mức đã tính.
+
+Hàng đợi dựng cho môi trường serverless nên không request nào ngồi chờ một job dài. Trang tự poll trong lúc học viên còn xem; một nhịp quét định kỳ làm lưới đỡ cho việc mà trang đã đóng; và một trần đồng thời trên mỗi học viên giữ mức dùng pool luôn có biên và dự đoán được. Quan trọng nhất, cả đường này có một **chế độ mô phỏng** tự bật khi chưa cấu hình credential — hàng đợi, máy trạng thái và giao diện đều chạy thử được trên laptop, và đó chính là thứ biến điều phối phân tán thành cái phát triển được thay vì chỉ deploy rồi chờ.
+
+## Hai ứng dụng, có chủ đích
+
+Trang công khai là bản export tĩnh; nền tảng là ứng dụng có server vì nó phải verify phiên và ký URL. Tách ra nghĩa là nội dung công khai phát hành theo nhịp riêng, và một lần sửa trang giới thiệu không bao giờ deploy lại hệ thống đang giữ dữ liệu học viên — một ranh giới tốn thêm đúng một đường ống và mua về một mức thu hẹp thiệt hại vĩnh viễn.

@@ -1,47 +1,72 @@
 ---
 title: AI Pipeline Mastery
-kicker: Course & portal
+kicker: Learning platform
 summary: >-
-  A 40-hour course that takes one complete PyTorch training pipeline apart — Dataset, DataLoader, Model, training loop, validation — and the internal portal that delivers it: 20 lessons in four parts, plus a Next.js system where students sign in to read and download the material.
+  A teaching system built as software: a Python pipeline that generates course artifacts from source and verifies them by executing them, and a Next.js platform that authenticates learners, serves material from private storage, and runs their code either in the browser or on a pool of remote GPUs.
 year: 2026
 order: 6
 featured: false
-tags: [Teaching, PyTorch, Next.js, Firebase, Cloudflare R2]
+tags: [Next.js, Firestore, Cloudflare R2, Pyodide, GPU orchestration, PyTorch]
 cover: /img/project-apm.avif
-role: Solo — curriculum design, lesson production, and the portal that serves it
-stack: [PyTorch, Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Tailwind v4]
+role: Solo — platform architecture, GPU orchestration, build tooling, content production
+stack: [Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Pyodide, Kaggle API, Tailwind v4]
 points:
   - >-
-    Twenty lessons of two hours each — 40 hours — split evenly across four parts: Data Pipeline, Model, Training Loop, Validation.
+    Course artifacts are generated, not hand-assembled: a Python toolchain builds slide decks and reference documents through `python-pptx` and `python-docx`, and compiles exercises and assessments into JSON from their per-task sources — so a change at the source propagates everywhere instead of being copied by hand.
   - >-
-    Every lesson carries the same three pieces: the knowledge (slides and a written reference), the practice (a notebook and a script), and a multiple-choice check.
+    Quality is enforced by execution rather than review. The gate runs every reference solution and requires it to pass, runs every starter and requires it to fail in the expected way, rebuilds the generated files and compares them byte for byte, and blocks the release on any mismatch. Correctness becomes a property the pipeline guarantees rather than a thing someone remembered to check.
   - >-
-    Each concept follows one thread on purpose — the line of code, what it actually runs, the theory underneath it, and how it fails when you get it wrong.
+    The platform is Next.js 16 on the App Router with server actions and no internal API tier — pages and actions query the data layer directly on the server, which removes a whole hop, a whole set of route handlers, and the drift that usually lives between them.
   - >-
-    The portal is a second repository: Next.js 16 with server actions, Google sign-in against an email whitelist, and materials in private storage, where the browser never talks to the data store directly.
+    A single security rule shapes the design: the browser never speaks to the data store. Sign-in yields an identity token that is exchanged for a verified session cookie, every read and write runs server-side behind that check, files are served as time-limited signed URLs from a private bucket, and database rules deny everything by default.
+  - >-
+    Learner code runs two ways behind one interface — in the browser through Pyodide for anything CPU-sized, and on remote GPUs through a job queue that leases an account from a pool, dispatches the work, tracks it to completion, collects logs and artifacts into object storage, and returns the account with its quota accounted for.
+  - >-
+    The queue is designed for a serverless host: no request ever blocks on a long-running job. Progress is tracked by client polling while the learner watches, with a scheduled sweep as the backstop for work whose page was closed, and a concurrency cap that keeps resource usage per learner bounded.
+  - >-
+    The whole GPU path has a simulation mode that activates when no credentials are configured, so the queue, the state machine and the interface are fully exercisable on a laptop — the difference between orchestration you can develop against and orchestration you can only deploy and hope for.
+  - >-
+    Delivered as two independently deployed applications: a statically exported marketing site and a server-backed platform, so public content ships on its own cadence without redeploying the system that holds learner data.
 metrics:
-  - { label: Lessons, value: '20' }
-  - { label: Hours, value: '40' }
-  - { label: Parts, value: '4' }
+  - { label: Slides generated, value: '383' }
+  - { label: Figures rendered, value: '129' }
+  - { label: Execution lanes, value: '2', note: 'in-browser and remote GPU' }
 ---
 
-## The shape of the course
+## Course material as a build artifact
 
-Most introductions to deep learning start from theory and arrive at code. This one starts from a complete PyTorch training pipeline and works backwards into the theory of each link: **Dataset → DataLoader → Model → Training loop → Validation.**
+The premise is that teaching material is software: it has sources, it has a build, and it has tests.
 
-The four parts are four questions:
+Decks and reference documents are produced programmatically through `python-pptx` and `python-docx` — 383 slides and 129 figures so far, the figures rendered from real datasets by scripts rather than drawn once and pasted. Exercises and assessments are **compiled**: a build step reads each task's own sources and emits the JSON the platform consumes. Nothing that ships is authored twice.
 
-1. **Data Pipeline** — how does data get from disk into the model?
-2. **Model** — what is "learning" actually adjusting?
-3. **Training Loop** — what do the four steps of one iteration do?
-4. **Validation** — how do you know a model is genuinely good rather than memorising?
+The benefit is the one you get from any build system. A correction at the source appears in every derived artifact. Regenerating is cheap enough to do routinely, so material stays current instead of accumulating small divergences. And because the output is data rather than a document, the platform can render it, grade it and version it without a human transcription step in the middle.
 
-Every concept is taught on the same thread: the line of code, what it runs, the theory it rests on, and the failure you see when it is wrong. The last one matters most — a concept you have only seen working is a concept you cannot debug.
+## Verification by execution
 
-## The portal
+The quality gate does not read the material. It runs it.
 
-Delivering a course is a systems problem, not a content problem, so the second repository is a real application: an admin publishes lessons and materials, a student signs in and downloads them.
+Every reference solution is executed and must pass its own tests. Every starter file is executed and must fail in exactly the expected way, which is what proves the exercise actually contains an exercise. The generated artifacts are rebuilt and compared byte for byte against what is on disk, so a published exercise can never drift from the solution it was derived from. Structural checks — asset completeness, terminology consistency, document conventions — run in the same pass, and any failure blocks the release.
 
-The security rule runs through the whole design: **the browser never speaks to the data store.** The client uses authentication only to obtain an identity token; every read and write goes through a server that has verified the session cookie, file downloads are handed out as time-limited signed URLs, and the database rules deny everything by default.
+This converts correctness from something a person remembers to check into a property the pipeline guarantees. It is the difference between material that is reviewed and material that is tested.
 
-That constraint is also what separates the portal from the course landing page — the landing page is a static export, the portal needs a server to verify sessions and sign URLs, so they are two apps deployed independently.
+## The platform
+
+The delivery system is Next.js 16 on the App Router, with server actions and Tailwind v4. There is deliberately no internal API tier: server components and actions call the data layer directly, because a page that already executes on the server gains nothing from talking to itself over HTTP. That removes a hop, a set of route handlers, and the contract drift that tends to live between them.
+
+Routing is split into an administrative area and a learner area, each with an authorisation check at the layout boundary rather than repeated per page — access control that is structural, so a new page inherits it by existing in the right place.
+
+One security rule shapes everything: **the browser never speaks to the data store.** Google sign-in against an invitation whitelist produces an identity token, which is exchanged once for a verified session cookie; every read and write happens server-side behind that check; files live in a private object store and are handed out as time-limited signed URLs; the database rules deny everything by default. Access is recorded to an audit log with CSV export, which turns "who has what" from a question into a query.
+
+## Running someone else's code, twice over
+
+Exercises are set the way coding interviews are: the learner sees the function to implement, while fixtures, assertions and reporting live in a harness that is composed onto their submission at execution time.
+
+The platform contains no Python at all. The test runner is generated from one source that the local toolchain also uses, and the entire contract between the two systems is a single printed line carrying a JSON result. That keeps a TypeScript application from ever needing to understand Python semantics, and guarantees that running an exercise locally and running it on the platform execute identical code.
+
+From there, two lanes behind one interface. CPU-sized work runs **in the browser through Pyodide** — no queue, no infrastructure, no cost per run. Anything needing acceleration goes to a **GPU job queue**: lease an account from a pool, dispatch the work, track it to completion, pull logs and output files into object storage, release the account with its quota accounted for.
+
+The queue is built for a serverless host, so no request ever blocks on a long job. The page polls while the learner is watching it; a scheduled sweep is the backstop for work whose page was closed; and a concurrency cap per learner keeps pool usage bounded and predictable. Crucially, the whole path has a **simulation mode** that engages when no credentials are configured — the queue, the state machine and the interface are all exercisable on a laptop, which is what makes distributed orchestration something you can develop against rather than only deploy.
+
+## Two applications, on purpose
+
+The public site is a static export; the platform is a server-backed application because it has to verify sessions and sign URLs. Splitting them means public content ships on its own cadence, and an edit to a marketing page never redeploys the system holding learner data — a boundary that costs one extra pipeline and buys a permanent reduction in blast radius.
