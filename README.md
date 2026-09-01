@@ -17,16 +17,16 @@ pnpm dev
 
 Everything except the AI features works without any keys.
 
-| Command          | What it does                                            |
-| ---------------- | ------------------------------------------------------- |
-| `pnpm dev`       | Velite in watch mode alongside the Next dev server      |
-| `pnpm build`     | Rebuilds content, the knowledge index, then the site    |
-| `pnpm verify`    | Types, lint, WCAG contrast, unit tests                  |
-| `pnpm test`      | Vitest — retrieval, cost estimation, message catalogues |
-| `pnpm test:e2e`  | Playwright on desktop Chromium and mobile WebKit        |
-| `pnpm test:a11y` | axe against every page, WCAG 2.2 AA                     |
-| `pnpm shots`     | Writes screenshots to `e2e/__screenshots__/`            |
-| `pnpm knowledge` | Rebuilds `lib/ai/knowledge.json`                        |
+| Command          | What it does                                                 |
+| ---------------- | ------------------------------------------------------------ |
+| `pnpm dev`       | Velite in watch mode alongside the Next dev server           |
+| `pnpm build`     | Rebuilds content, the knowledge index, then the site         |
+| `pnpm verify`    | Types, lint, WCAG contrast, unit tests                       |
+| `pnpm test`      | Vitest — retrieval, fit scoring, cost estimation, catalogues |
+| `pnpm test:e2e`  | Playwright on desktop Chromium and mobile WebKit             |
+| `pnpm test:a11y` | axe against every page, WCAG 2.2 AA                          |
+| `pnpm shots`     | Writes screenshots to `e2e/__screenshots__/`                 |
+| `pnpm knowledge` | Rebuilds `lib/ai/knowledge.json`                             |
 
 ## How it fits together
 
@@ -47,7 +47,7 @@ agent will not claim it** — that is the point.
 ## The agent
 
 Four tools. `searchKnowledge` runs hybrid retrieval (BM25 and embeddings, fused
-with reciprocal rank fusion) over 90 passages. `navigateTo` executes in the
+with reciprocal rank fusion) over 130 passages. `navigateTo` executes in the
 browser and really moves the page. `showProject` streams a project card into the
 conversation. `githubActivity` reads live repository data.
 
@@ -56,6 +56,12 @@ neighbour, so a cosine floor of 0.20 and a query-coverage floor on the lexical
 half stop the agent from answering a cooking question out of ML passages. Both
 thresholds were measured against this corpus, not guessed — see the comments in
 `lib/ai/retrieval.ts`, and re-measure if the embedding model changes.
+
+The coverage floor has two settings, because a typed question and a pasted
+document are not the same shape. A job posting dilutes its technical terms with
+company prose, and at the query floor of 0.40 the lexical half switched itself
+off depending on how much of that prose a recruiter had written. Documents get
+0.25, which still refuses a pastry-chef posting. Both numbers are measured.
 
 ### Spend control
 
@@ -66,13 +72,45 @@ thresholds were measured against this corpus, not guessed — see the comments i
 | Hard daily USD ceiling, charged from real usage       | `lib/rate-limit.ts`      |
 | `stopWhen: stepCountIs(6)` and `maxOutputTokens`      | `app/api/chat/route.ts`  |
 | Pasted job descriptions wrapped as untrusted data     | `app/api/match/route.ts` |
+| Repeat analyses replayed from cache, unmetered        | `lib/ai/match.ts`        |
 
 Model routing keeps the bill small: `gpt-5.6-terra` for chat, `gpt-5.6-sol` only
-for job-description analysis, `gpt-5.6-luna` for summary rewrites.
+for job-description analysis, `gpt-5.6-luna` for summary rewrites and for
+reading requirements out of a posting.
+
+Handing the frontier model a requirement list rather than the raw posting pays
+for the extraction call several times over: the analysis prompt carries the
+evidence and a dozen short lines instead of up to 12k characters of recruiting
+prose, and the untrusted text is then only ever read by the cheap model, whose
+output is schema-constrained.
 
 Measured against the live deployment, one grounded chat message with retrieval
 costs about **$0.0022**, so the default $1 ceiling is roughly 450 messages a day
 before the assistant starts declining.
+
+## The job matcher
+
+`/match` reads a posting in two stages. The cheap model extracts what the
+posting asks for — each requirement marked must-have or nice-to-have, with a
+short retrieval query beside it — and the corpus is then searched once per
+requirement rather than once with the whole posting. A single query loses a line
+like "fraud detection is a plus" in two thousand characters of prose; seven
+short queries do not.
+
+**The score is arithmetic, not an opinion.** The model judges each requirement
+strong, partial or none; `lib/ai/score.ts` turns those into a number, with a
+must-have worth three nice-to-haves and a ceiling of 74 while any must-have is
+unevidenced. The model cannot emit a score, so it cannot inflate one, and the
+same posting always scores the same. The browser computes it from the streamed
+judgements using that same function.
+
+Cited URLs are a `z.enum` of the passages actually retrieved, built per request,
+so a link in the assessment cannot be a 404. Analyses are cached in Redis by a
+hash of the posting, the locale and the index build time, and a cache hit costs
+nothing and spends none of the visitor's hourly allowance.
+
+The finished assessment copies out as Markdown, links absolute, so it can leave
+the page and land in whatever a recruiter keeps their notes in.
 
 ## Deploying
 

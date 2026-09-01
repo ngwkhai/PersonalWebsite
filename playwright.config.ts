@@ -1,4 +1,25 @@
 import { defineConfig, devices } from '@playwright/test';
+import { existsSync, readFileSync } from 'node:fs';
+
+/**
+ * `next start` reads .env.local; this process does not.
+ *
+ * Without it the agent spec computes `live` from an empty environment, decides
+ * the server cannot serve, and runs the spend-guard tests against a server that
+ * is in fact fully configured — so they assert a refusal that never comes and
+ * fail on every local run. Read the same file the server will, without
+ * overriding anything already set.
+ */
+for (const file of ['.env.local', '.env']) {
+  if (!existsSync(file)) continue;
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const entry = /^\s*([A-Z0-9_]+)\s*=\s*(.*)$/.exec(line);
+    if (!entry) continue;
+    const key = entry[1]!;
+    if (process.env[key] !== undefined) continue;
+    process.env[key] = entry[2]!.trim().replace(/^["']|["']$/g, '');
+  }
+}
 
 const PORT = 3100;
 const baseURL = `http://127.0.0.1:${PORT}`;

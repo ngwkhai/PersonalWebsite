@@ -43,7 +43,54 @@ test.describe('agent, live', () => {
     // It must not have gone rummaging through the case studies for an answer.
     await expect(dock.getByText('81.31')).toHaveCount(0);
   });
+
+  /**
+   * The posting below mentions fraud detection once, in a "nice to have" line
+   * near the end. Retrieving with the whole posting as one query loses it; that
+   * is why the matcher extracts requirements and searches per requirement, and
+   * this asserts the outcome rather than the mechanism.
+   *
+   * It also pins the two things a recruiter would notice first: a score exists
+   * at all (it is computed from the judgements, so an empty evidence set shows
+   * as no score), and every link in it resolves.
+   *
+   * This spends one of the five analyses an IP gets per hour, and it cannot be
+   * served from cache because `pnpm build` re-embeds the corpus. Repeated runs
+   * inside an hour will fail on the rate limit rather than on anything wrong.
+   */
+  test('reads a posting for what it asks for, and cites pages that exist', async ({ page }) => {
+    await page.goto('/en/match');
+    await page.getByRole('textbox').fill(FRAUD_ML_JD);
+    await page.getByRole('button', { name: 'Analyse fit' }).click();
+
+    const score = page.locator('p.font-mono.tabular-nums').first();
+    await expect(score).toHaveText(/^\d+\/100$/, { timeout: 90_000 });
+
+    await expect(page.getByRole('link', { name: /credit-card-fraud-detection/ })).toBeVisible();
+
+    for (const link of await page.getByRole('link', { name: /\/projects\// }).all()) {
+      const href = await link.getAttribute('href');
+      expect((await page.request.get(href!)).status()).toBe(200);
+    }
+  });
 });
+
+const FRAUD_ML_JD = `Machine Learning Engineer, Risk Platform
+
+Responsibilities
+- Ship production machine learning services and own their deployment end to end.
+- Improve inference latency and throughput on GPU infrastructure.
+
+Requirements
+- Strong Python, with PyTorch or TensorFlow.
+- Experience with Kubernetes, Docker and a major cloud provider.
+- Familiarity with model quantisation and inference optimisation.
+
+Nice to have
+- Fraud detection or imbalanced-class modelling.
+
+We offer a competitive salary, equity and a learning budget, and we are an equal
+opportunity employer.`;
 
 test.describe('spend guard', () => {
   test.skip(live, 'runs only when the agent is deliberately unable to serve');

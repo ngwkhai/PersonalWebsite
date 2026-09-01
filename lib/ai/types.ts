@@ -19,6 +19,12 @@ export interface Chunk {
 
 export interface KnowledgeIndex {
   readonly builtAt: string;
+  /**
+   * Digest of the corpus itself, not of when it was built. Two builds of
+   * unchanged content produce the same fingerprint, which is what lets a cache
+   * keyed on it survive a redeploy.
+   */
+  readonly fingerprint: string;
   readonly model: string | null;
   readonly chunks: readonly Chunk[];
   /** Document frequency per token, for BM25 IDF. */

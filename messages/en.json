@@ -92,7 +92,11 @@
     "score": "Fit",
     "matched": "Backed by evidence",
     "gaps": "Not evidenced",
+    "must": "must-have",
+    "nice": "nice to have",
     "talkingPoints": "Worth raising",
+    "copy": "Copy as Markdown",
+    "copied": "Copied",
     "empty": "Nothing analysed yet.",
     "tooShort": "That is too short to analyse. Paste the full description."
   },

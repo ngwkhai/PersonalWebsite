@@ -221,8 +221,14 @@ async function main() {
     );
   }
 
+  // Digest the corpus rather than the clock, so anything keyed on the index —
+  // the job matcher's analysis cache — only invalidates when the content it was
+  // derived from actually changed.
+  const fingerprint = id(chunks.map((c) => `${c.id}:${c.text}`));
+
   const index: KnowledgeIndex = {
     builtAt: new Date().toISOString(),
+    fingerprint,
     model,
     chunks: embedded,
     df,

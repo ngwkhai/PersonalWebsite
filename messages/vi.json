@@ -92,7 +92,11 @@
     "score": "Độ phù hợp",
     "matched": "Có dẫn chứng",
     "gaps": "Chưa có dẫn chứng",
+    "must": "bắt buộc",
+    "nice": "ưu tiên",
     "talkingPoints": "Nên trao đổi thêm",
+    "copy": "Sao chép dạng Markdown",
+    "copied": "Đã sao chép",
     "empty": "Chưa phân tích gì.",
     "tooShort": "Nội dung quá ngắn để phân tích. Hãy dán đầy đủ mô tả."
   },
