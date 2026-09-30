@@ -34,12 +34,15 @@ export function ProjectCard({
           <span className="label !text-ink tabular-nums">{project.year}</span>
           <span className="label">{project.kicker}</span>
           {project.live && project.demo && (
+            // The label is 17px tall, and a thumb that misses it lands on the
+            // card's own link and opens the case study instead. The pseudo
+            // element widens what can be tapped to 33px without moving layout.
             <a
               href={project.demo}
               target="_blank"
               rel="noreferrer"
               aria-label={`${t('tryLive')} — ${new URL(project.demo).host}`}
-              className="label !text-teal hover:!text-ink relative z-10 inline-flex items-center gap-1.5 transition-colors md:mt-1"
+              className="label !text-teal hover:!text-ink relative z-10 inline-flex items-center gap-1.5 transition-colors after:absolute after:-inset-x-2 after:-inset-y-2 md:mt-1"
             >
               <span aria-hidden className="bg-teal inline-block size-1.5 rounded-full" />
               {t('tryLive')}
