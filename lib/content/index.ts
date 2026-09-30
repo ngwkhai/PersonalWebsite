@@ -14,6 +14,17 @@ export function getFeaturedProjects(locale: AppLocale): Project[] {
   return getProjects(locale).filter((p) => p.featured);
 }
 
+/**
+ * Deployed products first, then the research. The two are shown apart because
+ * they are proved differently: one by a link that works, the other by a number.
+ */
+export function groupProjects(projects: Project[]): { live: Project[]; research: Project[] } {
+  return {
+    live: projects.filter((p) => p.live),
+    research: projects.filter((p) => !p.live),
+  };
+}
+
 export function getProject(locale: AppLocale, slug: string): Project | undefined {
   return allProjects.find((p) => p.locale === locale && p.slug === slug);
 }

@@ -32,6 +32,14 @@ const projects = defineCollection({
       cover: s.string(),
       repo: s.string().url().optional(),
       demo: s.string().url().optional(),
+      /**
+       * A deployed product a visitor can use, not a notebook or a recording.
+       * These are listed apart from the research, because their evidence is
+       * the running thing rather than a metric.
+       */
+      live: s.boolean().default(false),
+      /** One line on how to try the demo — a guest account, what resets. */
+      demoNote: s.string().max(200).optional(),
       paper: s.string().url().optional(),
       /**
        * The project's own description, verbatim from the previous site.
@@ -56,6 +64,9 @@ const projects = defineCollection({
         .pop()!
         .replace(/\.mdx$/, '');
       const locale = localeFromPath(path);
+      if (data.live && !data.demo) {
+        throw new Error(`${path}: a live project needs a demo URL`);
+      }
       // The cover is built at two shapes: 3:2 for the card and the case study
       // head, 1:1 for the chip in the chat. Derived rather than a second
       // frontmatter field, so the two can never name different pictures.

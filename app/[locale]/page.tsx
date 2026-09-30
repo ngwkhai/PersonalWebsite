@@ -7,10 +7,10 @@ import { Achievements } from '@/components/sections/achievements';
 import { Experience } from '@/components/sections/experience';
 import { WritingList } from '@/components/sections/writing-list';
 import { ResumeTeaser } from '@/components/sections/resume-teaser';
-import { ProjectCard } from '@/components/sections/project-card';
+import { ProjectList } from '@/components/sections/project-card';
 import { ContactForm } from '@/components/sections/contact-form';
 import { Section, SectionHeader } from '@/components/sections/section-header';
-import { getFeaturedProjects } from '@/lib/content';
+import { getFeaturedProjects, groupProjects } from '@/lib/content';
 import { highlights, profile } from '@/content/cv';
 import { routing, type AppLocale } from '@/i18n/routing';
 
@@ -25,7 +25,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const l = locale as AppLocale;
   const t = await getTranslations('sections');
   const tn = await getTranslations('nav');
-  const featured = getFeaturedProjects(l);
+  const featured = groupProjects(getFeaturedProjects(l));
 
   return (
     <>
@@ -51,10 +51,15 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </Link>
           }
         />
-        <div className="border-rule mt-[var(--space-block)] border-b">
-          {featured.map((project, index) => (
-            <ProjectCard key={project.slug} project={project} priority={index === 0} />
-          ))}
+        <div className="mt-[var(--space-block)] space-y-16">
+          <ProjectList
+            label={t('liveProjects')}
+            projects={featured.live}
+            level={3}
+            live
+            priorityFirst
+          />
+          <ProjectList label={t('researchProjects')} projects={featured.research} level={3} />
         </div>
       </Section>
 

@@ -33,13 +33,18 @@ const COVERS = [
   ['legacy/assets/img/project-qts.png', 'project-qts', 'fill'], // 1.57 — 5%
   ['legacy/assets/img/project-ccfd.png', 'project-ccfd', 'fill', 'east'], // 2.11 — keeps the title
   ['legacy/assets/img/project-docker.png', 'project-docker', 'fill'], // 1:1, but only margin is lost
+  ['assets/screens/bacera.png', 'project-bacera', 'fill', 'west'], // 1.50 — the chip keeps the headline
+  // Live demos, photographed by scripts/capture-screens.mjs already at 3:2.
+  ['assets/screens/researchmap.png', 'project-researchmap', 'fill', 'west'], // 1.50 — headline
+  ['assets/screens/taxmate.png', 'project-taxmate', 'fill', 'west'], // 1.50 — headline
+  ['assets/screens/flowcenter.png', 'project-flowcenter', 'fill', 'west'], // 1.50 — headline
+  ['assets/screens/detoura.png', 'project-detoura', 'fill'], // 1.50 — the board is the subject
 
   // Fits. Cropping these is what would destroy them.
   ['legacy/assets/img/project-nlp.png', 'project-nlp', 'fit'], // stacked mark over its name
   ['legacy/assets/img/project-tsc.png', 'project-tsc', 'fit'], // its title spans the full width
 
   ['legacy/assets/img/project-yolov1.png', 'project-yolov1', 'fit'], // the diagram IS the full width
-  ['assets/logos/detoura.webp', 'project-detoura', 'fit'], // logo inside its own frame
   ['assets/logos/ai-pipeline-mastery.webp', 'project-apm', 'fit'], // centred mark
   ['assets/logos/ai-server.webp', 'project-ai-server', 'fit'], // circular badge — a crop cuts the ring
 ];

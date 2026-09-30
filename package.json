@@ -19,6 +19,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "knowledge": "tsx scripts/build-knowledge.ts",
+    "screens": "node scripts/capture-screens.mjs",
     "covers": "node scripts/build-covers.mjs",
     "avatar": "node scripts/build-avatar.mjs",
     "test:a11y": "playwright test e2e/a11y.spec.ts --project=desktop",

@@ -35,7 +35,9 @@
     "achievementsEmpty": "Nothing listed yet.",
     "viewAll": "See all",
     "research": "Research",
-    "work": "Work"
+    "work": "Work",
+    "liveProjects": "Live products",
+    "researchProjects": "Research & engineering"
   },
   "project": {
     "role": "Role",
@@ -53,7 +55,9 @@
     "audienceResearcher": "a researcher",
     "explainRunning": "Rewriting the summary",
     "explainReset": "Show the original",
-    "inBrief": "In brief"
+    "inBrief": "In brief",
+    "tryLive": "Live demo",
+    "openDemo": "Open the live demo"
   },
   "chat": {
     "title": "Ask about my work",

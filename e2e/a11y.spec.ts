@@ -6,6 +6,7 @@ const PAGES = [
   ['/vi', 'homepage, Vietnamese'],
   ['/en/projects', 'work index'],
   ['/en/projects/gpu-inference-optimization', 'case study'],
+  ['/vi/projects/researchmap', 'live case study, with its demo button'],
   ['/en/resume', 'résumé'],
   ['/en/match', 'job matcher'],
   ['/en/colophon', 'colophon'],

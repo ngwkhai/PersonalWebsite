@@ -35,7 +35,9 @@
     "achievementsEmpty": "Chưa có mục nào.",
     "viewAll": "Xem tất cả",
     "research": "Nghiên cứu",
-    "work": "Làm việc"
+    "work": "Làm việc",
+    "liveProjects": "Sản phẩm đang chạy",
+    "researchProjects": "Nghiên cứu & kỹ thuật"
   },
   "project": {
     "role": "Vai trò",
@@ -53,7 +55,9 @@
     "audienceResearcher": "nhà nghiên cứu",
     "explainRunning": "Đang viết lại tóm tắt",
     "explainReset": "Xem bản gốc",
-    "inBrief": "Tóm lược"
+    "inBrief": "Tóm lược",
+    "tryLive": "Dùng thử",
+    "openDemo": "Mở bản demo"
   },
   "chat": {
     "title": "Hỏi về công việc của tôi",

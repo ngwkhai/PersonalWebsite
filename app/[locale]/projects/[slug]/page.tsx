@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUpRight, ExternalLink } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { MDXContent } from '@/components/mdx';
 import { MetricStrip } from '@/components/sections/metric-strip';
@@ -54,9 +54,12 @@ export default async function ProjectPage({
   const t = await getTranslations('project');
   const next = getNextProject(l, slug);
 
+  // A live demo gets its own button beside the claim, so it is not repeated
+  // here — on a phone this rail stacks below every point, two screens down.
+  const liveDemo = project.live ? project.demo : undefined;
   const links = [
     { href: project.repo, label: t('repo') },
-    { href: project.demo, label: t('demo') },
+    { href: liveDemo ? undefined : project.demo, label: t('demo') },
     { href: project.paper, label: t('paper') },
   ].filter((link): link is { href: string; label: string } => Boolean(link.href));
 
@@ -115,6 +118,30 @@ export default async function ProjectPage({
             {project.title}
           </h1>
           <p className="text-ink-2 mt-6 max-w-2xl text-lg leading-relaxed">{project.summary}</p>
+          {liveDemo && (
+            <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <a
+                href={liveDemo}
+                target="_blank"
+                rel="noreferrer"
+                className="label bg-ink !text-paper inline-flex items-center gap-2 px-5 py-3 transition-opacity hover:opacity-85"
+              >
+                {t('openDemo')}
+                <ArrowUpRight size={13} strokeWidth={2} aria-hidden />
+              </a>
+              <div className="min-w-0">
+                <p className="text-ink flex items-center gap-2 font-mono text-[0.8rem]">
+                  <span aria-hidden className="bg-teal inline-block size-1.5 rounded-full" />
+                  {new URL(liveDemo).host}
+                </p>
+                {project.demoNote && (
+                  <p className="text-ink-3 mt-0.5 max-w-[52ch] text-[0.85rem] leading-snug">
+                    {project.demoNote}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
           {project.points.length > 0 && (
             <ul className="border-rule mt-8 space-y-3 border-l-2 pl-5">
               {project.points.map((point) => (
