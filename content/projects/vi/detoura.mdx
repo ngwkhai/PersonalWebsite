@@ -2,82 +2,49 @@
 title: Detoura
 kicker: Nền tảng realtime
 summary: >-
-  Một monorepo TypeScript biến một ván cờ online thành một nền tảng. Luật chơi cắm vào đúng một interface có kiểu, server coi mỗi ván là trạng thái mờ đục, một bộ schema Zod vừa là bộ kiểm đầu vào vừa là bản đặc tả API được công bố, và một service thứ hai chạy giải đấu tự động giữa các bot qua WebSocket.
+  Game cờ đối kháng hai người thời gian thực, xây dựng như một nền tảng: lõi luật tất định, bộ schema vừa kiểm tra, vừa tài liệu hoá và kiểm thử API, cùng service giải đấu riêng cho bot.
 year: 2026
-order: 4
+order: 3
 featured: true
 tags: [Realtime, TypeScript, Zod, WebSocket, PostgreSQL, Cloud Run]
 cover: /img/project-detoura.avif
-demo: https://detoura-175412711513.asia-southeast1.run.app
-role: Làm một mình — kiến trúc, engine luật, giao thức, service arena, thuật toán tìm kiếm, triển khai
+demo: https://detoura.ngwkhai.com
+live: true
+demoNote: >-
+  Hai người có thể chơi chung trên một máy, hoặc bạn mở phòng rồi gửi mã cho người khác.
+role: Làm một mình — kiến trúc, engine luật, giao thức, service giải đấu, thuật toán tìm kiếm, triển khai
 stack: [TypeScript, Zod, ws, React, Vite, PostgreSQL, Docker, Cloud Run, GitHub Actions]
 points:
   - >-
-    Một monorepo pnpm gồm chín workspace xoay quanh đúng một lõi không phụ thuộc: package luật không import gì, không chạm đồng hồ, không dùng ngẫu nhiên, nhờ vậy tất định — và chính điều đó về sau khiến phát lại, mô phỏng và tìm kiếm phía server làm được mà không cần một bản cài đặt thứ hai.
+    Thiết kế monorepo TypeScript gồm chín package xoay quanh một lõi luật tất định, không phụ thuộc thư viện nào. Nhờ vậy cùng một đoạn code chạy được trên trình duyệt, trên server và khi phát lại ván đấu.
   - >-
-    Logic trò chơi cắm vào qua đúng một interface có kiểu. Nền tảng giữ ván đấu như trạng thái mờ đục và hỏi module mọi thứ nó cần, nên hỗ trợ trò chơi thứ hai chỉ là thêm một package luật và một lớp render, không sửa code phòng chơi, giao thức hay tầng truyền tin.
+    Tách nền tảng khỏi từng game cụ thể: luật game cắm vào qua một interface có kiểu duy nhất, còn server coi mỗi ván đấu là dữ liệu đóng, không đọc vào bên trong.
   - >-
-    Một bộ schema Zod là nguồn sự thật duy nhất: nó kiểm mọi tin nhắn gửi đến, đồng thời sinh ra `/openapi.json` và một trang `/spec` sống bao trọn danh mục mười bốn tin nhắn WebSocket mà OpenAPI không diễn đạt được. Tài liệu không thể tụt lại sau server, vì chính server sinh ra nó.
+    Dùng chung một bộ schema Zod để kiểm tra mọi tin nhắn và sinh đặc tả OpenAPI lẫn WebSocket. Một bộ kiểm thử chống lệch hợp đồng chạy trực tiếp trên bản đang triển khai.
   - >-
-    Một bộ kiểm trôi dạt chạy trên URL đã deploy ở mỗi lần phát hành, đối chiếu tài liệu thiết kế với bản spec mà service thật đang phục vụ. Producer/consumer drift — một bên ship hình dạng này, bên kia giả định hình dạng khác, cả hai bộ test đều xanh — trở thành lỗi build thay vì một báo cáo bug.
-  - >-
-    Service giải đấu là tiến trình riêng trên Postgres với SQL viết tay tham số hoá: API key chỉ lưu dạng băm và so sánh không phụ thuộc thời gian, lịch sinh trong một transaction, bảng xếp hạng phục vụ từ một SQL view tính lại mỗi lần đọc, và trận đấu lưu dưới dạng nhật ký hành động phát lại tất định thay vì trạng thái nhân bản.
-  - >-
-    Gia cố ngay ở tầng truyền tin: giới hạn tần suất theo token bucket trên mỗi kết nối, trần kích thước gói, một đồng hồ Fischer do server sở hữu mà trạng thái ván không bao giờ nhìn thấy, và một nhật ký sự kiện có cấu trúc khiến mọi lần từ chối đều truy vết được về sau.
-  - >-
-    Phát hành dưới dạng container trên Cloud Run qua GitHub Actions với Workload Identity Federation — không lưu credential dài hạn nào — sau một cổng gồm bộ kiểm hợp đồng, bộ chạy đầu-cuối Playwright và một bài kiểm khói WebSocket, tất cả chạy trên chính bản đã deploy.
+    Xây dựng server WebSocket giữ quyền quyết định cuối cùng, có giới hạn tần suất và đồng hồ do server quản lý, thêm service giải đấu trên Postgres, và pipeline triển khai lên Cloud Run không lưu khoá.
 metrics:
   - { label: Workspace, value: '9' }
   - { label: Interface có hợp đồng, value: '5' }
   - { label: Tin nhắn giao thức, value: '14' }
 ---
 
-## Một lõi không có gì bên dưới
+## Lõi tất định
 
-Kiến trúc bắt đầu từ đúng một ràng buộc: package luật có **không phụ thuộc nào**. Không import UI, không import mạng, không đồng hồ, không ngẫu nhiên. Hàm thuần vào, giá trị thuần ra.
+Package luật không phụ thuộc thư viện nào, không dùng đồng hồ và không dùng số ngẫu nhiên. Nhờ vậy, cùng một đoạn code vừa chạy trên trình duyệt để phản hồi tức thì, vừa chạy trên server với vai trò trọng tài. Ván đấu có thể lưu dưới dạng nhật ký nước đi rồi phát lại, và thuật toán tìm kiếm có thể mô phỏng trên chính bộ luật thật.
 
-Đó là một luật nhỏ với hệ quả lớn. Vì lõi tất định, cùng một bộ code chạy được trong trình duyệt để phản hồi tức thì và chạy trên server với vai trò trọng tài, không có rủi ro hai bản cài đặt nói khác nhau. Vì không có đồng hồ, một ván đấu phát lại được từ nhật ký hành động thay vì phải lưu ảnh chụp trạng thái. Vì không có ngẫu nhiên, một thuật toán tìm kiếm mô phỏng được hàng nghìn tương lai trên chính bộ luật thật chứ không phải trên một bản gần đúng.
+## Một interface cho mọi game
 
-Bao quanh nó là một monorepo pnpm gồm chín workspace: lõi, interface module, phần sinh spec, tiện ích HTTP dùng chung, mỗi trò chơi một package, client web, server realtime, và service giải đấu. Ranh giới được ép bằng export map của từng package chứ không bằng thói quen, nên một tầng không thể lặng lẽ thò tay vào ruột tầng khác.
+Luật game cắm vào nền tảng qua một interface có kiểu duy nhất, gồm các bước: khởi tạo ván, áp dụng nước đi, liệt kê nước hợp lệ, báo kết quả, và chiếu trạng thái ra để hiển thị. Server không bao giờ đọc trực tiếp các trường bên trong một ván đấu, nên muốn thêm game mới chỉ cần viết một package luật và một lớp hiển thị.
 
-## Một interface, bao nhiêu trò chơi cũng được
+## Schema vừa là API vừa là test
 
-Nền tảng không biết trò chơi nào đang chạy. Luật cắm vào qua đúng một interface có kiểu — khởi tạo, áp một hành động, liệt kê thứ hợp lệ, báo kết quả, và chiếu trạng thái thành ba mảng phẳng để bộ render dùng chung vẽ ra.
+Schema Zod kiểm tra mọi tin nhắn gửi đến server. Cũng từ những schema đó, hệ thống sinh ra `/openapi.json` và một trang đặc tả trực tiếp cho mười bốn loại tin nhắn WebSocket, phần mà OpenAPI không mô tả được. Ở mỗi lần phát hành, một bộ test chống lệch so sánh tài liệu thiết kế với đặc tả mà dịch vụ đang chạy thực sự trả về.
 
-Vì thế server giữ ván đấu như **trạng thái mờ đục**: nó không bao giờ đọc một trường nào, nó hỏi module. Chính phép đảo đó khiến nền tảng mở rộng được theo hướng rẻ. Thêm một trò chơi là thêm một package luật và một lớp render; vòng đời phòng chơi, giao thức, logic kết nối lại, đồng hồ và tầng lưu trữ chỉ viết một lần rồi dùng lại nguyên vẹn.
+## Realtime có phòng vệ
 
-Những quyết định nhỏ đi theo cùng một logic. Ghế ngồi là chỉ số chứ không phải màu, nên các trò chơi có quy ước khác nhau không phải đánh nhau với hệ kiểu. Kiểu kết quả mang đủ mọi trường hợp kết thúc ngay từ commit đầu tiên thay vì chỉ những gì trò chơi đầu tiên tình cờ cần — nhét thêm về sau sẽ phải sửa giao thức, schema và logic tính điểm trong cùng một tuần.
+Server là bên duy nhất có quyền quyết định trạng thái ván đấu. Mỗi kết nối có giới hạn tần suất theo token bucket và giới hạn kích thước frame, có thể nối lại bằng một token riêng, và mọi sự kiện đều được ghi vào nhật ký kiểm tra. Đồng hồ Fischer do server quản lý và được tách khỏi trạng thái game.
 
-## Schema là API, API là bài kiểm
+## Giải đấu và triển khai
 
-Mọi thứ đi trên dây đều được mô tả bằng schema Zod, và bộ schema đó làm ba việc từ một định nghĩa.
-
-Nó **kiểm**: mọi tin nhắn gửi đến đều được parse trước khi chạm vào bất kỳ logic nào, nên đầu vào dị dạng là một lần từ chối có kiểu chứ không phải một bất ngờ lúc chạy. Nó **viết tài liệu**: `/openapi.json` và trang `/spec` sống được sinh từ chính nó, gồm cả danh mục tin nhắn WebSocket — nơi phần lớn một hợp đồng realtime thực sự nằm và là thứ OpenAPI không có cách nào diễn đạt. Và nó **neo các bài kiểm**: một bộ kiểm trôi dạt chạy mỗi lần phát hành trên URL đã deploy, xác nhận mọi endpoint, tin nhắn và mã lỗi trong tài liệu thiết kế đều có mặt trong bản spec mà service đang chạy phục vụ.
-
-Lợi ích rất cụ thể. Tài liệu không thể cũ đi, vì không ai viết nó bằng tay. Frontend và backend không thể lặng lẽ tách nhau ra, vì chỗ lệch làm hỏng build thay vì hiện thành một bug ba tuần sau. Và một client mới — trình duyệt, bot, hay bộ test — viết được dựa trên một bản spec chắc chắn mô tả đúng service đang chạy.
-
-## Một service thứ hai, cố ý tách rời
-
-Giải đấu tự động chạy như tiến trình riêng, với cơ sở dữ liệu riêng và đường triển khai riêng, và bị cấm về mặt cấu trúc không được chạm vào giao thức đang phục vụ người chơi thật. Sự lớn lên của hệ này không làm mất ổn định lưu lượng của hệ kia.
-
-Tầng dữ liệu là SQL viết tay tham số hoá trên Postgres — không ORM, và mọi object phản hồi dựng theo từng trường, nên một cột mới không bao giờ vô tình lọt ra ngoài. Xác thực bằng API key chỉ lưu dạng băm và so sánh không phụ thuộc thời gian, cả hai vế băm trước nên phép so không thoát sớm và cũng không rò rỉ độ dài. Lịch thi đấu sinh trong một transaction. Bảng xếp hạng là **SQL view tính lại mỗi lần đọc**, thứ loại bỏ hẳn một lớp lỗi: một bảng dẫn xuất lặng lẽ mâu thuẫn với chính dữ liệu sinh ra nó.
-
-Trận đấu lưu dưới dạng **nhật ký hành động, không phải ảnh chụp**. Vì lõi tất định, phát lại là gấp lại nhật ký — rẻ hơn khi lưu, và về mặt cấu trúc không thể mâu thuẫn với bản ghi nó sinh ra từ đó.
-
-## Realtime, có phòng thủ
-
-Tầng truyền tin là một server WebSocket nơi backend là trọng tài duy nhất; client chạy cùng bộ luật chỉ để render lạc quan. Phiên sống sót qua một lần rớt mạng nhờ một token kết nối lại mờ đục, nên mất mạng là tạm dừng chứ không phải xử thua.
-
-Hành vi lạm dụng được tính vào ngân sách thay vì được tin tưởng: giới hạn tần suất token bucket trên mỗi kết nối, trần cứng cho kích thước gói, và xử thua tự động khi vi phạm giao thức kéo dài. Mỗi sự kiện như thế được ghi vào một nhật ký kiểm toán có cấu trúc, tách khỏi bản ghi trận đấu, nên người vận hành dựng lại được client đã làm gì thay vì phải suy đoán từ hành vi.
-
-Đồng hồ là quỹ thời gian Fischer do server sở hữu hoàn toàn và trạng thái ván không bao giờ nhìn thấy. Giữ thời gian ra ngoài trạng thái chính là thứ cho phép cùng một trạng thái được phát lại, mô phỏng và băm mà không có một dấu thời gian nào làm đổi kết quả.
-
-## Tìm kiếm, như một bài hiệu chuẩn
-
-Hai thuật toán tìm kiếm đầy đủ được dựng và chạy trên chính service đã deploy để đo cách nền tảng cư xử dưới tải tự động thật: **minimax với cắt tỉa alpha-beta và iterative deepening**, chặn theo quỹ thời gian còn lại chứ không theo độ sâu cố định, và **Monte Carlo Tree Search theo UCT**, với rollout đánh trọng số về phía hành động có thông tin để thống kê hội tụ trong số vòng lặp dùng được.
-
-Cả hai chịu chung một luật kiến trúc: hành động thật sự gửi đi luôn lấy từ danh sách hợp lệ do chính server cấp, còn mô phỏng cục bộ chỉ dùng để chấm điểm các nhánh sâu hơn. Một khiếm khuyết trong mô phỏng phía client có thể làm giảm chất lượng quyết định; nó không bao giờ tạo ra được một yêu cầu không hợp lệ. Đó là khác biệt giữa một client được tin và một client chỉ hữu ích.
-
-## Phát hành
-
-Hai service Cloud Run, build thành container bởi GitHub Actions và xác thực bằng Workload Identity Federation, nên không một credential dài hạn nào được lưu trong CI. Việc phát hành bị chặn sau bộ kiểm hợp đồng, bộ chạy đầu-cuối Playwright và một bài kiểm khói WebSocket — tất cả chạy trên bản deploy thật chứ không phải bản build cục bộ, vì môi trường duy nhất có hành vi đáng quan tâm là môi trường người dùng chạm tới.
+Giải đấu giữa các bot chạy trên một service riêng, dùng Postgres với câu SQL viết tay. API key chỉ lưu dưới dạng mã băm và được so sánh trong thời gian không đổi, bảng xếp hạng lấy từ một SQL view, còn ván đấu được lưu thành nhật ký hành động có thể phát lại. Hai bot, một dùng minimax với cắt tỉa alpha-beta và một dùng MCTS, được viết để thử tải service. Cả hai service triển khai lên Cloud Run qua GitHub Actions mà không lưu khoá. Mỗi bản phát hành phải qua test hợp đồng, test Playwright và smoke test WebSocket chạy trên bản triển khai thật.

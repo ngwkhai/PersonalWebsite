@@ -1,0 +1,59 @@
+---
+title: TaxMate AI
+kicker: Tuân thủ thuế · RAG pháp luật
+summary: >-
+  Trợ lý tuân thủ thuế cho người bán hàng online tại Việt Nam: trả lời câu hỏi pháp luật kèm trích dẫn cho mọi nhận định, và đối chiếu doanh thu với số đã kê khai. Khải dẫn dắt nhóm bốn người xây dựng.
+year: 2026
+order: 2
+featured: true
+tags: [RAG pháp luật, BM25, FastAPI, Đa tenant, Supabase, Cloud Run]
+cover: /img/project-taxmate.avif
+demo: https://taxmate.ngwkhai.com
+live: true
+demoNote: >-
+  Trang đăng nhập có sẵn một tài khoản mô phỏng dùng chung. Nếu đăng ký bằng email của bạn, bạn sẽ có một không gian làm việc riêng.
+role: Trưởng nhóm bốn người — phạm vi, tích hợp và phát hành; core Risk, API và xác thực, truy xuất pháp luật, triển khai GCP
+stack: [Python, FastAPI, PostgreSQL, Supabase Auth, OpenAI API, React, TypeScript, Cloud Run, GitHub Actions]
+points:
+  - >-
+    Dẫn dắt nhóm bốn người xây dựng bốn core trong một monorepo: Legal RAG, Risk, Graph và tối ưu lượng tử. Chốt phạm vi, ngân sách và lịch phát hành, review từng core, rồi tích hợp tất cả thành một sản phẩm.
+  - >-
+    Xây dựng core Risk: nhập file CSV rồi đối chiếu doanh thu, tiền về tài khoản và doanh thu kê khai qua bốn rule có phiên bản. Khi thiếu dữ liệu, hệ thống trả `insufficient_data` thay vì đưa ra một điểm số gây hiểu lầm.
+  - >-
+    Làm lại phần truy xuất của trợ lý pháp luật bằng BM25 trên cặp âm tiết tiếng Việt, và buộc mỗi nhận định chỉ được trích dẫn các chunk đã thực sự truy xuất. Nhờ đó, recall@5 theo văn bản tăng từ 32 lên 52 trên 56 câu kiểm thử.
+  - >-
+    Xây dựng xác thực đa tenant trên Supabase, triển khai hai môi trường dev và production trên Cloud Run sau load balancer và CDN, thông qua GitHub Actions.
+metrics:
+  - { label: Recall@5 của Legal, value: '93%', note: '52 trên 56 câu, trước đó là 32' }
+  - { label: Văn bản pháp luật đã lập chỉ mục, value: '13', note: '1.118 chunk' }
+  - { label: Core đã tích hợp, value: '4' }
+---
+
+## Bài toán
+
+Hộ và cá nhân kinh doanh online ở Việt Nam phải theo kịp quy định thuế mới, trong khi văn bản luật liên tục được sửa đổi và các nguồn doanh thu hiếm khi khớp nhau. TaxMate giải thích nghĩa vụ thuế theo đúng luật có hiệu lực trong kỳ của họ, và chỉ ra những chỗ sổ sách của chính họ bị lệch.
+
+## Dẫn dắt nhóm
+
+Mỗi thành viên phụ trách một core. Với vai trò trưởng nhóm, Khải ghi nhật ký quyết định có ngày tháng cho các vấn đề về phạm vi, cloud và ngân sách, duy trì bảng tiến độ chung cập nhật hằng ngày, review các core còn lại và phụ trách tích hợp. Khi nền tảng và khâu triển khai trở thành điểm nghẽn, Khải trực tiếp nhận thêm hai phần này.
+
+## Risk: điểm số không đoán mò
+
+Bốn rule có phiên bản lần lượt so doanh thu ròng với doanh thu kê khai, đối chiếu tiền về tài khoản với doanh thu, tìm giao dịch ghi trùng và khoản hoàn tiền bất thường, và đo xem dữ liệu phủ được bao nhiêu phần của kỳ. Cùng một đầu vào và cùng phiên bản rule luôn cho ra cùng một báo cáo.
+
+Điểm số là mức ưu tiên rà soát, không phải xác suất vi phạm. Nếu thiếu doanh thu kê khai, thiếu một trong hai nguồn dữ liệu, hoặc độ phủ dưới 80%, điểm sẽ để trống thay vì bằng 0, vì con số 0 dễ bị hiểu là "mọi thứ đều ổn".
+
+## Legal: trích đúng luật
+
+Khi kiểm thử trên dịch vụ đang chạy, trợ lý trả lời dựa trên sai văn bản: chunk dài luôn được xếp lên đầu, còn âm tiết ngắn như "hộ" thì bị bỏ qua. Bản làm lại gồm:
+
+- dùng BM25 trên âm tiết đơn và cặp âm tiết;
+- tách nhỏ các chunk quá dài;
+- hiểu câu gõ không dấu và số hiệu văn bản;
+- theo dõi quan hệ sửa đổi giữa các văn bản theo thời gian.
+
+Mỗi nhận định mang mã nguồn riêng, lấy từ một enum chỉ gồm các chunk đã được truy xuất, và server kiểm tra lại với manifest đã duyệt. Recall@5 tăng từ 32 lên 52 trên 56 câu. Các câu trả lời chưa được chuyên gia thuế duyệt, và dự án ghi rõ điều đó.
+
+## Nền tảng
+
+Danh tính người dùng lấy từ Supabase Auth, còn vai trò và tenant do server quyết định. Hai môi trường dev và production chạy trên Cloud Run, phía sau một load balancer toàn cầu có chứng chỉ TLS được quản lý và CDN. GitHub Actions triển khai mà không cần lưu khoá. Chi phí được chặn bằng giới hạn số instance, vì cảnh báo ngân sách không tự dừng việc chi tiêu.

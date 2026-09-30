@@ -1,0 +1,59 @@
+---
+title: TaxMate AI
+kicker: Tax compliance · Legal RAG
+summary: >-
+  A tax-compliance assistant for Vietnamese online sellers. It answers legal questions with a citation on every claim and reconciles sales against declared revenue. Built by a team of four that Khai led.
+year: 2026
+order: 2
+featured: true
+tags: [Legal RAG, BM25, FastAPI, Multi-tenant, Supabase, Cloud Run]
+cover: /img/project-taxmate.avif
+demo: https://taxmate.ngwkhai.com
+live: true
+demoNote: >-
+  The sign-in page offers a shared sandbox account. Signing up with your own email gives you a private workspace.
+role: Team lead of four — scope, integration and releases; Risk core, API and auth, legal retrieval, GCP deployment
+stack: [Python, FastAPI, PostgreSQL, Supabase Auth, OpenAI API, React, TypeScript, Cloud Run, GitHub Actions]
+points:
+  - >-
+    Led a four-person team building four cores in one monorepo: Legal RAG, Risk, Graph and quantum Optimization. Set scope, budget and releases, reviewed each core and integrated them into one product.
+  - >-
+    Built the Risk core. It imports CSVs and reconciles sales, bank deposits and declared revenue through four versioned rules, and returns `insufficient_data` instead of a misleading score when data is missing.
+  - >-
+    Rebuilt the legal assistant's retrieval with BM25 over Vietnamese syllable pairs, and made every claim cite only chunks that were actually retrieved. This raised document recall@5 from 32 to 52 of 56 test questions.
+  - >-
+    Built multi-tenant auth on Supabase, and deployed dev and production on Cloud Run behind a load balancer and CDN through GitHub Actions.
+metrics:
+  - { label: Legal recall@5, value: '93%', note: '52 of 56 questions, up from 32' }
+  - { label: Legal documents indexed, value: '13', note: '1,118 chunks' }
+  - { label: Cores integrated, value: '4' }
+---
+
+## The problem
+
+Household and online businesses in Vietnam face new tax rules, legislation that keeps being amended, and revenue sources that rarely agree. TaxMate explains their obligations from the law in force for their period, and shows where their own records disagree.
+
+## Leading the build
+
+Each of the four team members owned one core. As lead, Khai kept a dated log of decisions on scope, cloud and budget, ran a shared daily status board, reviewed the other cores and handled integration. When the platform and deployment became the bottleneck, Khai took them over.
+
+## Risk: a score that refuses to guess
+
+Four versioned rules compare net sales with declared revenue, match bank deposits to sales, flag duplicates and unusual refunds, and measure how much of the period the data covers. The same input and rule version always produce the same report.
+
+The score is a review priority, not a probability of wrongdoing. Without declared revenue, both data sources and 80% coverage, the score is null rather than zero, because a zero would read as reassurance.
+
+## Legal: citing the right law
+
+Testing the live service showed answers drawn from the wrong documents. Long chunks always ranked first, and short syllables such as "hộ" were dropped. The rebuild:
+
+- uses BM25 over single syllables and syllable pairs;
+- splits oversized chunks;
+- handles missing diacritics and document numbers;
+- follows amendments over time.
+
+Every claim carries its own source IDs, taken from an enum of the chunks that were retrieved, and the server checks them against the approved manifest. Recall@5 rose from 32 to 52 of 56 questions. The answers have not yet been reviewed by a tax professional, and the project states this openly.
+
+## Platform
+
+Identity comes from Supabase Auth, while roles and tenants are decided on the server. Dev and production run on Cloud Run behind a global load balancer with managed TLS and a CDN. GitHub Actions deploys them without a stored key. Instance caps are the real cost limit, because budget alerts don't stop spending.

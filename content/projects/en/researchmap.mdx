@@ -1,0 +1,52 @@
+---
+title: ResearchMap AI
+kicker: Research tooling · Agentic RAG
+summary: >-
+  Turns a one-line description of a research field into a map of its literature: topics, trends and gaps. An agent answers questions about the field, citing only papers it actually retrieved.
+year: 2026
+order: 1
+featured: true
+tags: [Agentic RAG, pgvector, Clustering, FastAPI, React, Cloud Run]
+cover: /img/project-researchmap.avif
+demo: https://researchmap.ngwkhai.com
+live: true
+demoNote: >-
+  No sign-up needed: a guest session can run one full analysis of a field.
+role: Solo — product, backend, AI pipeline, frontend, deployment
+stack: [Python, FastAPI, PostgreSQL, pgvector, scikit-learn, OpenAI API, React, TypeScript, Cloud Run, GitHub Actions]
+points:
+  - >-
+    Built the full product solo: a FastAPI backend on PostgreSQL with pgvector, a React frontend, sign-in with Google OAuth and TOTP, plans with quotas, and an admin panel.
+  - >-
+    Designed the analysis pipeline. An LLM plans the OpenAlex queries, papers are embedded and clustered with KMeans, an LLM names each topic, and research gaps are computed from topics that share no papers.
+  - >-
+    Built an agentic RAG chat on OpenAI tool calling, with 7 tools and at most 4 rounds. Its citations come only from papers the tools returned, and it sits behind a relevance floor measured on real data.
+  - >-
+    Benchmarked it with four harnesses and an LLM judge, and shipped it to Cloud Run through GitHub Actions and Workload Identity Federation.
+metrics:
+  - { label: Cited papers verified real, value: '36/36' }
+  - { label: Retrieval precision@5, value: '0.867' }
+  - { label: Cost per answer, value: '$0.00032', note: 'gpt-5.4-nano, measured' }
+---
+
+## The problem
+
+Someone entering an unfamiliar research field needs to know four things: its sub-topics, which of them are growing, which papers matter, and where the gaps are. Search engines don't answer these, and general chatbots answer them without evidence. The product was built for the AI20K Build Cohort 2 programme.
+
+## Approach
+
+- **Search planning.** An LLM turns the user's sentence into three to eight English queries for OpenAlex. Results are deduplicated by DOI first, then by title.
+- **Topics.** Papers are embedded into pgvector and clustered with KMeans, with the number of clusters chosen from the size of the corpus. An LLM then names each cluster. The 320-paper demo corpus yields 18 topics.
+- **Gaps.** Gaps are computed, not generated. Pairs of topics with no paper in common are proposed as gaps, and each one comes with the papers behind it.
+- **Grounded chat.** Citations are collected from tool results, never from the model's own text. On this corpus, on-topic questions score 0.55–0.79 cosine and off-topic ones 0.15–0.31, so a floor of 0.35 sits in the gap. An off-topic question gets "not covered" instead of an invented answer. Paper text is fenced as data to resist prompt injection.
+
+## Results
+
+- All 36 cited papers were verified as real in the database. The assistant classified all 15 test questions correctly as on-topic or off-topic. The LLM judge averaged 8.0/10.
+- Retrieval precision@5 was 0.867, and query-planning precision was 0.886.
+- Each answer cost $0.00032 on `gpt-5.4-nano`.
+- Topic labelling was the weakest area at 6.25/10. The report states this rather than hiding it.
+
+## Delivery
+
+A single container on Cloud Run serves both the API and the frontend, backed by Cloud SQL and Secret Manager. Every push to `main` deploys through GitHub Actions using Workload Identity Federation, so no service-account key is stored anywhere.

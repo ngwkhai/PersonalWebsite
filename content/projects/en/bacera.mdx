@@ -1,0 +1,51 @@
+---
+title: Bacera
+kicker: Commerce · POS integration
+summary: >-
+  An online shop and workshop booking site for a Hanoi pottery studio, built on WordPress with Pancake POS as the system of record. Its public demo replays recorded POS traffic.
+year: 2026
+order: 4
+featured: true
+tags: [WordPress, PHP, REST, POS integration, Docker, GCP]
+cover: /img/project-bacera.avif
+demo: https://bacera.ngwkhai.com
+live: true
+demoNote: >-
+  Runs on recorded POS data and resets nightly. The sign-in code appears on screen, and every payment method completes.
+repo: https://github.com/ngwkhai/bacera-pancake-integration
+role: Team of two — Pancake POS plugin, shop and checkout, payments, search, demo and infrastructure (theme, auth and workshops by Khánh Toàn)
+stack: [PHP 8.3, WordPress, REST API, Tailwind CSS, Alpine.js, MariaDB, Docker, Caddy, Compute Engine]
+points:
+  - >-
+    Built a WordPress plugin that integrates Pancake POS through six modules, so products, stock and orders live in the POS and the site never keeps a second inventory.
+  - >-
+    Kept the API key on the server. Checkout calls nonce-checked REST routes that talk to the POS, and product images are proxied under the studio's own domain.
+  - >-
+    Verified bank transfer, card and PayPal payments with payment intents that expire, plus a status endpoint that turns the POS's inconsistent "paid" signals into one answer.
+  - >-
+    Turned the client project into a safe public demo. It replays recorded POS responses, cannot reach the real POS from its container, and resets every night on Compute Engine.
+metrics:
+  - { label: Integration modules, value: '6' }
+  - { label: Custom SQL tables, value: '15' }
+  - { label: POS endpoints replayed, value: '12' }
+---
+
+## The problem
+
+Bacera is a pottery studio in Hanoi that sells finished pieces and runs workshops, and its staff already work in Pancake POS. The brief was to sell online without creating a second inventory that someone would have to keep in sync by hand.
+
+## The POS as the system of record
+
+The site reads categories, prices, stock and product details from Pancake when it needs them, and writes orders and customers back. WordPress keeps only what the POS has no concept of: pages, workshops, reviews and SEO. The integration is one plugin with six modules that share an API client, so a change in Pancake's responses only has to be handled in one place. Customers are matched by phone number, so someone who buys both online and at the counter stays a single record.
+
+## Nothing secret in the browser
+
+Address lookup, order creation and payment status all go through the plugin's nonce-checked REST routes. The browser only ever sees the studio's domain. Images are served from `/bacera-img/{slug}` with long cache headers instead of CDN hashes.
+
+## Payments verified, not assumed
+
+Orders paid by bank transfer, card or PayPal get a payment intent with an expiry time. The status endpoint turns the several ways the POS reports "paid" into one of five states (paid, pending, partial, failed or expired), so the checkout only has to handle a small, fixed vocabulary.
+
+## From client project to public demo
+
+A public demo must never create orders in the client's POS. A must-use plugin replays recorded GET responses, with personal data and cost prices removed, and simulates every write. As a second safeguard, the container's hosts file points the POS domain at localhost. A nightly job restores a clean snapshot and generates three weeks of workshop sessions. The demo runs on an e2-small Compute Engine VM with Docker Compose and Caddy, and SSH is reachable only through Identity-Aware Proxy.

@@ -27,13 +27,15 @@ Everything except the AI features works without any keys.
 | `pnpm test:a11y` | axe against every page, WCAG 2.2 AA                          |
 | `pnpm shots`     | Writes screenshots to `e2e/__screenshots__/`                 |
 | `pnpm knowledge` | Rebuilds `lib/ai/knowledge.json`                             |
+| `pnpm screens`   | Photographs the live demos into `assets/screens/`            |
+| `pnpm covers`    | Builds every project cover from `assets/` into `public/img/` |
 
 ## How it fits together
 
 ```
 content/cv.ts            Single source of truth for facts about Khai
 content/achievements.ts  Awards and credentials — add yours here
-content/projects/        14 case studies, 7 projects × 2 locales
+content/projects/        28 case studies, 14 projects × 2 locales
         ↓
 lib/ai/knowledge.json    Built by scripts/build-knowledge.ts
         ↓
@@ -47,7 +49,7 @@ agent will not claim it** — that is the point.
 ## The agent
 
 Four tools. `searchKnowledge` runs hybrid retrieval (BM25 and embeddings, fused
-with reciprocal rank fusion) over 130 passages. `navigateTo` executes in the
+with reciprocal rank fusion) over about 200 passages. `navigateTo` executes in the
 browser and really moves the page. `showProject` streams a project card into the
 conversation. `githubActivity` reads live repository data.
 

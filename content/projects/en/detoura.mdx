@@ -2,82 +2,49 @@
 title: Detoura
 kicker: Realtime platform
 summary: >-
-  A TypeScript monorepo that turned a single online board game into a platform. Rules plug into one typed interface, the server treats a match as opaque state, one set of Zod schemas is both the validator and the published API spec, and a second service runs automated tournaments between bots over WebSocket.
+  A realtime two-player board game built as a platform. It has a deterministic rules core, one set of typed schemas that validates, documents and tests the API, and a separate tournament service for bots.
 year: 2026
-order: 4
+order: 3
 featured: true
 tags: [Realtime, TypeScript, Zod, WebSocket, PostgreSQL, Cloud Run]
 cover: /img/project-detoura.avif
-demo: https://detoura-175412711513.asia-southeast1.run.app
-role: Solo — architecture, rules engine, protocol, arena service, search algorithms, deployment
+demo: https://detoura.ngwkhai.com
+live: true
+demoNote: >-
+  Play two players on one screen, or open a room and send its code to someone else.
+role: Solo — architecture, rules engine, protocol, tournament service, search algorithms, deployment
 stack: [TypeScript, Zod, ws, React, Vite, PostgreSQL, Docker, Cloud Run, GitHub Actions]
 points:
   - >-
-    A pnpm monorepo of nine workspaces around one dependency-free core: the rules package imports nothing, touches no clock and no randomness, and is therefore deterministic — which is what later made replay, simulation and server-side search possible without a second implementation.
+    Designed a nine-package TypeScript monorepo around a deterministic rules core with no dependencies, so the same code runs in the browser, on the server and in replays.
   - >-
-    Game logic plugs into a single typed interface. The platform holds a match as opaque state and asks the module every question it has, so supporting a second game is a rules package plus a render layer, with no change to the room, protocol or transport code.
+    Made the platform game-agnostic: rules plug into one typed interface, and the server treats a match as opaque state.
   - >-
-    One set of Zod schemas is the single source of truth: it validates every inbound message and it generates `/openapi.json` and a live `/spec` covering the fourteen-message WebSocket catalog that OpenAPI cannot express. Documentation cannot fall behind the server because it is produced by the server.
+    Used one set of Zod schemas to validate every message and to generate the OpenAPI and WebSocket spec, with a contract-drift suite that runs against the live deployment.
   - >-
-    A contract-drift suite runs against the deployed URL on every release, checking the design document against the spec the live service is actually serving. Producer/consumer drift — one shape shipped, another assumed, both test suites green — becomes a build failure instead of a bug report.
-  - >-
-    The tournament service is its own process on Postgres with hand-written parameterised SQL: API keys stored only as hashes and compared in constant time, schedules generated in one transaction, standings served from a SQL view recomputed on read, and matches persisted as action logs that replay deterministically instead of as duplicated state.
-  - >-
-    Hardened at the transport layer with per-connection token-bucket rate limiting, a frame-size ceiling, a server-owned Fischer clock the game state never sees, and a structured event log that makes every rejection auditable after the fact.
-  - >-
-    Shipped as containers on Cloud Run through GitHub Actions with Workload Identity Federation — no long-lived credentials — behind a gate of contract tests, Playwright end-to-end runs and a WebSocket smoke test executed against the real deployment.
+    Built an authoritative WebSocket server with rate limiting and a server-owned clock, a Postgres tournament service, and a Cloud Run pipeline with no stored credentials.
 metrics:
   - { label: Workspace packages, value: '9' }
   - { label: Interfaces under contract, value: '5' }
   - { label: Protocol messages, value: '14' }
 ---
 
-## A core with nothing underneath it
+## A deterministic core
 
-The architecture starts from one constraint: the rules package has **zero dependencies**. No UI import, no network import, no clock, no randomness. Pure functions in, pure values out.
+The rules package has no dependencies, no clock and no randomness. Because of that, the same code can run in the browser for instant feedback and on the server as the authority. Matches can be stored as move logs and replayed, and search algorithms can simulate moves against the real rules.
 
-That is a small rule with large consequences. Because the core is deterministic, the same code can run in the browser for instant local feedback and on the server as the authority, with no risk of two implementations disagreeing. Because it has no clock, a match can be replayed from its move log rather than stored as snapshots. Because it has no randomness, a search algorithm can simulate thousands of futures against the real rules instead of an approximation of them.
+## One interface, any game
 
-Around it sits a pnpm monorepo of nine workspaces: the core, a module interface, spec generation, shared HTTP utilities, one package per game, the web client, the realtime server, and the tournament service. Boundaries are enforced by package export maps rather than by convention, so a layer cannot quietly reach into another one's internals.
+Rules plug in through a single typed interface: initialise a match, apply an action, list the legal moves, report the outcome, and project the state for rendering. The server never reads a match's fields directly, so adding a new game only takes a rules package and a render layer.
 
-## One interface, any number of games
+## The schema is the API and the test
 
-The platform does not know which game is running. Rules plug in through a single typed interface — initialise, apply an action, list what is legal, report an outcome, and project the state into three flat arrays that the shared renderer draws.
-
-The server therefore holds a match as **opaque state**: it never reads a field, it asks the module. That inversion is what makes the platform extensible in the cheap direction. Adding a game is a rules package and a render layer; the room lifecycle, the protocol, the reconnection logic, the clock and the persistence layer are written once and reused unchanged.
-
-Small decisions follow the same logic. Seats are indices rather than colours, so games with different conventions do not fight the type. The outcome type carried every terminal case from the first commit rather than the ones the first game happened to need — retrofitting one later would have meant changing the protocol, the schema and the scoring logic in the same week.
-
-## The schema is the API, the API is the test
-
-Everything on the wire is described by Zod schemas, and those schemas do three jobs from one definition.
-
-They **validate**: every inbound message is parsed before it reaches any logic, so malformed input is a typed rejection rather than a runtime surprise. They **document**: `/openapi.json` and a live `/spec` page are generated from them, including the WebSocket message catalogue, which is where most of a realtime contract lives and which OpenAPI has no way to express. And they **anchor the tests**: a drift suite runs on every release against the deployed URL, checking that every endpoint, message and error code in the design document is present in the spec the running service serves.
-
-The benefit is specific. Documentation cannot go stale, because nobody writes it. Frontend and backend cannot drift apart quietly, because the divergence fails a build rather than surfacing as a bug three weeks later. And a new client — a browser, a bot, a test harness — can be written against a spec that is guaranteed to describe the service as deployed.
-
-## A second service, kept separate on purpose
-
-Automated tournaments run as their own process, with their own database and their own deployment pipeline, and are structurally forbidden from touching the protocol that serves live players. One system's growth cannot destabilise another's traffic.
-
-Its data layer is hand-written parameterised SQL over Postgres — no ORM, and every response object built field by field, so a new column can never leak outward by accident. Authentication is API-key based with keys stored only as hashes and compared in constant time, with both sides hashed first so the comparison neither short-circuits nor leaks a length. Schedules are generated in a single transaction. Standings are a **SQL view recomputed on read**, which removes an entire class of bug: a derived table that silently disagrees with the rows it was derived from.
-
-Matches persist as **action logs, not snapshots**. Because the core is deterministic, a replay is a fold over the log — cheaper to store, and structurally incapable of contradicting the record it came from.
+Zod schemas validate every inbound message. The same schemas generate `/openapi.json` and a live spec of the fourteen WebSocket messages, which OpenAPI cannot describe on its own. On every release, a drift suite checks the design document against the spec that the deployed service actually serves.
 
 ## Realtime, defended
 
-The transport is a WebSocket server where the backend is the sole authority; the client runs the same rules only to render optimistically. Sessions survive a dropped connection through an opaque reconnection token, so a lost network is a pause rather than a forfeit.
+The server is the only authority on game state. Each connection has a token-bucket rate limit and a cap on frame size, can reconnect with an opaque token, and is recorded in an audit log. The Fischer clock is owned by the server and kept out of the game state.
 
-Abuse is budgeted rather than trusted: token-bucket rate limiting per connection, a hard ceiling on frame size, and automatic forfeiture on sustained protocol violation. Every one of those events is written to a structured audit log, separate from the match record, so an operator can reconstruct what a client did without inferring it from behaviour.
+## Tournaments and delivery
 
-The clock is a Fischer time bank the server owns outright and the game state never sees. Keeping time out of the state is what allows the same state to be replayed, simulated and hashed without a timestamp changing the result.
-
-## Search, as a calibration exercise
-
-Two full search algorithms were built against the deployed service to characterise how the platform behaves under real automated load: **minimax with alpha-beta pruning and iterative deepening**, bounded by the remaining time budget rather than a fixed depth, and **Monte Carlo Tree Search with UCT**, with rollouts weighted toward informed play so the statistics converge in a usable number of iterations.
-
-Both are held to one architectural rule: the action actually transmitted always comes from the server's own list of legal actions, and local simulation is used only to score deeper branches. A defect in client-side simulation can degrade decision quality; it can never produce an invalid request. That is the difference between a client that is trusted and a client that is merely useful.
-
-## Delivery
-
-Two Cloud Run services, built as containers by GitHub Actions and authenticated with Workload Identity Federation, so no long-lived credential is ever stored in CI. Release is gated on the contract suite, Playwright end-to-end runs and a WebSocket smoke test — all executed against the real deployment rather than a local build, because the only environment whose behaviour matters is the one users reach.
+Bot tournaments run as a separate service on Postgres with hand-written SQL. API keys are stored as hashes and compared in constant time, standings come from a SQL view, and matches are stored as action logs that can be replayed. Two bots, one using minimax with alpha-beta pruning and one using MCTS, were built to load-test the service. Both services deploy to Cloud Run through GitHub Actions without stored credentials. Each release has to pass contract tests, Playwright tests and a WebSocket smoke test against the real deployment.

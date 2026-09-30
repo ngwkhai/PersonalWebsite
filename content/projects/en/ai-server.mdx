@@ -2,7 +2,7 @@
 title: Classroom Trash Detection
 kicker: Distributed inference
 summary: >-
-  A computer-vision system split across a network boundary. A stateful client owns capture, presentation and storage on ordinary hardware; a stateless FastAPI service owns the model on a GPU; and everything between them — bandwidth, latency, failure and portability — is engineered at the seam.
+  A computer-vision system split across a network. A stateful client handles the camera and the dashboard, and a stateless FastAPI service runs YOLOv8 on a GPU.
 year: 2026
 order: 8
 featured: false
@@ -13,61 +13,35 @@ role: Full system — distributed architecture, client, inference service, runti
 stack: [Python, YOLOv8, ONNX Runtime, FastAPI, Flask, OpenCV, SQLite, Docker, Modal]
 points:
   - >-
-    A single-process application was refactored into two deployable units that meet at one HTTP contract — an image in, structured detections out, authenticated by header key — so the compute-heavy half can live on a GPU while the rest runs on whatever hardware is already in place.
+    Refactored a single-process app into a stateful client and a stateless GPU inference service, connected by one authenticated HTTP contract.
   - >-
-    The split is drawn along state: the client owns capture, the annotated video stream, local persistence and a status API; the inference service owns the model and nothing else. A stateless service can be relocated, rebuilt or scaled without the client knowing it happened.
+    Cut network and GPU load by downscaling frames to 640 px and rescaling the returned coordinates, and by running inference on sampled frames with cached results in between.
   - >-
-    Input is configuration rather than a code path — a local device or a network video stream, with candidate-endpoint probing and automatic reconnection on a background thread — so changing the camera hardware changes one environment variable and nothing on the server.
+    Added a local fallback for when the remote service is down, and a status API that reports which backend served each request and how long it took.
   - >-
-    Bandwidth is engineered explicitly: frames are downscaled to a fixed width before transmission and returned coordinates are rescaled by the same factor, so annotations register correctly against the full-resolution stream instead of against the payload that was sent.
-  - >-
-    Throughput is engineered separately: inference is sampled rather than run per frame, with results cached in between, so the video keeps its frame rate while the network and the GPU carry a fraction of the load.
-  - >-
-    Failure is designed for. A configurable local fallback keeps the pipeline alive when the remote service is unreachable, and the status API publishes which backend actually served each request alongside its measured latency — so a performance complaint resolves to the link or the model instead of a guess.
-  - >-
-    Serving cost was reduced at the runtime layer: ONNX export at half precision, model format resolved at load across PyTorch, ONNX and TensorRT, warm-up at process start so no request pays the cold path, and a health endpoint that reports the artifact actually loaded.
-  - >-
-    The same FastAPI application deploys three ways without modification — a notebook GPU behind a tunnel, a Docker image, and a serverless GPU function — which turns the hosting decision into a runtime choice rather than a rewrite.
+    Exported the model to half-precision ONNX, loaded it at startup, and deployed the same FastAPI app to a notebook GPU, a Docker image and a serverless GPU.
 metrics:
   - { label: Model formats, value: '3', note: 'PyTorch, ONNX, TensorRT' }
   - { label: Upload width, value: '640 px' }
   - { label: Deploy targets, value: '3' }
 ---
 
-## Splitting one process into two
+## The problem
 
-The first version was a single process doing everything: reading the video source, running the model, serving a dashboard and writing to a database. That is the natural shape to build and the wrong shape to operate, because its parts want different hardware. A model wants a GPU. A camera, a dashboard and a small database want to be close to the thing they are watching.
+The first version did everything in one process: it read the camera, ran the model, served a dashboard and wrote to a database. The model needed a GPU, while everything else needed to stay near the camera.
 
-So the system was refactored into two deployable units that meet at exactly one HTTP contract — an image in, structured detections out, authenticated with a header key.
+## Split along state
 
-The split is drawn along **state**, which is the boundary that actually matters. The client owns everything stateful: the capture thread, the annotated stream, local persistence, the status API. The inference service owns the model and holds nothing between requests. A stateless service can be moved to different hardware, rebuilt, or run in several copies without the client being aware of it, and the response payload is kept deliberately small so the contract stays narrow enough to reimplement.
-
-The same discipline is applied to input. The video source is configuration rather than a code path — a local device or a network stream, resolved at startup, with candidate-endpoint probing and automatic reconnection on a background thread. Changing the camera hardware is an environment variable, and the inference service never learns about it.
+The client owns everything stateful: capture, the annotated stream, local storage and a status API. The inference service owns only the model and holds nothing between requests, so it can be moved, scaled or rebuilt without the client noticing. The video source is set by configuration and can be a local device or a network stream, with automatic reconnection.
 
 ## Engineering the link
 
-Once inference crosses a network, the network becomes a component you have to design, not a pipe you get for free.
+Frames are downscaled to a fixed width before they are sent, and the detections are rescaled so the boxes line up on the full-resolution stream. Inference runs on sampled frames rather than every frame, so the video keeps its frame rate while the network and the GPU carry only a fraction of the load.
 
-Two mechanisms carry most of it. Frames are **downscaled to a fixed width before transmission**, because the detector resamples anything larger and the extra bytes buy nothing — but the results come back in the coordinate space of what was sent, so the client retains the scale factor and rescales every result before rendering. That keeps annotations registered against the full-resolution stream people are actually looking at. And inference is **sampled rather than run per frame**, with results cached in between: the video keeps its frame rate while the network and GPU carry a fraction of the traffic.
+## Failing well
 
-Together they decouple two things that are usually forced to move as one — display smoothness and inference cost — which is what lets the same system run acceptably over a fast local link and a slow remote one.
+When the remote call fails, the client runs the model locally, so the system stays available even without the GPU. Every remote call is timed and reported along with the backend that served it. Alerts fire when the state changes, with a limit on how often they can repeat, and storage is written at fixed time intervals instead of on every frame.
 
-## Failing well, and knowing about it
+## Cheaper to serve, anywhere
 
-A camera system that stops when a server goes away is worse than one that degrades, so the client can fall back to running the model locally when the remote call fails. Availability survives the loss of the accelerator; only quality of service changes.
-
-Observability is built into the same seam. Every remote call is timed, and the status API publishes both the measured latency and **which backend actually served the request**. That is a small amount of code that changes the character of every performance conversation: "it feels slow" resolves to the link or the model, with a number attached.
-
-The same instinct shapes the output side. Notifications are **edge-triggered with a rate ceiling** — emitted on a state transition, then at most once per interval while the condition persists — because per-event alerting produces a volume of messages that trains people to ignore the channel. Persistence is time-sampled on a fixed interval rather than written per frame. In both cases the system is designed around what a human can act on, not around what the model happens to produce.
-
-## Making the model cheaper to serve
-
-The model is exported to **ONNX at half precision**: the same weights, a runtime built for inference rather than training, and a smaller footprint per request. Format is resolved at load time across PyTorch weights, ONNX and TensorRT, so moving between them is a configuration change rather than an edit — and the export tooling always resolves the original training weights regardless of what the runtime path currently points at.
-
-The service loads its model at process start rather than on first request, so no user pays the cold path, and the health endpoint reports the format and artifact actually loaded. That last detail is the cheapest possible answer to the most common deployment question: is the thing running the thing I shipped?
-
-## One application, three deployment targets
-
-The service is written once and runs three ways without modification: a notebook GPU behind a tunnel for iteration, a Docker image for anywhere that takes containers, and a serverless GPU function that mounts the same application object directly.
-
-Nothing in the client knows which one is answering, because the contract is the only thing it depends on. Hosting therefore becomes a runtime decision — driven by cost, latency or availability on the day — instead of an architectural commitment made once and paid for indefinitely.
+The model runs as half-precision ONNX, and the format (PyTorch, ONNX or TensorRT) is chosen when the model loads. Loading happens at startup, so no request pays the cold-start cost, and the health endpoint reports which model file is actually loaded. The same app runs on a notebook GPU behind a tunnel, as a Docker image, and as a serverless GPU function.

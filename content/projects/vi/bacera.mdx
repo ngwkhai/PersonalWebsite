@@ -1,0 +1,51 @@
+---
+title: Bacera
+kicker: Thương mại · Tích hợp POS
+summary: >-
+  Website bán hàng và đặt chỗ workshop cho một xưởng gốm ở Hà Nội, xây dựng trên WordPress, dùng Pancake POS làm nguồn dữ liệu gốc. Bản demo công khai phát lại dữ liệu POS đã được ghi sẵn.
+year: 2026
+order: 4
+featured: true
+tags: [WordPress, PHP, REST, Tích hợp POS, Docker, GCP]
+cover: /img/project-bacera.avif
+demo: https://bacera.ngwkhai.com
+live: true
+demoNote: >-
+  Bản demo chạy trên dữ liệu POS đã ghi sẵn và được reset mỗi đêm. Mã đăng nhập hiện ngay trên màn hình, và mọi phương thức thanh toán đều chạy được đến cuối.
+repo: https://github.com/ngwkhai/bacera-pancake-integration
+role: Nhóm hai người — plugin Pancake POS, shop và checkout, thanh toán, tìm kiếm, bản demo và hạ tầng (theme, đăng nhập, workshop do Khánh Toàn làm)
+stack: [PHP 8.3, WordPress, REST API, Tailwind CSS, Alpine.js, MariaDB, Docker, Caddy, Compute Engine]
+points:
+  - >-
+    Xây dựng plugin WordPress tích hợp Pancake POS qua sáu module. Sản phẩm, tồn kho và đơn hàng đều nằm trong POS, nên website không phải giữ một kho hàng thứ hai.
+  - >-
+    Giữ API key ở phía server: checkout gọi các REST route có kiểm tra nonce để làm việc với POS, còn ảnh sản phẩm được proxy qua tên miền của chính xưởng.
+  - >-
+    Xác minh thanh toán chuyển khoản, thẻ và PayPal bằng payment intent có hạn dùng, cùng một endpoint quy các tín hiệu "đã thanh toán" không thống nhất của POS về một kết quả duy nhất.
+  - >-
+    Biến dự án khách hàng thành bản demo công khai an toàn: phát lại dữ liệu POS đã ghi, chặn container kết nối tới POS thật, và tự reset mỗi đêm trên Compute Engine.
+metrics:
+  - { label: Module tích hợp, value: '6' }
+  - { label: Bảng SQL tự thiết kế, value: '15' }
+  - { label: Endpoint POS được phát lại, value: '12' }
+---
+
+## Bài toán
+
+Bacera là một xưởng gốm ở Hà Nội, vừa bán sản phẩm vừa mở workshop, và nhân viên đã quen làm việc trên Pancake POS. Yêu cầu đặt ra là bán hàng online mà không sinh thêm một kho hàng thứ hai buộc ai đó phải đồng bộ bằng tay.
+
+## POS là nguồn dữ liệu gốc
+
+Website đọc danh mục, giá, tồn kho và chi tiết sản phẩm từ Pancake khi cần, rồi ghi đơn hàng và thông tin khách ngược lại vào POS. WordPress chỉ giữ những thứ POS không quản lý: các trang nội dung, workshop, đánh giá và SEO. Phần tích hợp là một plugin gồm sáu module dùng chung một API client, nên khi Pancake thay đổi cách trả dữ liệu thì chỉ phải sửa ở một chỗ. Khách hàng được đối chiếu theo số điện thoại, nên người mua cả online lẫn tại quầy vẫn chỉ là một bản ghi.
+
+## Không để lộ bí mật trên trình duyệt
+
+Tra cứu địa chỉ, tạo đơn và kiểm tra trạng thái thanh toán đều đi qua các REST route có kiểm tra nonce của plugin. Trình duyệt chỉ nhìn thấy tên miền của xưởng. Ảnh sản phẩm được phục vụ qua `/bacera-img/{slug}`, có header cache dài hạn, thay vì dùng đường dẫn băm của CDN.
+
+## Thanh toán được xác minh
+
+Đơn thanh toán bằng chuyển khoản, thẻ hoặc PayPal đều được gắn một payment intent có hạn dùng. POS báo "đã thanh toán" theo nhiều cách khác nhau, và endpoint trạng thái quy tất cả về một trong năm trạng thái: đã trả, chờ, trả một phần, thất bại hoặc hết hạn. Nhờ vậy, phần checkout chỉ cần xử lý một bộ trạng thái nhỏ và cố định.
+
+## Từ dự án khách hàng thành bản demo công khai
+
+Bản demo công khai không bao giờ được tạo đơn trong POS của khách. Một mu-plugin phát lại các response GET đã ghi sẵn (đã xoá dữ liệu cá nhân và giá nhập) và giả lập mọi thao tác ghi. Để chắc chắn hơn, file hosts của container trỏ tên miền POS về localhost. Mỗi đêm, một tác vụ tự khôi phục snapshot sạch và sinh lịch workshop cho ba tuần tới. Bản demo chạy trên một VM e2-small của Compute Engine với Docker Compose và Caddy, và chỉ truy cập SSH được qua Identity-Aware Proxy.

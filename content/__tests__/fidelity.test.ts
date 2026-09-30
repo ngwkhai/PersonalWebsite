@@ -39,7 +39,15 @@ const ADDED_SINCE_LEGACY = new Set(['Viettel Networks', 'VinSmart Feature']);
  * the organisations above: the seven legacy case studies still have to match
  * the previous site exactly, and a new one has to be added here on purpose.
  */
-const PROJECTS_SINCE_LEGACY = new Set(['detoura', 'ai-pipeline-mastery', 'ai-server']);
+const PROJECTS_SINCE_LEGACY = new Set([
+  'detoura',
+  'ai-pipeline-mastery',
+  'ai-server',
+  'bacera',
+  'researchmap',
+  'taxmate',
+  'flowcenter',
+]);
 
 /**
  * A claim the previous site made that Khai has since updated. The old wording

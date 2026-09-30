@@ -1,0 +1,50 @@
+---
+title: Flow Center
+kicker: Nền tảng phòng khám · RAG y tế
+summary: >-
+  Đặt lịch, khảo sát thể trạng và trợ lý chat cho một cơ sở chăm sóc đau bụng kinh theo Y học Cổ truyền. AI chỉ được hoạt động trong phạm vi nội dung đã được chuyên gia duyệt.
+year: 2026
+order: 5
+featured: true
+tags: [Next.js, PostgreSQL, pgvector, Tìm kiếm lai, AI y tế, Vercel]
+cover: /img/project-flowcenter.avif
+demo: https://flowcenter.ngwkhai.com
+live: true
+demoNote: >-
+  Trợ lý chat trả lời được ngay mà không cần tài khoản. Để đặt lịch và lưu kết quả khảo sát, bạn cần đăng ký bằng số điện thoại.
+role: Một mình, cho khách hàng — full stack, tính năng AI, triển khai
+stack: [Next.js 16, TypeScript, PostgreSQL, Drizzle ORM, pgvector, OpenAI API, Vercel, Neon]
+points:
+  - >-
+    Một mình xây dựng toàn bộ website của cơ sở trên Next.js 16, PostgreSQL và Drizzle, gồm đặt lịch kèm quy trình xử lý của nhân viên, khảo sát thể trạng, trợ lý chat, xác thực và trang quản trị, triển khai trên Vercel và Neon.
+  - >-
+    Bảo đảm đặt lịch an toàn khi nhiều người đặt cùng lúc bằng advisory lock và các bước chuyển trạng thái ràng buộc ngay trong SQL. Có test bắn tám lượt đặt song song vào hai chỗ để kiểm chứng.
+  - >-
+    Giữ AI trong phạm vi nội dung đã duyệt: khảo sát được chấm bằng rule cố định, gặp dấu hiệu cảnh báo thì dừng lại, và mô hình chỉ được diễn đạt lại mẫu lời khuyên của cơ sở, gặp lỗi thì quay về dùng mẫu.
+  - >-
+    Xây dựng trợ lý chat RAG với tìm kiếm tiếng Việt kiểu lai: từ khoá bỏ dấu kết hợp pgvector, trộn kết quả bằng RRF. Trợ lý chỉ đọc dữ liệu, và chỉ đặt lịch khi chính người dùng bấm nút.
+metrics:
+  - { label: Lượt đặt song song trong test tranh chấp, value: '8', note: 'cho 2 chỗ, không vượt chỗ' }
+  - { label: Dấu hiệu cảnh báo dừng phân tích, value: '10' }
+  - { label: Số ngày giữ hội thoại, value: '90' }
+---
+
+## Bài toán
+
+Cơ sở cần đưa quầy lễ tân lên mạng: nhận đặt lịch, cho người bệnh mô tả tình trạng trước lần khám đầu, và trả lời những câu hỏi thường gặp hằng ngày. Việc nào cũng liên quan đến sức khoẻ, nên mỗi phần đều cần giới hạn rõ ràng về những gì phần mềm, đặc biệt là mô hình AI, được phép làm.
+
+## Đặt lịch chịu được tải
+
+Mỗi lượt đặt chạy trong một transaction giữ hai advisory lock: một theo khách và một theo ngày cùng khung giờ. Một partial unique index bảo đảm thêm luật mỗi khách chỉ có một lịch cho một khung giờ. Thao tác của nhân viên được viết dạng `UPDATE … WHERE status IN (…)`, nên hai người thao tác cùng lúc không thể cùng thành công. Ngày giờ được tính theo múi giờ của cơ sở, không theo giờ UTC của server.
+
+## AI trong giới hạn chuyên môn
+
+Khảo sát được chấm theo bảng điểm của cơ sở, không bao giờ do mô hình chấm. Chỉ cần gặp một trong mười dấu hiệu cảnh báo, phân tích sẽ dừng lại và hướng người bệnh tới bác sĩ. Với phần lời khuyên, mô hình nhận mẫu đã duyệt làm bản nháp và chỉ được diễn đạt lại. Nếu kết quả chứa tên thể bệnh nội bộ, quá thời gian chờ hoặc JSON không hợp lệ, hệ thống dùng lại bản mẫu, nên tính năng vẫn chạy được khi không có mô hình.
+
+## Trợ lý chỉ đọc, không tự hành động
+
+Trợ lý trả lời dựa trên cẩm nang của cơ sở, bằng một vòng lặp gọi công cụ dạng stream, tối đa năm vòng. Công cụ đọc dữ liệu cá nhân từ phiên đăng nhập, không bao giờ từ tham số do mô hình đưa vào. Việc đặt hay huỷ lịch chỉ xảy ra khi người dùng bấm nút trên thẻ, và đi qua chính server action mà các trang dùng. Để tìm kiếm, văn bản tiếng Việt được chuyển về dạng không dấu, khớp theo từ và cặp từ, chạy song song với pgvector, rồi trộn hai danh sách kết quả bằng reciprocal rank fusion.
+
+## Quyền riêng tư
+
+Chỉ có câu trả lời khảo sát và tên gọi được gửi tới OpenAI, kèm `store: false`. Mật khẩu được băm bằng scrypt, và phiên đăng nhập chỉ lưu mã băm của token. Mọi trang và server action đều kiểm tra lại quyền truy cập. Hội thoại được xoá sau 90 ngày.

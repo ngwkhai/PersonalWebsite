@@ -2,7 +2,7 @@
 title: AI Pipeline Mastery
 kicker: Learning platform
 summary: >-
-  A teaching system built as software: a Python pipeline that generates course artifacts from source and verifies them by executing them, and a Next.js platform that authenticates learners, serves material from private storage, and runs their code either in the browser or on a pool of remote GPUs.
+  A course built as software. A Python pipeline generates the course material and executes it as a test, and a Next.js platform runs learners' code either in the browser or on a pool of remote GPUs.
 year: 2026
 order: 6
 featured: false
@@ -12,21 +12,13 @@ role: Solo — platform architecture, GPU orchestration, build tooling, content 
 stack: [Next.js 16, Firebase Auth, Firestore, Cloudflare R2, Pyodide, Kaggle API, Tailwind v4]
 points:
   - >-
-    Course artifacts are generated, not hand-assembled: a Python toolchain builds slide decks and reference documents through `python-pptx` and `python-docx`, and compiles exercises and assessments into JSON from their per-task sources — so a change at the source propagates everywhere instead of being copied by hand.
+    Built a Python toolchain that generates slide decks, documents and exercises from source. So far it has produced 383 slides and 129 figures rendered from real data.
   - >-
-    Quality is enforced by execution rather than review. The gate runs every reference solution and requires it to pass, runs every starter and requires it to fail in the expected way, rebuilds the generated files and compares them byte for byte, and blocks the release on any mismatch. Correctness becomes a property the pipeline guarantees rather than a thing someone remembered to check.
+    Enforced quality by execution. Every reference solution must pass, every starter must fail as expected, and generated files are rebuilt and compared byte for byte before each release.
   - >-
-    The platform is Next.js 16 on the App Router with server actions and no internal API tier — pages and actions query the data layer directly on the server, which removes a whole hop, a whole set of route handlers, and the drift that usually lives between them.
+    Built the learner platform on Next.js 16 with server actions and no internal API layer. The browser never touches the data store, and files are served as signed URLs.
   - >-
-    A single security rule shapes the design: the browser never speaks to the data store. Sign-in yields an identity token that is exchanged for a verified session cookie, every read and write runs server-side behind that check, files are served as time-limited signed URLs from a private bucket, and database rules deny everything by default.
-  - >-
-    Learner code runs two ways behind one interface — in the browser through Pyodide for anything CPU-sized, and on remote GPUs through a job queue that leases an account from a pool, dispatches the work, tracks it to completion, collects logs and artifacts into object storage, and returns the account with its quota accounted for.
-  - >-
-    The queue is designed for a serverless host: no request ever blocks on a long-running job. Progress is tracked by client polling while the learner watches, with a scheduled sweep as the backstop for work whose page was closed, and a concurrency cap that keeps resource usage per learner bounded.
-  - >-
-    The whole GPU path has a simulation mode that activates when no credentials are configured, so the queue, the state machine and the interface are fully exercisable on a laptop — the difference between orchestration you can develop against and orchestration you can only deploy and hope for.
-  - >-
-    Delivered as two independently deployed applications: a statically exported marketing site and a server-backed platform, so public content ships on its own cadence without redeploying the system that holds learner data.
+    Designed a GPU job queue for a serverless host. It leases accounts from a pool, tracks jobs through polling and a scheduled sweep, and can run end to end in a local simulation mode.
 metrics:
   - { label: Slides generated, value: '383' }
   - { label: Figures rendered, value: '129' }
@@ -35,38 +27,20 @@ metrics:
 
 ## Course material as a build artifact
 
-The premise is that teaching material is software: it has sources, it has a build, and it has tests.
-
-Decks and reference documents are produced programmatically through `python-pptx` and `python-docx` — 383 slides and 129 figures so far, the figures rendered from real datasets by scripts rather than drawn once and pasted. Exercises and assessments are **compiled**: a build step reads each task's own sources and emits the JSON the platform consumes. Nothing that ships is authored twice.
-
-The benefit is the one you get from any build system. A correction at the source appears in every derived artifact. Regenerating is cheap enough to do routinely, so material stays current instead of accumulating small divergences. And because the output is data rather than a document, the platform can render it, grade it and version it without a human transcription step in the middle.
+Slide decks and reference documents are generated with `python-pptx` and `python-docx`, and figures are rendered from real datasets. Exercises are compiled into the JSON that the platform reads. A fix made at the source reaches every artifact, and nothing is written twice.
 
 ## Verification by execution
 
-The quality gate does not read the material. It runs it.
-
-Every reference solution is executed and must pass its own tests. Every starter file is executed and must fail in exactly the expected way, which is what proves the exercise actually contains an exercise. The generated artifacts are rebuilt and compared byte for byte against what is on disk, so a published exercise can never drift from the solution it was derived from. Structural checks — asset completeness, terminology consistency, document conventions — run in the same pass, and any failure blocks the release.
-
-This converts correctness from something a person remembers to check into a property the pipeline guarantees. It is the difference between material that is reviewed and material that is tested.
+The release gate runs the material instead of reading it. Reference solutions must pass, starter files must fail in the expected way, and generated files must match the committed ones byte for byte. Structural checks run in the same pass, and any failure blocks the release.
 
 ## The platform
 
-The delivery system is Next.js 16 on the App Router, with server actions and Tailwind v4. There is deliberately no internal API tier: server components and actions call the data layer directly, because a page that already executes on the server gains nothing from talking to itself over HTTP. That removes a hop, a set of route handlers, and the contract drift that tends to live between them.
+The platform uses Next.js 16 on the App Router, with server components and actions calling the data layer directly. Learners sign in with Google against an invitation list and receive a verified session cookie. Every read and write happens on the server, files are served from a private bucket as time-limited signed URLs, database rules deny access by default, and all access is written to an audit log.
 
-Routing is split into an administrative area and a learner area, each with an authorisation check at the layout boundary rather than repeated per page — access control that is structural, so a new page inherits it by existing in the right place.
+## Running learners' code
 
-One security rule shapes everything: **the browser never speaks to the data store.** Google sign-in against an invitation whitelist produces an identity token, which is exchanged once for a verified session cookie; every read and write happens server-side behind that check; files live in a private object store and are handed out as time-limited signed URLs; the database rules deny everything by default. Access is recorded to an audit log with CSV export, which turns "who has what" from a question into a query.
+Exercises follow the coding-interview pattern: the learner writes one function, and a harness adds the tests when it runs. CPU-sized work runs in the browser through Pyodide. GPU work goes to a queue that leases an account from a pool, dispatches the job, and collects logs and outputs into object storage. It then returns the account with its quota accounted for. No request waits on a long-running job, and a simulation mode makes the whole path testable on a laptop.
 
-## Running someone else's code, twice over
+## Two applications
 
-Exercises are set the way coding interviews are: the learner sees the function to implement, while fixtures, assertions and reporting live in a harness that is composed onto their submission at execution time.
-
-The platform contains no Python at all. The test runner is generated from one source that the local toolchain also uses, and the entire contract between the two systems is a single printed line carrying a JSON result. That keeps a TypeScript application from ever needing to understand Python semantics, and guarantees that running an exercise locally and running it on the platform execute identical code.
-
-From there, two lanes behind one interface. CPU-sized work runs **in the browser through Pyodide** — no queue, no infrastructure, no cost per run. Anything needing acceleration goes to a **GPU job queue**: lease an account from a pool, dispatch the work, track it to completion, pull logs and output files into object storage, release the account with its quota accounted for.
-
-The queue is built for a serverless host, so no request ever blocks on a long job. The page polls while the learner is watching it; a scheduled sweep is the backstop for work whose page was closed; and a concurrency cap per learner keeps pool usage bounded and predictable. Crucially, the whole path has a **simulation mode** that engages when no credentials are configured — the queue, the state machine and the interface are all exercisable on a laptop, which is what makes distributed orchestration something you can develop against rather than only deploy.
-
-## Two applications, on purpose
-
-The public site is a static export; the platform is a server-backed application because it has to verify sessions and sign URLs. Splitting them means public content ships on its own cadence, and an edit to a marketing page never redeploys the system holding learner data — a boundary that costs one extra pipeline and buys a permanent reduction in blast radius.
+The public site is a static export, and the platform is a separate server-backed app. Changes to the marketing pages never redeploy the system that holds learner data.

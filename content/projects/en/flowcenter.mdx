@@ -1,0 +1,50 @@
+---
+title: Flow Center
+kicker: Clinic platform · Health RAG
+summary: >-
+  Booking, a self-assessment and a chat assistant for a clinic that treats period pain with traditional medicine. The AI stays strictly inside clinician-approved content.
+year: 2026
+order: 5
+featured: true
+tags: [Next.js, PostgreSQL, pgvector, Hybrid search, Health AI, Vercel]
+cover: /img/project-flowcenter.avif
+demo: https://flowcenter.ngwkhai.com
+live: true
+demoNote: >-
+  The chat assistant answers without an account. Booking and saved assessment results need a sign-up with a phone number.
+role: Solo, for a client — full stack, AI features, deployment
+stack: [Next.js 16, TypeScript, PostgreSQL, Drizzle ORM, pgvector, OpenAI API, Vercel, Neon]
+points:
+  - >-
+    Built the clinic's site solo on Next.js 16, PostgreSQL and Drizzle, with booking and a staff workflow, a self-assessment, a chat assistant, auth and an admin area, deployed on Vercel and Neon.
+  - >-
+    Made booking safe under concurrency with advisory locks and state transitions enforced in SQL. A test sends eight parallel bookings at two seats.
+  - >-
+    Kept the AI inside approved content. Fixed rules score the assessment, warning signs stop it, and the model may only rephrase the clinic's template, falling back to that template on any failure.
+  - >-
+    Built a RAG chat assistant with hybrid Vietnamese search: accent-folded keywords plus pgvector, fused with RRF. It reads data, but books only when the visitor presses the button.
+metrics:
+  - { label: Parallel bookings in the race test, value: '8', note: 'for 2 seats, none overbooked' }
+  - { label: Warning signs that stop the analysis, value: '10' }
+  - { label: Days a conversation is kept, value: '90' }
+---
+
+## The problem
+
+The clinic needed its front desk online: taking bookings, letting patients describe their symptoms before a first visit, and answering everyday questions. All of this touches health, so each part needs a clear limit on what the software, and especially the model, is allowed to do.
+
+## Booking that holds under load
+
+Each booking runs in a transaction that holds two advisory locks, one per customer and one per date and slot. A partial unique index backs up the rule of one booking per slot. Staff actions are written as `UPDATE … WHERE status IN (…)`, so two staff members acting at once cannot both succeed. Dates follow the clinic's time zone, not the server's UTC.
+
+## AI inside clinical limits
+
+The self-assessment is scored with the clinic's points table, never by the model. Any of ten warning signs stops the analysis and points the patient to a doctor. For the advice, the model gets the approved template as a draft and may only rephrase it. If the output contains an internal pattern name, times out or is invalid JSON, the template is shown instead, so the feature still works without the model.
+
+## A chat assistant that reads but does not act
+
+A streaming tool loop of at most five rounds answers from the clinic's handbook. Tools read personal data from the session, never from the model's arguments. Booking or cancelling happens only when the visitor presses a card's button, through the same server actions the pages use. Search folds Vietnamese to accent-free text, matches words and word pairs, runs pgvector alongside, and merges both result lists with reciprocal rank fusion.
+
+## Privacy
+
+Only survey answers and the patient's given name are sent to OpenAI, with `store: false`. Passwords are hashed with scrypt, and sessions store only token hashes. Every page and server action checks authorisation again, and conversations are deleted after 90 days.
